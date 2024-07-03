@@ -47,7 +47,7 @@ public class AccountItemAdapter extends BaseAdapter {
         convertView = inflater.inflate(layout, null);
         // ánh xạ
         ImageView imgIcon = (ImageView) convertView.findViewById(R.id.imgIcon);
-        ImageView imgNext = (ImageView) convertView.findViewById(R.id.imgNext);;
+        ImageView imgNext = (ImageView) convertView.findViewById(R.id.imgNext);
         TextView tvFunction = (TextView) convertView.findViewById(R.id.tvFunction);
 
         //gán giá trị
