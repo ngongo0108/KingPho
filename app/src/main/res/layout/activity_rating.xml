@@ -75,7 +75,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:isIndicator="true"
-                android:progressTint="#93BC66"
+                android:progressTint="#EB8D21"
                 android:rating="4.8"
                 android:stepSize="0.1" />
 
@@ -139,7 +139,7 @@
                 android:layout_weight="1"
                 android:progressBackgroundTint="#D7D7D7"
                 android:progressDrawable="@drawable/rounded_progress_bar"
-                android:progressTint="#93BC66" />
+                android:progressTint="#EB8D21" />
 
             <ProgressBar
                 android:id="@+id/progress4Star"
@@ -150,7 +150,7 @@
                 android:layout_weight="1"
                 android:progressBackgroundTint="#D7D7D7"
                 android:progressDrawable="@drawable/rounded_progress_bar"
-                android:progressTint="#93BC66" />
+                android:progressTint="#EB8D21" />
 
             <ProgressBar
                 android:id="@+id/progress3Star"
@@ -161,7 +161,7 @@
                 android:layout_weight="1"
                 android:progressBackgroundTint="#D7D7D7"
                 android:progressDrawable="@drawable/rounded_progress_bar"
-                android:progressTint="#93BC66" />
+                android:progressTint="#EB8D21" />
 
             <ProgressBar
                 android:id="@+id/progress2Star"
@@ -172,7 +172,7 @@
                 android:layout_weight="1"
                 android:progressBackgroundTint="#D7D7D7"
                 android:progressDrawable="@drawable/rounded_progress_bar"
-                android:progressTint="#93BC66" />
+                android:progressTint="#EB8D21" />
 
             <ProgressBar
                 android:id="@+id/progress1Star"
@@ -184,7 +184,7 @@
                 android:progress="10"
                 android:progressBackgroundTint="#D7D7D7"
                 android:progressDrawable="@drawable/rounded_progress_bar"
-                android:progressTint="#93BC66" />
+                android:progressTint="#EB8D21" />
         </LinearLayout>
 
     </LinearLayout>

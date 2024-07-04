@@ -291,7 +291,7 @@
                         style="?android:attr/ratingBarStyleSmall"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:progressTint="#93BC66"
+                        android:progressTint="#EB8D21"
                         android:isIndicator="true"
                         android:rating="4.8"
                         android:stepSize="0.1" />
@@ -357,7 +357,7 @@
                         android:progress="86"
                         android:progressDrawable="@drawable/rounded_progress_bar"
                         android:progressBackgroundTint="#D7D7D7"
-                        android:progressTint="#93BC66" />
+                        android:progressTint="#EB8D21" />
 
                     <ProgressBar
                         android:id="@+id/progress4Star"
@@ -369,7 +369,7 @@
                         android:layout_weight="1"
                         android:progress="75"
                         android:progressBackgroundTint="#D7D7D7"
-                        android:progressTint="#93BC66" />
+                        android:progressTint="#EB8D21" />
 
                     <ProgressBar
                         android:id="@+id/progress3Star"
@@ -381,7 +381,7 @@
                         android:layout_weight="1"
                         android:progress="50"
                         android:progressBackgroundTint="#D7D7D7"
-                        android:progressTint="#93BC66" />
+                        android:progressTint="#EB8D21" />
 
                     <ProgressBar
                         android:id="@+id/progress2Star"
@@ -393,7 +393,7 @@
                         android:layout_weight="1"
                         android:progress="30"
                         android:progressBackgroundTint="#D7D7D7"
-                        android:progressTint="#93BC66" />
+                        android:progressTint="#EB8D21" />
 
                     <ProgressBar
                         android:id="@+id/progress1Star"
@@ -405,7 +405,7 @@
                         android:layout_weight="1"
                         android:progress="10"
                         android:progressBackgroundTint="#D7D7D7"
-                        android:progressTint="#93BC66" />
+                        android:progressTint="#EB8D21" />
                 </LinearLayout>
 
             </LinearLayout>

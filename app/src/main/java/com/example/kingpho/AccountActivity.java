@@ -2,6 +2,7 @@ package com.example.kingpho;
 
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -35,6 +36,13 @@ public class AccountActivity extends AppCompatActivity {
         arrayItem = getDataList();
         adapter = new AccountItemAdapter(this, R.layout.item_function_user, arrayItem);
         lvItem.setAdapter(adapter);
+
+        lvItem.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+            }
+        });
 
         // set value
         tvName.setText("Thu Huong");
