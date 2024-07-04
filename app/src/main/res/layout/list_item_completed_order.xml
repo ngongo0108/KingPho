@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="horizontal"
     android:padding="16dp"
     android:background="?attr/selectableItemBackground">
@@ -41,20 +42,25 @@
             android:id="@+id/textViewStatus"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:background="@drawable/border_status"
+            android:padding="5dp"
             android:text="Completed"
-            android:textSize="14sp"
-            android:textColor="@android:color/holo_green_dark"
-            android:layout_marginTop="4dp" />
+            android:textColor="#FFBD2B"
+            android:textSize="14sp"/>
     </LinearLayout>
 
     <Button
+        style="@style/Widget.MaterialComponents.Button"
         android:id="@+id/buttonReorder"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:backgroundTint="#FFB000"
-        android:text="Reorder"
-        android:textColor="@android:color/white"
-        android:textSize="14sp"
+        android:layout_gravity="center_vertical"
+        android:backgroundTint="#FFE9CC"
         android:paddingHorizontal="16dp"
-        android:layout_gravity="center_vertical" />
+        android:text="Details"
+        android:textColor="@android:color/black"
+        android:textAllCaps="false"
+        android:textSize="14sp"
+        app:tint="#FFE9C9"  />
 </LinearLayout>

@@ -1,55 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <ImageView
+        android:id="@+id/imageViewFood"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:layout_gravity="center_horizontal"
+        android:src="@drawable/ic_launcher_foreground"
+        android:scaleType="centerCrop"
+        android:layout_marginBottom="16dp"/>
 
     <TextView
         android:id="@+id/textViewFoodName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Food Name"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        android:layout_marginTop="16dp"
-        android:layout_centerHorizontal="true"/>
+        android:textSize="18sp"
+        android:textStyle="bold" />
 
     <TextView
         android:id="@+id/textViewEstimatedTime"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Estimated Time: "
+        android:text="Estimated Time:"
         android:textSize="16sp"
-        android:layout_below="@id/textViewFoodName"
-        android:layout_marginTop="16dp"
-        android:layout_centerHorizontal="true"/>
+        android:layout_marginTop="8dp" />
 
     <TextView
         android:id="@+id/textViewPrice"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Price: "
+        android:text="Price:"
         android:textSize="16sp"
-        android:layout_below="@id/textViewEstimatedTime"
-        android:layout_marginTop="16dp"
-        android:layout_centerHorizontal="true"/>
-
-    <TextView
-        android:id="@+id/textViewTrackingProcess"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Tracking Process:"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        android:layout_below="@id/textViewPrice"
-        android:layout_marginTop="32dp"
-        android:layout_centerHorizontal="true"/>
+        android:layout_marginTop="8dp" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerViewTrackingSteps"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/textViewTrackingProcess"
         android:layout_marginTop="16dp"
-        android:layout_centerHorizontal="true"/>
-
-</RelativeLayout>
+        android:background="@android:color/transparent" />
+</LinearLayout>

@@ -9,41 +9,49 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 
-public class TrackingStepsAdapter extends RecyclerView.Adapter<TrackingStepsAdapter.ViewHolder> {
+public class TrackingStepsAdapter extends RecyclerView.Adapter<TrackingStepsAdapter.TrackingStepViewHolder> {
 
-    private List<TrackingStep> steps;
+    private List<TrackingStep> trackingSteps;
 
-    public TrackingStepsAdapter(List<TrackingStep> steps) {
-        this.steps = steps;
+    public TrackingStepsAdapter(List<TrackingStep> trackingSteps) {
+        this.trackingSteps = trackingSteps;
     }
 
     @NonNull
     @Override
-    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public TrackingStepViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_tracking_step, parent, false);
-        return new ViewHolder(view);
+        return new TrackingStepViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        TrackingStep step = steps.get(position);
-        holder.textViewStepDescription.setText(step.getDescription());
-        holder.imageViewStepIcon.setImageResource(step.getIcon());
+    public void onBindViewHolder(@NonNull TrackingStepViewHolder holder, int position) {
+        TrackingStep step = trackingSteps.get(position);
+        holder.stepTitle.setText(step.getTitle());
+        holder.stepSubtitle.setText(step.getSubtitle());
+
+        // Hide connecting line for the first item
+        if (position == 0) {
+            holder.verticalLine.setVisibility(View.INVISIBLE);
+        } else {
+            holder.verticalLine.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override
     public int getItemCount() {
-        return steps.size();
+        return trackingSteps.size();
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
-        TextView textViewStepDescription;
-        ImageView imageViewStepIcon;
+    static class TrackingStepViewHolder extends RecyclerView.ViewHolder {
+        TextView stepTitle, stepSubtitle;
+        View verticalLine;
 
-        public ViewHolder(@NonNull View itemView) {
+        TrackingStepViewHolder(View itemView) {
             super(itemView);
-            textViewStepDescription = itemView.findViewById(R.id.textViewStepDescription);
-            imageViewStepIcon = itemView.findViewById(R.id.imageViewStepIcon);
+            stepTitle = itemView.findViewById(R.id.step_title);
+            stepSubtitle = itemView.findViewById(R.id.step_subtitle);
+            verticalLine = itemView.findViewById(R.id.vertical_line);
         }
     }
 }

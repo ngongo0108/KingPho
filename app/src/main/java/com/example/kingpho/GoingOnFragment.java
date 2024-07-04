@@ -1,47 +1,51 @@
 package com.example.kingpho;
 
-
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class GoingOnFragment extends Fragment {
 
-    private RecyclerView recyclerViewOrders;
+    private RecyclerView recyclerView;
     private OrderAdapter orderAdapter;
     private List<Order> orderList;
 
-    @Nullable
+    public GoingOnFragment() {
+        // Required empty public constructor
+    }
+
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_going_on, container, false);
-
-        recyclerViewOrders = view.findViewById(R.id.recyclerViewOrders);
-        recyclerViewOrders.setLayoutManager(new LinearLayoutManager(getContext()));
-
-        // Initialize the order list and adapter
-        orderList = new ArrayList<>();
-        // Add some demo data
-        orderList.add(new Order(R.drawable.ic_launcher_foreground, "Pho Special", "$10.99", "In Progress"));
-        orderList.add(new Order(R.drawable.ic_launcher_foreground, "Pho Beef", "$9.99", "In Progress"));
-
-        orderAdapter = new OrderAdapter(getContext(), orderList, new OrderAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(Order order) {
-                // Handle tracking button click
-            }
-        });
-
-        recyclerViewOrders.setAdapter(orderAdapter);
-
+        recyclerView = view.findViewById(R.id.recyclerViewOrders);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         return view;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        // Initialize order list (replace with your data fetching logic)
+        orderList = new ArrayList<>();
+        orderList.add(new Order(R.drawable.ic_launcher_foreground, "Pho Beef", "$12.99", "In progress"));
+        orderList.add(new Order(R.drawable.ic_launcher_foreground, "Pho Chicken", "$10.99", "In progress"));
+
+        // Initialize and set adapter with listener
+        orderAdapter = new OrderAdapter(getContext(), orderList);
+        recyclerView.setAdapter(orderAdapter);
     }
 }
