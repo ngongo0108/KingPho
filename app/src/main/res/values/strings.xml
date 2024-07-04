@@ -1,3 +1,6 @@
 <resources>
     <string name="app_name">KingPho</string>
+    <string name="back">Back</string>
+    <string name="btn_going_on">Going On</string>
+    <string name="btn_completed">Completed</string>
 </resources>
