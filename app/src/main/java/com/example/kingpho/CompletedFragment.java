@@ -30,8 +30,15 @@ public class CompletedFragment extends Fragment {
         // Initialize the completed order list and adapter
         completedOrderList = new ArrayList<>();
         // Add some demo data
-        completedOrderList.add(new Order(R.drawable.ic_launcher_foreground, "Pho Special", "$10.99", "Completed"));
-        completedOrderList.add(new Order(R.drawable.ic_launcher_foreground, "Pho Beef", "$9.99", "Completed"));
+        completedOrderList.add(new Order(R.drawable.pdb, "Pho Special", "$10.99", "Completed"));
+        completedOrderList.add(new Order(R.drawable.pdb, "Pho Special", "$10.99", "Completed"));
+        completedOrderList.add(new Order(R.drawable.pdb, "Pho Beef", "$9.99", "Completed"));
+        completedOrderList.add(new Order(R.drawable.pdb, "Pho Special", "$10.99", "Completed"));
+        completedOrderList.add(new Order(R.drawable.pdb, "Pho Special", "$10.99", "Completed"));
+        completedOrderList.add(new Order(R.drawable.pdb, "Pho Special", "$10.99", "Completed"));
+        completedOrderList.add(new Order(R.drawable.pdb, "Pho Beef", "$9.99", "Completed"));
+        completedOrderList.add(new Order(R.drawable.pdb, "Pho Beef", "$9.99", "Completed"));
+        completedOrderList.add(new Order(R.drawable.pdb, "Pho Beef", "$9.99", "Completed"));
 
         completedOrderAdapter = new CompletedOrderAdapter(getContext(), completedOrderList, new CompletedOrderAdapter.OnItemClickListener() {
             @Override

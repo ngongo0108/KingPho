@@ -3,13 +3,13 @@ package com.example.kingpho;
 public class TrackingStep {
     private String title;
     private String subtitle;
-    private int iconResId;
+    private int iconResource;
     private String status;
 
-    public TrackingStep(String title, String subtitle, int iconResId, String status) {
+    public TrackingStep(String title, String subtitle, int iconResource, String status) {
         this.title = title;
         this.subtitle = subtitle;
-        this.iconResId = iconResId;
+        this.iconResource = iconResource;
         this.status = status;
     }
 
@@ -21,8 +21,8 @@ public class TrackingStep {
         return subtitle;
     }
 
-    public int getIconResId() {
-        return iconResId;
+    public int getIconResource() {
+        return iconResource;
     }
 
     public String getStatus() {

@@ -1,6 +1,7 @@
 package com.example.kingpho;
 
 import android.os.Bundle;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -29,7 +30,7 @@ public class TrackingActivity extends AppCompatActivity {
         fetchTrackingInformation();
 
         // Retrieve data passed from OrderAdapter
-        int foodImage = getIntent().getIntExtra("foodImage", R.drawable.ic_launcher_foreground);
+        int foodImage = getIntent().getIntExtra("foodImage", R.drawable.pdb);
         String foodName = getIntent().getStringExtra("foodName");
         String estimatedTime = getIntent().getStringExtra("estimatedTime");
         String price = getIntent().getStringExtra("price");
@@ -45,12 +46,16 @@ public class TrackingActivity extends AppCompatActivity {
         textViewEstimatedTime.setText("Estimated Time: " + estimatedTime);
         textViewPrice.setText("Price: " + price);
 
+        // Set up back button
+        ImageButton btnBack = findViewById(R.id.btnBack);
+        btnBack.setOnClickListener(v -> finish());
+
         // Example data (replace with actual fetched data)
         trackingSteps = new ArrayList<>();
-        trackingSteps.add(new TrackingStep("Order Placed", "We have received your order.", R.drawable.ic_check_circle, "completed"));
-        trackingSteps.add(new TrackingStep("Order Confirmed", "Your order has been confirmed.", R.drawable.ic_check_circle, "completed"));
-        trackingSteps.add(new TrackingStep("Order Processed", "We are preparing your order.", R.drawable.step_indicator_blue, "ongoing"));
-        trackingSteps.add(new TrackingStep("Ready to Pickup", "Your order is ready for pickup.", R.drawable.ic_check_circle_gray, "pending"));
+        trackingSteps.add(new TrackingStep("Order Placed", "We have received your order.", R.drawable.order_placed, "completed"));
+        trackingSteps.add(new TrackingStep("Order Confirmed", "Your order has been confirmed.", R.drawable.order_confirmed, "completed"));
+        trackingSteps.add(new TrackingStep("Order Processed", "We are preparing your order.", R.drawable.order_processing, "ongoing"));
+        trackingSteps.add(new TrackingStep("Ready to Pickup", "Your order is ready for pickup.", R.drawable.order_ready, "pending"));
 
         // Set up RecyclerView adapter
         trackingStepsAdapter = new TrackingStepsAdapter(trackingSteps);
