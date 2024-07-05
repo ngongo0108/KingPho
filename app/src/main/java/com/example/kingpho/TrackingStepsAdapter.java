@@ -31,15 +31,28 @@ public class TrackingStepsAdapter extends RecyclerView.Adapter<TrackingStepsAdap
         holder.stepSubtitle.setText(trackingStep.getSubtitle());
         holder.stepIcon.setImageResource(trackingStep.getIconResource());
 
-        // Set the status dot color based on the status
-        if (trackingStep.getStatus().equals("completed")) {
-            holder.statusDot.setBackgroundResource(R.drawable.dot_completed); // Add drawable for completed status
-        } else if (trackingStep.getStatus().equals("ongoing")) {
-            holder.statusDot.setBackgroundResource(R.drawable.dot_ongoing); // Add drawable for ongoing status
-        } else {
-            holder.statusDot.setBackgroundResource(R.drawable.dot_pending); // Add drawable for pending status
+        int titleColor;
+        int dotDrawable;
+
+        switch (trackingStep.getStatus()) {
+            case "completed":
+                titleColor = holder.itemView.getContext().getResources().getColor(R.color.completed_color);
+                dotDrawable = R.drawable.dot_completed_orange;
+                break;
+            case "ongoing":
+                titleColor = holder.itemView.getContext().getResources().getColor(R.color.ongoing_color);
+                dotDrawable = R.drawable.dot_ongoing_orange;
+                break;
+            default:
+                titleColor = holder.itemView.getContext().getResources().getColor(R.color.pending_color);
+                dotDrawable = R.drawable.dot_pending;
+                break;
         }
+
+        holder.stepTitle.setTextColor(titleColor);
+        holder.statusDot.setBackgroundResource(dotDrawable);
     }
+
 
     @Override
     public int getItemCount() {
