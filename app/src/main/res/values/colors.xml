@@ -11,4 +11,11 @@
         <color name="ongoing_color">#FFB000</color> <!-- Orange -->
         <color name="pending_color">#808080</color> <!-- Gray -->
     <color name="your_search_icon_color">#FF0000</color>
+    <color name="color_red">#ff0000</color>
+    <color name="color_yellow">#ffcc00</color>
+    <color name="color_orange">#FFB000</color>
+    <color name="color_default">#E9E9E9</color>
+    <color name="color_gray">#f6f6f6</color>
+
+
 </resources>
