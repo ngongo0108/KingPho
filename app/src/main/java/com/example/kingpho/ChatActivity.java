@@ -3,8 +3,6 @@ package com.example.kingpho;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -16,6 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.kingpho.adapter.ChatingAdapter;
+import com.example.kingpho.fragment.MainActivity;
 import com.example.kingpho.model.Chating;
 
 import java.util.ArrayList;
