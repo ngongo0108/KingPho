@@ -14,6 +14,9 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.kingpho.fragment.HomeFragment;
+import com.example.kingpho.fragment.MainActivity;
+
 public class LoginActivity extends AppCompatActivity {
 
     EditText edtUsername, edtPassword;
@@ -69,7 +72,7 @@ public class LoginActivity extends AppCompatActivity {
                         }
 
                         // Navigate to MainActivity upon successful login
-                        Intent intent = new Intent(LoginActivity.this, SearchListActivity.class);
+                        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                         startActivity(intent);
                         finish();
                     } else {

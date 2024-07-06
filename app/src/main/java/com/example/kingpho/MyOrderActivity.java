@@ -11,6 +11,9 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.example.kingpho.fragment.CompletedFragment;
+import com.example.kingpho.fragment.GoingOnFragment;
+
 public class MyOrderActivity extends AppCompatActivity {
 
     private Button btnGoingOn, btnCompleted;

@@ -37,6 +37,7 @@
             android:id="@+id/vpListImage"
             android:layout_width="match_parent"
             android:layout_height="250dp" />
+
         <me.relex.circleindicator.CircleIndicator3
             android:id="@+id/circleIndicator"
             android:layout_width="wrap_content"
@@ -51,12 +52,15 @@
 
     <ImageView
         android:id="@+id/imgGoBack"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
         android:layout_marginStart="20dp"
         android:layout_marginTop="20dp"
-        android:scaleType="fitXY"
-        android:background="@drawable/btnrectangle"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:background="@drawable/btn_orange"
+        android:backgroundTint="#E6F19D2C"
+        android:src="@drawable/arrow_left"
+        android:scaleType="centerCrop"
+        app:tint="@color/white"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/arrow_left" />
@@ -69,6 +73,7 @@
         android:text="TextView"
         android:textSize="25sp"
         android:textStyle="bold"
+        android:textColor="#000000"
         app:layout_constraintStart_toStartOf="@+id/guideline"
         app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
 
@@ -124,6 +129,7 @@
         android:text="TextView"
         android:textSize="20sp"
         android:textStyle="bold"
+        android:textColor="#000000"
         app:layout_constraintBottom_toBottomOf="@+id/textView"
         app:layout_constraintEnd_toStartOf="@+id/textView"
         app:layout_constraintTop_toTopOf="@+id/textView" />
@@ -134,6 +140,7 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="3dp"
         android:text="đ"
+        android:textColor="#000000"
         android:textSize="20sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="@+id/imgPlus"
@@ -145,7 +152,7 @@
         android:layout_width="0dp"
         android:layout_height="60dp"
         android:layout_marginBottom="16dp"
-        android:backgroundTint="#53B175"
+        android:backgroundTint="#EB8D21"
         android:text="Add To Card"
         android:textAllCaps="false"
         android:textColor="#fff"
@@ -171,7 +178,8 @@
             android:layout_height="wrap_content"
             android:text="Total amount"
             android:textSize="20sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:textColor="#000000"/>
 
         <TextView
             android:id="@+id/sumPrice"
@@ -219,6 +227,7 @@
                 android:text="Description"
                 android:textSize="20sp"
                 android:textStyle="bold"
+                android:textColor="#000000"
                 app:layout_constraintEnd_toStartOf="@+id/guideline2"
                 app:layout_constraintStart_toStartOf="@+id/guideline"
                 app:layout_constraintTop_toBottomOf="@+id/imgMinus" />
@@ -245,7 +254,8 @@
                     android:layout_weight="1"
                     android:text="Rating"
                     android:textSize="20sp"
-                    android:textStyle="bold" />
+                    android:textStyle="bold"
+                    android:textColor="#000000"/>
                 <TextView
                     android:id="@+id/seeMore"
                     android:layout_width="wrap_content"

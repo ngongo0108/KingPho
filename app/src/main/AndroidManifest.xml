@@ -25,16 +25,18 @@
             android:value="@string/google_map_api_key"/>
         <meta-data android:name="com.google.android.gms.verson"
             android:value="@integer/google_play_services_version"/>
+
+<!--        <activity-->
+<!--            android:name=".WelcomeActivity"-->
+<!--            android:exported="true">-->
+<!--            <intent-filter>-->
+<!--                <action android:name="android.intent.action.MAIN" />-->
+
+<!--                <category android:name="android.intent.category.LAUNCHER" />-->
+<!--            </intent-filter>-->
+<!--        </activity>-->
         <activity
-            android:name=".MapActivity"/>
-      <activity
-            android:name=".OrderDetailsActivity"
-            android:exported="true" />
-        <activity
-            android:name=".SearchListActivity"
-            android:exported="true" />
-        <activity
-            android:name=".WelcomeActivity"
+            android:name=".fragment.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -47,19 +49,19 @@
         <activity android:name=".RatingActivity"/>
         <activity android:name=".ChatActivity"/>
         <activity android:name=".ProfileActivity"/>
-        <activity android:name=".AccountActivity" />
-        <activity android:name=".DetailProductActivity" />
-        <activity android:name=".RatingActivity" />
-        <activity android:name=".ChatActivity" />
+        <activity android:name=".MapActivity"/>
+        <activity
+            android:name=".OrderDetailsActivity"
+            android:exported="true" />
         <activity
             android:name=".LoginActivity"
             android:exported="true" />
         <activity
             android:name=".SignUpActivity"
             android:exported="true" />
-        <activity
-            android:name=".fragment.MainActivity"
-            android:exported="true" />
+<!--        <activity-->
+<!--            android:name=".fragment.MainActivity"-->
+<!--            android:exported="true" />-->
         <activity
             android:name=".ForgotPasswordActivity"
             android:exported="true" />

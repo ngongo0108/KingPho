@@ -8,9 +8,12 @@
     <FrameLayout
         android:id="@+id/fragment_container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@+id/coordinatorLayout"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:id="@+id/coordinatorLayout"
         android:layout_width="match_parent"
         android:layout_height="100dp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -29,17 +32,16 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                >
+                android:layout_height="match_parent">
 
                 <LinearLayout
                     android:id="@+id/homeBtn"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="0.2"
-                    android:paddingVertical="10dp"
                     android:background="@drawable/border_button"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    android:paddingVertical="10dp">
 
                     <ImageView
                         android:id="@+id/imageViewHome"
@@ -63,8 +65,8 @@
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="0.2"
-                    android:paddingVertical="10dp"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    android:paddingVertical="10dp">
 
                     <ImageView
                         android:id="@+id/imageViewSearch"
@@ -113,8 +115,8 @@
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="0.2"
-                    android:paddingVertical="10dp"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    android:paddingVertical="10dp">
 
                     <ImageView
                         android:id="@+id/imageViewFavourite"
@@ -138,8 +140,8 @@
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="0.2"
-                    android:paddingVertical="10dp"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    android:paddingVertical="10dp">
 
                     <ImageView
                         android:id="@+id/imageViewProfile"

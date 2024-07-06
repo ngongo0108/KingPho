@@ -1,4 +1,4 @@
-package com.example.kingpho;
+package com.example.kingpho.model;
 
 public class Order {
     private int imageResource;

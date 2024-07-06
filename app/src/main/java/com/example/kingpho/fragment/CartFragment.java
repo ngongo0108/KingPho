@@ -27,7 +27,6 @@ public class CartFragment extends Fragment {
     private RecyclerView recyclerViewCart;
     private CartAdapter cartAdapter;
     private Manager manager;
-    private ImageView imageViewBack;
     private TextView textViewCart;
     private TextView itemTotalTxt;
     private TextView deliveryTxt;
@@ -59,14 +58,12 @@ public class CartFragment extends Fragment {
                 Toast.makeText(requireContext(), "Checkout not implemented yet", Toast.LENGTH_SHORT).show();
             }
         });
-
         return view;
     }
 
     private void initView(View view) {
         recyclerViewCart = view.findViewById(R.id.recyclerViewFav);
         imageViewEmptyCart = view.findViewById(R.id.emptyCartLayout);
-         imageViewBack = view.findViewById(R.id.imageViewBack);
          textViewCart = view.findViewById(R.id.textViewCart);
         checkoutBtn = view.findViewById(R.id.checkoutBtn);
         itemTotalTxt = view.findViewById(R.id.itemTotalTxt);

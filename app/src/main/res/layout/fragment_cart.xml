@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:background="@color/white"
     android:id="@+id/scrollViewCart"
-
+    android:scrollbars="none"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -35,28 +35,12 @@
             android:text="My Cart"
             android:textSize="20sp"
             android:textStyle="bold"
+            android:textColor="#000000"
             app:layout_constraintEnd_toStartOf="@+id/guideline2"
             app:layout_constraintStart_toStartOf="@+id/guideline"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <ImageView
-            android:id="@+id/imageViewBack"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintBottom_toBottomOf="@+id/textViewCart"
-            app:layout_constraintStart_toStartOf="@+id/guideline"
-            app:layout_constraintTop_toTopOf="@+id/textViewCart"
-            app:srcCompat="@drawable/arrow_left" />
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recyclerViewFav"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            app:layout_constraintStart_toStartOf="@+id/guideline"
-            app:layout_constraintTop_toBottomOf="@+id/textViewCart" />
-
-<!--        <LinearLayout-->
+        <!--        <LinearLayout-->
 <!--            android:id="@+id/layoutEmptyCart"-->
 <!--            android:layout_width="match_parent"-->
 <!--            android:layout_height="wrap_content"-->
@@ -84,6 +68,15 @@
 <!--                android:text="Add Products" />-->
 <!--        </LinearLayout>-->
 
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerViewFav"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            app:layout_constraintEnd_toStartOf="@+id/guideline2"
+            app:layout_constraintStart_toStartOf="@+id/guideline"
+            app:layout_constraintTop_toBottomOf="@+id/textViewCart" />
+
         <LinearLayout
             android:id="@+id/itemTotalLayout"
             android:layout_width="0dp"
@@ -101,15 +94,17 @@
                 android:layout_weight="1"
                 android:text="Items Total:"
                 android:textSize="18sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:textColor="#000000"/>
 
             <TextView
                 android:id="@+id/itemTotal"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="0đ"
+                android:text="100000000000000000000đ"
                 android:textSize="18sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                />
         </LinearLayout>
 
         <LinearLayout
@@ -129,7 +124,8 @@
                 android:layout_weight="1"
                 android:text="Delivery Service:"
                 android:textSize="18sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:textColor="#000000"/>
 
             <TextView
                 android:id="@+id/deliveryTotal"
@@ -137,7 +133,7 @@
                 android:layout_height="wrap_content"
                 android:text="0đ"
                 android:textSize="18sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"/>
         </LinearLayout>
 
         <LinearLayout
@@ -157,7 +153,8 @@
                 android:layout_weight="1"
                 android:text="Total:"
                 android:textSize="18sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:textColor="#000000"/>
 
             <TextView
                 android:id="@+id/total"
@@ -165,13 +162,13 @@
                 android:layout_height="wrap_content"
                 android:text="0đ"
                 android:textSize="18sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"/>
         </LinearLayout>
 
         <Button
             android:id="@+id/checkoutBtn"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="60dp"
             android:layout_marginTop="16dp"
             android:backgroundTint="@color/color_orange"
             android:text="Check out"

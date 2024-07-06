@@ -1,4 +1,4 @@
-package com.example.kingpho;
+package com.example.kingpho.adapter;
 
 import android.content.Context;
 import android.content.Intent;
@@ -11,6 +11,10 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.kingpho.R;
+import com.example.kingpho.TrackingActivity;
+import com.example.kingpho.model.Order;
 
 import java.util.List;
 

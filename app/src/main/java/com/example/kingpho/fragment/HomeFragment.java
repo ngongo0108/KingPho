@@ -2,11 +2,13 @@
 
 package com.example.kingpho.fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -31,11 +33,10 @@ public class HomeFragment extends Fragment {
     private RecyclerView recyclerView;
     private ArrayList<Category> categoryList;
     private CategoryAdapter categoryAdapter;
-
     private RecyclerView recyclerViewProducts;
     private ArrayList<Food> productList;
     private ProductAdapter productAdapter;
-
+    private TextView seeAll;
     private Manager manager;
 
     public HomeFragment() {
@@ -48,6 +49,18 @@ public class HomeFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
         TinyDB tinyDB = new TinyDB(requireContext());
         manager = new Manager(requireContext(), tinyDB);
+        seeAll = view.findViewById(R.id.seeAll);
+        seeAll.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Fragment newFragment = new ProductFragment(); // Replace with your target fragment
+                requireActivity().getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.fragment_container, newFragment)
+                        .addToBackStack(null)
+                        .commit();
+                ((MainActivity) requireActivity()).setActiveButton(((MainActivity) requireActivity()).productsBtn);
+            }
+        });
         initializeRecyclerViews(view);
         initializeData();
         return view;
