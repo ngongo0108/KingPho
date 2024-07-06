@@ -10,5 +10,5 @@
         <color name="completed_color">#FAC95C</color> <!-- Orange -->
         <color name="ongoing_color">#FFB000</color> <!-- Orange -->
         <color name="pending_color">#808080</color> <!-- Gray -->
-
+    <color name="your_search_icon_color">#FF0000</color>
 </resources>

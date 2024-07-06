@@ -13,7 +13,13 @@
         android:theme="@style/Theme.KingPho"
         tools:targetApi="31">
         <activity
-            android:name=".MainActivity"
+            android:name=".OrderDetailsActivity"
+            android:exported="true" />
+        <activity
+            android:name=".SearchListActivity"
+            android:exported="true" />
+        <activity
+            android:name=".WelcomeActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -21,6 +27,28 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".AccountActivity" />
+        <activity android:name=".DetailProductActivity" />
+        <activity android:name=".RatingActivity" />
+        <activity android:name=".ChatActivity" />
+        <activity
+            android:name=".LoginActivity"
+            android:exported="true" />
+        <activity
+            android:name=".SignUpActivity"
+            android:exported="true" />
+        <activity
+            android:name=".MainActivity"
+            android:exported="true" />
+        <activity
+            android:name=".ForgotPasswordActivity"
+            android:exported="true" />
+        <activity
+            android:name=".CheckEmailActivity"
+            android:exported="true" />
+        <activity
+            android:name=".ResetPasswordActivity"
+            android:exported="true" />
     </application>
 
 </manifest>
