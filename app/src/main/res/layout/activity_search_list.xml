@@ -1,0 +1,64 @@
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center_horizontal"
+    android:padding="8dp"
+    android:iconifiedByDefault="false">>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:paddingStart="6dp"
+        android:gravity="center_vertical">
+
+        <ImageButton
+            android:id="@+id/btnBack"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@drawable/btn_orange"
+            android:backgroundTint="#E6F19D2C"
+            android:src="@drawable/arrow_left"
+            android:scaleType="centerCrop"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="@color/white" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center_horizontal"
+            android:layout_marginEnd="35dp"
+            android:text="Find Products"
+            android:textSize="20sp"
+            android:textColor="#DC000000"
+            android:textStyle="bold" />
+    </LinearLayout>
+    <SearchView
+        android:id="@+id/searchView"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:queryHint="Search Store..."
+        android:background="@drawable/rounded_search_background"
+        android:padding="4dp"
+        android:layout_marginVertical="16dp"
+        android:layout_marginHorizontal="6dp"
+        android:focusable="true"
+        android:focusableInTouchMode="true"/>
+
+    <GridView
+        android:id="@+id/gridView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/searchView"
+        android:numColumns="2"
+        android:scrollbars="none"
+        android:isScrollContainer="false"
+        android:verticalSpacing="8dp"
+        android:horizontalSpacing="8dp"
+        android:padding="8dp" />
+
+</LinearLayout>

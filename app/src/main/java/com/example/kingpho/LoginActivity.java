@@ -69,7 +69,7 @@ public class LoginActivity extends AppCompatActivity {
                         }
 
                         // Navigate to MainActivity upon successful login
-                        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                        Intent intent = new Intent(LoginActivity.this, SearchListActivity.class);
                         startActivity(intent);
                         finish();
                     } else {
