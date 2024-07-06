@@ -17,7 +17,7 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
-    private LinearLayout homeBtn, productsBtn,favouriteBtn, profileBtn;
+    public LinearLayout homeBtn, productsBtn, favouriteBtn, profileBtn;
     private View activeButton;
     private FloatingActionButton cartBtn;
 
@@ -55,12 +55,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (v.getId() == R.id.homeBtn) {
             replaceFragment(new HomeFragment());
             setActiveButton(homeBtn);
-        } else if (v.getId() == R.id.cartBtn) {
+        } else if (v.getId() == R.id.produtsBtn) {
+            replaceFragment(new ProductFragment());
+            setActiveButton(productsBtn);
+        }else if (v.getId() == R.id.cartBtn) {
             replaceFragment(new CartFragment());
             setActiveButton(cartBtn);
         } else if(v.getId() == R.id.favouriteBtn){
             replaceFragment(new FavouriteFragment());
             setActiveButton(favouriteBtn);
+        }else if (v.getId() == R.id.profileBtn) {
+            replaceFragment(new ProfileFragment());
+            setActiveButton(profileBtn);
         }
     }
 
@@ -71,9 +77,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 .commit();
     }
 
-    private void setActiveButton(View activeBtn) {
+    public void setActiveButton(View activeBtn) {
         if (activeButton != null) {
-            //
             activeButton.setBackgroundColor(ContextCompat.getColor(this, R.color.color_gray));
         }
         activeBtn.setBackgroundResource(R.drawable.bg_btn_change);

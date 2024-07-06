@@ -9,6 +9,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.kingpho.adapter.TrackingStepsAdapter;
+import com.example.kingpho.model.TrackingStep;
+
 import java.util.ArrayList;
 import java.util.List;
 

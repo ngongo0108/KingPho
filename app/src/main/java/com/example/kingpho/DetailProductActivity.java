@@ -171,8 +171,6 @@ public class DetailProductActivity extends AppCompatActivity {
         return list;
     }
     private void goBack() {
-        Intent intent = new Intent(this, MainActivity.class);
-        startActivity(intent);
         finish();
     }
     private void minusAction() {
@@ -203,14 +201,11 @@ public class DetailProductActivity extends AppCompatActivity {
         isFavor = !isFavor;
     }
     private void addToCard() {
-        Intent intent = new Intent(this, MainActivity.class);
-        startActivity(intent);
-        finish();
+        Toast.makeText(this, "product added to cart", Toast.LENGTH_SHORT).show();
     }
     private void seeMoreAction() {
         Intent intent = new Intent(this, RatingActivity.class);
         startActivity(intent);
-        finish();
     }
     public static String formatMoney(String moneyString) {
         try {
