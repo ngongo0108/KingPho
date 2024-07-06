@@ -1,11 +1,10 @@
-<?xml version="1.0" encoding="utf-8"?>
+<!-- activity_my_order.xml -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:layout_marginHorizontal="24dp"
-    android:layout_marginVertical="20dp"
-    >
+    android:layout_marginVertical="20dp">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -60,6 +59,6 @@
         android:id="@+id/orderFrameLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="16dp"
-        />
+        android:layout_marginTop="16dp" />
+
 </LinearLayout>

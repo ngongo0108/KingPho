@@ -1,31 +1,46 @@
 package com.example.kingpho;
 
-public class Order {
-    private int imageResource;
-    private String title;
-    private String price;
+import java.io.Serializable;
+import java.util.List;
+
+public class Order implements Serializable {
+    private List<FoodItem> foodItems;
     private String status;
+    private String orderNumber;
+    private double totalPrice;
+    private int img; // Image resource ID for the order
+    private String estimatedTime;
 
-    public Order(int imageResource, String title, String price, String status) {
-        this.imageResource = imageResource;
-        this.title = title;
-        this.price = price;
+    public Order(List<FoodItem> foodItems, String status, String orderNumber, double totalPrice, int img, String estimatedTime) {
+        this.foodItems = foodItems;
         this.status = status;
+        this.orderNumber = orderNumber;
+        this.totalPrice = totalPrice;
+        this.img = img;
+        this.estimatedTime = estimatedTime;
     }
 
-    public int getImageResource() {
-        return imageResource;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public String getPrice() {
-        return price;
+    public List<FoodItem> getFoodItems() {
+        return foodItems;
     }
 
     public String getStatus() {
         return status;
+    }
+
+    public String getOrderNumber() {
+        return orderNumber;
+    }
+
+    public double getTotalPrice() {
+        return totalPrice;
+    }
+
+    public int getImg() {
+        return img;
+    }
+
+    public String getEstimatedTime() {
+        return estimatedTime;
     }
 }

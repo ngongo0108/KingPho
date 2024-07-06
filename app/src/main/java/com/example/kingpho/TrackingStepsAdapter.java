@@ -5,11 +5,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
 import java.util.List;
 
-public class TrackingStepsAdapter extends RecyclerView.Adapter<TrackingStepsAdapter.TrackingStepViewHolder> {
+public class TrackingStepsAdapter extends RecyclerView.Adapter<TrackingStepsAdapter.TrackingStepsViewHolder> {
 
     private List<TrackingStep> trackingSteps;
 
@@ -19,38 +21,33 @@ public class TrackingStepsAdapter extends RecyclerView.Adapter<TrackingStepsAdap
 
     @NonNull
     @Override
-    public TrackingStepViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public TrackingStepsViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_tracking_step, parent, false);
-        return new TrackingStepViewHolder(view);
+        return new TrackingStepsViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull TrackingStepViewHolder holder, int position) {
-        TrackingStep trackingStep = trackingSteps.get(position);
-        holder.stepTitle.setText(trackingStep.getTitle());
-        holder.stepSubtitle.setText(trackingStep.getSubtitle());
-        holder.stepIcon.setImageResource(trackingStep.getIconResource());
+    public void onBindViewHolder(@NonNull TrackingStepsViewHolder holder, int position) {
+        TrackingStep step = trackingSteps.get(position);
+        holder.stepTitle.setText(step.getTitle());
+        holder.stepSubtitle.setText(step.getSubtitle());
+        holder.stepIcon.setImageResource(step.getIconResource());
 
-        int titleColor;
-        int dotDrawable;
-
-        switch (trackingStep.getStatus()) {
+        // Set status dot background based on step status
+        switch (step.getStatus()) {
             case "completed":
-                titleColor = holder.itemView.getContext().getResources().getColor(R.color.completed_color);
-                dotDrawable = R.drawable.dot_completed_orange;
+                holder.statusDot.setBackgroundResource(R.drawable.dot_completed_orange);
                 break;
             case "ongoing":
-                titleColor = holder.itemView.getContext().getResources().getColor(R.color.ongoing_color);
-                dotDrawable = R.drawable.dot_ongoing_orange;
+                holder.statusDot.setBackgroundResource(R.drawable.dot_ongoing_orange);
+                break;
+            case "pending":
+                holder.statusDot.setBackgroundResource(R.drawable.dot_pending);
                 break;
             default:
-                titleColor = holder.itemView.getContext().getResources().getColor(R.color.pending_color);
-                dotDrawable = R.drawable.dot_pending;
+                holder.statusDot.setBackgroundResource(R.drawable.dot_pending);
                 break;
         }
-
-        holder.stepTitle.setTextColor(titleColor);
-        holder.statusDot.setBackgroundResource(dotDrawable);
     }
 
 
@@ -59,17 +56,18 @@ public class TrackingStepsAdapter extends RecyclerView.Adapter<TrackingStepsAdap
         return trackingSteps.size();
     }
 
-    public static class TrackingStepViewHolder extends RecyclerView.ViewHolder {
+    public static class TrackingStepsViewHolder extends RecyclerView.ViewHolder {
         TextView stepTitle, stepSubtitle;
         ImageView stepIcon;
-        View statusDot;
+        View statusDot; // Add statusDot view
 
-        public TrackingStepViewHolder(@NonNull View itemView) {
+        public TrackingStepsViewHolder(@NonNull View itemView) {
             super(itemView);
             stepTitle = itemView.findViewById(R.id.step_title);
             stepSubtitle = itemView.findViewById(R.id.step_subtitle);
             stepIcon = itemView.findViewById(R.id.step_icon);
-            statusDot = itemView.findViewById(R.id.status_dot);
+            statusDot = itemView.findViewById(R.id.status_dot); // Initialize statusDot view
+
         }
     }
 }

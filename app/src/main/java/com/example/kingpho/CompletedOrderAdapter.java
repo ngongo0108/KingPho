@@ -7,8 +7,10 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
 import java.util.List;
 
 public class CompletedOrderAdapter extends RecyclerView.Adapter<CompletedOrderAdapter.CompletedOrderViewHolder> {
@@ -33,10 +35,10 @@ public class CompletedOrderAdapter extends RecyclerView.Adapter<CompletedOrderAd
     @Override
     public void onBindViewHolder(@NonNull CompletedOrderViewHolder holder, int position) {
         Order order = orderList.get(position);
-        holder.textViewTitle.setText(order.getTitle());
-        holder.textViewPrice.setText(order.getPrice());
+        holder.textViewTitle.setText(order.getOrderNumber());
+        holder.textViewPrice.setText(String.format("$%.2f", order.getTotalPrice()));
         holder.textViewStatus.setText(order.getStatus());
-        holder.imageViewOrder.setImageResource(order.getImageResource());
+        holder.imageViewOrder.setImageResource(order.getImg());
 
         holder.buttonReorder.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -14,8 +14,11 @@ import java.util.List;
 
 public class TrackingActivity extends AppCompatActivity {
 
+    private RecyclerView recyclerViewFoodItems;
     private RecyclerView recyclerViewTrackingSteps;
+    private FoodItemsAdapter foodItemsAdapter;
     private TrackingStepsAdapter trackingStepsAdapter;
+    private List<FoodItem> foodItems;
     private List<TrackingStep> trackingSteps;
 
     @Override
@@ -23,32 +26,34 @@ public class TrackingActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tracking);
 
+        recyclerViewFoodItems = findViewById(R.id.recyclerViewFoodItems);
         recyclerViewTrackingSteps = findViewById(R.id.recyclerViewTrackingSteps);
+
+        recyclerViewFoodItems.setLayoutManager(new LinearLayoutManager(this));
         recyclerViewTrackingSteps.setLayoutManager(new LinearLayoutManager(this));
 
-        // Fetch tracking information (replace with your actual logic)
-        fetchTrackingInformation();
+        // Retrieve data passed from GoingOnAdapter
+        Order order = (Order) getIntent().getSerializableExtra("order");
 
-        // Retrieve data passed from OrderAdapter
-        int foodImage = getIntent().getIntExtra("foodImage", R.drawable.pdb);
-        String foodName = getIntent().getStringExtra("foodName");
-        String estimatedTime = getIntent().getStringExtra("estimatedTime");
-        String price = getIntent().getStringExtra("price");
-
-        // Populate food information in views
+        // Populate order information in views
         ImageView imageViewFood = findViewById(R.id.imageViewFood);
-        TextView textViewFoodName = findViewById(R.id.textViewFoodName);
+        TextView textViewOrderNumber = findViewById(R.id.textViewOrderNumber);
         TextView textViewEstimatedTime = findViewById(R.id.textViewEstimatedTime);
-        TextView textViewPrice = findViewById(R.id.textViewPrice);
+        TextView textViewTotalPrice = findViewById(R.id.textViewTotalPrice);
 
-        imageViewFood.setImageResource(foodImage);
-        textViewFoodName.setText(foodName);
-        textViewEstimatedTime.setText("Estimated Time: " + estimatedTime);
-        textViewPrice.setText("Price: " + price);
+        imageViewFood.setImageResource(order.getImg()); // Set image resource
+        textViewOrderNumber.setText(order.getOrderNumber()); // Set order number
+        textViewEstimatedTime.setText("Estimated Time: " + order.getEstimatedTime()); // Set estimated time
+        textViewTotalPrice.setText("Total Price: $" + order.getTotalPrice()); // Set total price
 
         // Set up back button
         ImageButton btnBack = findViewById(R.id.btnBack);
         btnBack.setOnClickListener(v -> finish());
+
+        // Set up RecyclerView adapter for food items
+        foodItems = order.getFoodItems();
+        foodItemsAdapter = new FoodItemsAdapter(foodItems);
+        recyclerViewFoodItems.setAdapter(foodItemsAdapter);
 
         // Example data (replace with actual fetched data)
         trackingSteps = new ArrayList<>();
@@ -57,16 +62,8 @@ public class TrackingActivity extends AppCompatActivity {
         trackingSteps.add(new TrackingStep("Order Processed", "We are preparing your order.", R.drawable.order_processing, "ongoing"));
         trackingSteps.add(new TrackingStep("Ready to Pickup", "Your order is ready for pickup.", R.drawable.order_ready, "pending"));
 
-        // Set up RecyclerView adapter
+        // Set up RecyclerView adapter for tracking steps
         trackingStepsAdapter = new TrackingStepsAdapter(trackingSteps);
         recyclerViewTrackingSteps.setAdapter(trackingStepsAdapter);
-    }
-
-    private void fetchTrackingInformation() {
-        // Placeholder for fetching tracking information from backend or other source
-        // Replace with actual implementation to fetch food order information
-        // Example:
-        // String foodOrderId = getIntent().getStringExtra("foodOrderId");
-        // Use foodOrderId to fetch tracking steps for that specific order
     }
 }
