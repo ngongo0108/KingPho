@@ -49,7 +49,6 @@ public class ProfileActivity extends AppCompatActivity {
         save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(ProfileActivity.this, arrayInfo.get(0).getInfo(), Toast.LENGTH_SHORT).show();
             }
         });
         camera.setOnClickListener(new View.OnClickListener() {

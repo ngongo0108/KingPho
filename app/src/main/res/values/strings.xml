@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">KingPho</string>
+    <string name="google_map_api_key">AIzaSyAokfN6yzX1WEAMISWqjeW-lXnGDDhSRXg</string>
 </resources>
