@@ -72,6 +72,7 @@ public class Food {
     private int numberInCart;
     private Category category;
 
+    private int rating;
     public Food(String foodTitle, String foodImage, String foodDescription, Double foodPrice, Category category) {
         this.foodTitle = foodTitle;
         this.foodImage = foodImage;
@@ -87,6 +88,24 @@ public class Food {
         this.foodPrice = foodPrice;
         this.numberInCart = numberInCart;
         this.category = category;
+    }
+
+    public Food(String foodTitle, String foodImage, String foodDescription, Double foodPrice, int numberInCart, Category category, int rating) {
+        this.foodTitle = foodTitle;
+        this.foodImage = foodImage;
+        this.foodDescription = foodDescription;
+        this.foodPrice = foodPrice;
+        this.numberInCart = numberInCart;
+        this.category = category;
+        this.rating = rating;
+    }
+
+    public int getRating() {
+        return rating;
+    }
+
+    public void setRating(int rating) {
+        this.rating = rating;
     }
 
     public String getFoodTitle() {
