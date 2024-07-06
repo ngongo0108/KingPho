@@ -41,8 +41,23 @@ public class GoingOnFragment extends Fragment {
 
         // Initialize order list (replace with your data fetching logic)
         orderList = new ArrayList<>();
-        orderList.add(new Order(R.drawable.ic_launcher_foreground, "Pho Beef", "$12.99", "In progress"));
-        orderList.add(new Order(R.drawable.ic_launcher_foreground, "Pho Chicken", "$10.99", "In progress"));
+        orderList.add(new Order(R.drawable.pdb, "Pho Beef", "$12.99", "In progress"));
+        orderList.add(new Order(R.drawable.pdb,"Pho Chicken", "$10.99", "In progress"));
+        orderList.add(new Order(R.drawable.pdb,"Pho Chicken", "$10.99", "In progress"));
+        orderList.add(new Order(R.drawable.pdb,"Pho Chicken", "$10.99", "In progress"));
+        orderList.add(new Order(R.drawable.pdb,"Pho Chicken", "$10.99", "In progress"));
+        orderList.add(new Order(R.drawable.pdb,"Pho Chicken", "$10.99", "In progress"));
+        orderList.add(new Order(R.drawable.pdb,"Pho Chicken", "$10.99", "In progress"));
+        orderList.add(new Order(R.drawable.pdb,"Pho Chicken", "$10.99", "In progress"));
+        orderList.add(new Order(R.drawable.pdb,"Pho Chicken", "$10.99", "In progress"));
+        orderList.add(new Order(R.drawable.pdb,"Pho Chicken", "$10.99", "In progress"));
+        orderList.add(new Order(R.drawable.pdb,"Pho Chicken", "$10.99", "In progress"));
+        orderList.add(new Order(R.drawable.pdb,"Pho Chicken", "$10.99", "In progress"));
+        orderList.add(new Order(R.drawable.pdb,"Pho Chicken", "$10.99", "In progress"));
+        orderList.add(new Order(R.drawable.pdb,"Pho Chicken", "$10.99", "In progress"));
+        orderList.add(new Order(R.drawable.pdb,"Pho Chicken", "$10.99", "In progress"));
+        orderList.add(new Order(R.drawable.pdb,"Pho Chicken", "$10.99", "In progress"));
+
 
         // Initialize and set adapter with listener
         orderAdapter = new OrderAdapter(getContext(), orderList);

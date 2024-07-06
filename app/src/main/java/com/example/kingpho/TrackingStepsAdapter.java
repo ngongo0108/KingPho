@@ -26,32 +26,50 @@ public class TrackingStepsAdapter extends RecyclerView.Adapter<TrackingStepsAdap
 
     @Override
     public void onBindViewHolder(@NonNull TrackingStepViewHolder holder, int position) {
-        TrackingStep step = trackingSteps.get(position);
-        holder.stepTitle.setText(step.getTitle());
-        holder.stepSubtitle.setText(step.getSubtitle());
+        TrackingStep trackingStep = trackingSteps.get(position);
+        holder.stepTitle.setText(trackingStep.getTitle());
+        holder.stepSubtitle.setText(trackingStep.getSubtitle());
+        holder.stepIcon.setImageResource(trackingStep.getIconResource());
 
-        // Hide connecting line for the first item
-        if (position == 0) {
-            holder.verticalLine.setVisibility(View.INVISIBLE);
-        } else {
-            holder.verticalLine.setVisibility(View.VISIBLE);
+        int titleColor;
+        int dotDrawable;
+
+        switch (trackingStep.getStatus()) {
+            case "completed":
+                titleColor = holder.itemView.getContext().getResources().getColor(R.color.completed_color);
+                dotDrawable = R.drawable.dot_completed_orange;
+                break;
+            case "ongoing":
+                titleColor = holder.itemView.getContext().getResources().getColor(R.color.ongoing_color);
+                dotDrawable = R.drawable.dot_ongoing_orange;
+                break;
+            default:
+                titleColor = holder.itemView.getContext().getResources().getColor(R.color.pending_color);
+                dotDrawable = R.drawable.dot_pending;
+                break;
         }
+
+        holder.stepTitle.setTextColor(titleColor);
+        holder.statusDot.setBackgroundResource(dotDrawable);
     }
+
 
     @Override
     public int getItemCount() {
         return trackingSteps.size();
     }
 
-    static class TrackingStepViewHolder extends RecyclerView.ViewHolder {
+    public static class TrackingStepViewHolder extends RecyclerView.ViewHolder {
         TextView stepTitle, stepSubtitle;
-        View verticalLine;
+        ImageView stepIcon;
+        View statusDot;
 
-        TrackingStepViewHolder(View itemView) {
+        public TrackingStepViewHolder(@NonNull View itemView) {
             super(itemView);
             stepTitle = itemView.findViewById(R.id.step_title);
             stepSubtitle = itemView.findViewById(R.id.step_subtitle);
-            verticalLine = itemView.findViewById(R.id.vertical_line);
+            stepIcon = itemView.findViewById(R.id.step_icon);
+            statusDot = itemView.findViewById(R.id.status_dot);
         }
     }
 }

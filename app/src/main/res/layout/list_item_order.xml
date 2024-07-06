@@ -4,15 +4,19 @@
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="horizontal"
-    android:padding="16dp"
-    android:background="?attr/selectableItemBackground">
+    android:background="?attr/selectableItemBackground"
+    android:paddingVertical="16dp"
+    >
 
-    <ImageView
+    <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/imageViewOrder"
-        android:layout_width="64dp"
-        android:layout_height="64dp"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
         android:layout_gravity="center_vertical"
-        android:src="@drawable/ic_launcher_foreground" />
+        android:src="@drawable/ic_launcher_background"
+        app:circularflow_radiusInDP="20dp"
+        app:shapeAppearanceOverlay="@style/roundedImage"
+        />
 
     <LinearLayout
         android:layout_width="0dp"
@@ -43,7 +47,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
-            android:background="@drawable/border_status"
+            android:background="@drawable/border_status_yellow"
             android:padding="5dp"
             android:text="Status"
             android:textColor="#FFBD2B"
