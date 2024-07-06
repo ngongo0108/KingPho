@@ -11,6 +11,11 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.example.kingpho.fragment.CompletedFragment;
+import com.example.kingpho.fragment.GoingOnFragment;
+import com.example.kingpho.model.FoodItem;
+import com.example.kingpho.model.Order;
+
 import java.util.ArrayList;
 import java.util.List;
 

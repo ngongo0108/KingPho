@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="80dp"
+    android:layout_height="75dp"
     android:layout_gravity="center">
 
     <!-- Vertical Line -->
@@ -20,7 +20,8 @@
         android:layout_height="15dp"
         android:layout_centerHorizontal="true"
         android:layout_alignStart="@+id/vertical_line"
-        android:layout_marginTop="40dp"
+        android:src="@drawable/ic_launcher_background"
+        android:layout_marginTop="32dp"
         android:layout_marginStart="-5dp"/>
 
     <!-- Step Icon -->

@@ -1,4 +1,4 @@
-package com.example.kingpho;
+package com.example.kingpho.model;
 
 import java.io.Serializable;
 import java.util.List;
