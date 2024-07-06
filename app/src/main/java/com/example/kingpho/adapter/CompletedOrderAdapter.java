@@ -1,4 +1,4 @@
-package com.example.kingpho;
+package com.example.kingpho.adapter;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -9,6 +9,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.kingpho.R;
+import com.example.kingpho.model.Order;
+
 import java.util.List;
 
 public class CompletedOrderAdapter extends RecyclerView.Adapter<CompletedOrderAdapter.CompletedOrderViewHolder> {

@@ -1,4 +1,4 @@
-package com.example.kingpho;
+package com.example.kingpho.adapter;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -7,6 +7,10 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.example.kingpho.R;
+import com.example.kingpho.model.FoodItem;
+
 import java.util.List;
 
 public class FoodItemAdapter extends BaseAdapter {

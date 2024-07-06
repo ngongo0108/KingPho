@@ -1,4 +1,4 @@
-package com.example.kingpho;
+package com.example.kingpho.fragment;
 
 
 import android.os.Bundle;
@@ -10,6 +10,11 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import com.example.kingpho.R;
+import com.example.kingpho.adapter.CompletedOrderAdapter;
+import com.example.kingpho.model.Order;
+
 import java.util.ArrayList;
 import java.util.List;
 

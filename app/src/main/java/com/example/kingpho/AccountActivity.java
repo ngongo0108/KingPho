@@ -1,5 +1,6 @@
 package com.example.kingpho;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
@@ -45,9 +46,15 @@ public class AccountActivity extends AppCompatActivity {
         });
 
         // set value
+        imgAvatar.setImageResource(R.drawable.avatar);
         tvName.setText("Thu Huong");
         tvEmail.setText("huong@gmail.com");
-        imgEdit.setImageResource(R.drawable.edit);
+        imgEdit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                editProfile();
+            }
+        });
 
         btnLogOut.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -80,5 +87,10 @@ public class AccountActivity extends AppCompatActivity {
     }
     private void logoutAction() {
         Toast.makeText(this, "Logout Action", Toast.LENGTH_SHORT).show();
+    }
+    private void editProfile() {
+        Intent intent = new Intent(this, ProfileActivity.class);
+        startActivity(intent);
+        finish();
     }
 }

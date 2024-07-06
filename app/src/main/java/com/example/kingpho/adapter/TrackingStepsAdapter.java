@@ -1,4 +1,4 @@
-package com.example.kingpho;
+package com.example.kingpho.adapter;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -7,6 +7,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.kingpho.R;
+import com.example.kingpho.model.TrackingStep;
+
 import java.util.List;
 
 public class TrackingStepsAdapter extends RecyclerView.Adapter<TrackingStepsAdapter.TrackingStepViewHolder> {
