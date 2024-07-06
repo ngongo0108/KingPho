@@ -6,6 +6,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -43,7 +44,6 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
         Food item = cartItemList.get(position);
         holder.productName.setText(item.getFoodTitle());
         holder.productPrice.setText(String.valueOf(item.getFoodPrice()));
-        holder.totalEachProduct.setText(String.valueOf(Math.round(item.getNumberInCart() * item.getFoodPrice() * 100) / 100));
         holder.productQuantity.setText(String.valueOf(item.getNumberInCart()));
         int drawableResourceId = holder.itemView.getContext().getResources().getIdentifier(item.getFoodImage(), "drawable", holder.itemView.getContext().getPackageName());
         Glide.with(holder.itemView.getContext())
@@ -82,14 +82,13 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        TextView productName, productPrice, productQuantity, totalEachProduct;
+        TextView productName, productPrice, productQuantity;
         ImageView productImage,minusBtn,plusBtn;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             productName = itemView.findViewById(R.id.title);
             productPrice = itemView.findViewById(R.id.price);
-            totalEachProduct = itemView.findViewById(R.id.price2);
             productQuantity = itemView.findViewById(R.id.textViewQuantity);
             productImage = itemView.findViewById(R.id.pic);
             minusBtn = itemView.findViewById(R.id.minusBtn);

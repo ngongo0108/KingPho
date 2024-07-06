@@ -38,7 +38,7 @@
             android:name=".SignUpActivity"
             android:exported="true" />
         <activity
-            android:name=".MainActivity"
+            android:name=".fragment.MainActivity"
             android:exported="true" />
         <activity
             android:name=".ForgotPasswordActivity"
