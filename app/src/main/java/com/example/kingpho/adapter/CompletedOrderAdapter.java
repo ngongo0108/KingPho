@@ -1,6 +1,7 @@
 package com.example.kingpho.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,6 +11,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.kingpho.FeedbackActivity;
 import com.example.kingpho.R;
 import com.example.kingpho.model.Order;
 
@@ -46,6 +48,8 @@ public class CompletedOrderAdapter extends RecyclerView.Adapter<CompletedOrderAd
             @Override
             public void onClick(View v) {
                 onItemClickListener.onItemClick(order);
+                Intent intent = new Intent(context, FeedbackActivity.class);
+                context.startActivity(intent);
             }
         });
     }

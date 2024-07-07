@@ -1,5 +1,6 @@
 [versions]
 agp = "8.3.2"
+androidMapsUtils = "0.5"
 circleindicator = "2.1.6"
 glide = "4.16.0"
 gson = "2.11.0"
@@ -15,6 +16,7 @@ playServicesMaps = "19.0.0"
 uiTextAndroid = "1.6.8"
 
 [libraries]
+android-maps-utils = { module = "com.google.maps.android:android-maps-utils", version.ref = "androidMapsUtils" }
 circleindicator = { module = "me.relex:circleindicator", version.ref = "circleindicator" }
 compiler = { module = "com.github.bumptech.glide:compiler", version.ref = "glide" }
 gson = { module = "com.google.code.gson:gson", version.ref = "gson" }

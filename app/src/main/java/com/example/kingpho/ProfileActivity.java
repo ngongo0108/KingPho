@@ -74,8 +74,6 @@ public class ProfileActivity extends AppCompatActivity {
         return list;
     }
     private void goBack() {
-        Intent intent = new Intent(this, AccountActivity.class);
-        startActivity(intent);
         finish();
     }
 }

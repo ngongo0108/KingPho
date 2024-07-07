@@ -16,6 +16,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.example.kingpho.MapActivity;
+import com.example.kingpho.MyOrderActivity;
 import com.example.kingpho.ProfileActivity;
 import com.example.kingpho.R;
 import com.example.kingpho.adapter.AccountItemAdapter;
@@ -24,7 +26,7 @@ import com.google.android.material.imageview.ShapeableImageView;
 
 import java.util.ArrayList;
 
-public class ProfileFragment extends Fragment {
+public class AccountFragment extends Fragment {
     private ShapeableImageView imgAvatar;
     private ImageView imgEdit;
     private TextView tvName, tvEmail;
@@ -45,7 +47,17 @@ public class ProfileFragment extends Fragment {
         lvItem.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
+                AccountItem item = arrayItem.get(position);
+                if (item.getName().equals("Order")){
+                    Intent intent = new Intent(getContext(), MyOrderActivity.class);
+                    startActivity(intent);
+                } else if (item.getName().equals("My Details")) {
+                    Intent intent = new Intent(getContext(), ProfileActivity.class);
+                    startActivity(intent);
+                } else if (item.getName().equals("Delivery Address")) {
+                    Intent intent = new Intent(getContext(), MapActivity.class);
+                    startActivity(intent);
+                }
             }
         });
 

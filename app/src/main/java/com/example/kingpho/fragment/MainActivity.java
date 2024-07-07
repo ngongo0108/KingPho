@@ -10,10 +10,7 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.example.kingpho.R;
-import com.example.kingpho.model.Food;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-
-import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -65,7 +62,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             replaceFragment(new FavouriteFragment());
             setActiveButton(favouriteBtn);
         }else if (v.getId() == R.id.profileBtn) {
-            replaceFragment(new ProfileFragment());
+            replaceFragment(new AccountFragment());
             setActiveButton(profileBtn);
         }
     }

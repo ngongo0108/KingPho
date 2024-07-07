@@ -19,12 +19,15 @@
 
     <ImageView
         android:id="@+id/imgGoBack"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
         android:layout_marginStart="20dp"
         android:layout_marginTop="20dp"
-        android:scaleType="fitXY"
-        android:background="@drawable/btnrectangle"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:background="@drawable/btn_orange"
+        android:backgroundTint="#E6F19D2C"
+        android:src="@drawable/arrow_left"
+        android:scaleType="centerCrop"
+        app:tint="@color/white"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/arrow_left" />
@@ -35,9 +38,9 @@
         android:layout_marginBottom="15dp"
         android:background="@drawable/border_button"
         android:elevation="5dp"
-        app:layout_constraintBottom_toTopOf="@+id/button"
-        app:layout_constraintEnd_toEndOf="@+id/button"
-        app:layout_constraintStart_toStartOf="@+id/button">
+        app:layout_constraintBottom_toTopOf="@+id/btnOrderDetail"
+        app:layout_constraintEnd_toEndOf="@+id/btnOrderDetail"
+        app:layout_constraintStart_toStartOf="@+id/btnOrderDetail">
 
         <ImageView
             android:id="@+id/imageView2"
@@ -79,21 +82,18 @@
             app:layout_constraintTop_toBottomOf="@+id/textView7" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <TextView
-        android:id="@+id/button"
-        android:layout_width="match_parent"
-        android:layout_height="70dp"
-        android:layout_marginHorizontal="24dp"
+    <Button
+        android:id="@+id/btnOrderDetail"
+        android:layout_width="0dp"
+        android:layout_height="60dp"
         android:layout_marginBottom="20dp"
+        android:layout_marginHorizontal="24dp"
+        android:backgroundTint="#EB8D21"
         android:text="Order Detail"
         android:textAllCaps="false"
-        android:textSize="20sp"
-        android:gravity="center"
-        android:elevation="5dp"
-        android:textStyle="bold"
         android:textColor="#fff"
-        android:backgroundTint="#EB8D21"
-        android:background="@drawable/border_button"
+        android:textSize="20sp"
+        android:elevation="5dp"
         app:layout_constraintBottom_toBottomOf="@+id/mapFragment"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />

@@ -50,9 +50,11 @@
         <activity android:name=".ChatActivity"/>
         <activity android:name=".ProfileActivity"/>
         <activity android:name=".MapActivity"/>
+        <activity android:name=".MyOrderActivity"/>
         <activity android:name=".PaymentActivity"/>
+        <activity android:name=".TrackingActivity"/>
         <activity
-            android:name=".OrderDetailsActivity"
+            android:name=".FeedbackActivity"
             android:exported="true" />
         <activity
             android:name=".LoginActivity"
