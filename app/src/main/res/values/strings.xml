@@ -6,4 +6,10 @@
     <string name="back">Back</string>
     <string name="btn_going_on">Going On</string>
     <string name="btn_completed">Completed</string>
+    <string name="filter">Filter</string>
+
+    <string-array name="filter_options">
+        <item>Tên A-Z</item>
+        <item>Giá tiền</item>
+    </string-array>
 </resources>
