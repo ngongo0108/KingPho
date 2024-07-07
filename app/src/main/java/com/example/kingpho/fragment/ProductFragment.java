@@ -46,6 +46,8 @@ public class ProductFragment extends Fragment {
         adapter = new FoodAdapter(getContext(), allFoodImages);
         gridView.setAdapter(adapter);
 
+
+
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {

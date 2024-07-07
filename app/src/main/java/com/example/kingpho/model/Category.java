@@ -1,6 +1,8 @@
 package com.example.kingpho.model;
 
-public class Category {
+import java.io.Serializable;
+
+public class Category implements Serializable {
     private String categoryTitle;
     private String categoryImage;
 

@@ -1,16 +1,19 @@
     package com.example.kingpho.adapter;
 
+    import android.content.Intent;
     import android.view.LayoutInflater;
     import android.view.View;
     import android.view.ViewGroup;
     import android.widget.ImageView;
     import android.widget.TextView;
+    import android.widget.Toast;
 
     import androidx.annotation.NonNull;
     import androidx.constraintlayout.widget.ConstraintLayout;
     import androidx.recyclerview.widget.RecyclerView;
 
     import com.bumptech.glide.Glide;
+    import com.example.kingpho.DetailProductActivity;
     import com.example.kingpho.R;
     import com.example.kingpho.helper.Manager;
     import com.example.kingpho.model.Food;
@@ -49,6 +52,7 @@
             private TextView foodName;
             private TextView foodPrice;
             private ImageView removeFavouriteButton;
+            private ImageView addToCartButton;
 
             public FavouriteViewHolder(@NonNull View itemView) {
                 super(itemView);
@@ -56,6 +60,7 @@
                 foodName = itemView.findViewById(R.id.title);
                 foodPrice = itemView.findViewById(R.id.price);
                 removeFavouriteButton = itemView.findViewById(R.id.favBtn);
+                addToCartButton = itemView.findViewById(R.id.addtocartBtn);
             }
 
             public void bind(Food food) {
@@ -66,8 +71,13 @@
                 Glide.with(itemView.getContext())
                         .load(drawableResourceId)
                         .into(foodImage);
+                addToCartButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        manager.addToCart(food);
+                    }
+                });
 
-//                updateFavouriteButton(manager.isFavourite(food));
                 if(favouritesList.size() > 0) {
                     removeFavouriteButton.setImageResource(R.drawable.heart_ic_change);
                 }
@@ -76,15 +86,16 @@
                     favouritesList.remove(food);
                     notifyItemRemoved(getAdapterPosition());
                 });
+
+                foodImage.setOnClickListener(v -> {
+                    Intent intent = new Intent(v.getContext(), DetailProductActivity.class);
+//                    intent.putExtra("foodId", product.ge());
+                    v.getContext().startActivity(intent);
+                    Toast.makeText(v.getContext(), "Bạn đã chọn sản phẩm " + food.getFoodTitle(), Toast.LENGTH_SHORT).show();
+                });
             }
 
-//            private void updateFavouriteButton(boolean isFavourite) {
-//                if (isFavourite) {
-//                    removeFavouriteButton.setImageResource(R.drawable.heart_ic_change);
-//                } else {
-//                    removeFavouriteButton.setImageResource(R.drawable.btn3);
-//                }
-//            }
+
         }
     }
 

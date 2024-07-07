@@ -1,8 +1,11 @@
 package com.example.kingpho.adapter;
 
+import android.annotation.SuppressLint;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -18,18 +21,18 @@ import com.example.kingpho.model.Food;
 
 import java.util.ArrayList;
 
+
 public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
     private ArrayList<Food> cartItemList;
     private Manager manager;
     private ChangeNumberItemsListener changeNumberItemsListener;
-
-
-    int numberIncart = 1;
+    private ArrayList<Food> selectedItems;
 
     public CartAdapter(ArrayList<Food> cartItemList, Manager manager, ChangeNumberItemsListener changeNumberItemsListener) {
         this.cartItemList = cartItemList;
         this.manager = manager;
         this.changeNumberItemsListener = changeNumberItemsListener;
+        this.selectedItems = new ArrayList<>();
     }
 
     @NonNull
@@ -40,7 +43,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull ViewHolder holder, @SuppressLint("RecyclerView") int position) {
         Food item = cartItemList.get(position);
         holder.productName.setText(item.getFoodTitle());
         holder.productPrice.setText(String.valueOf(item.getFoodPrice()));
@@ -49,29 +52,45 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
         Glide.with(holder.itemView.getContext())
                 .load(drawableResourceId)
                 .into(holder.productImage);
+
+        holder.checkBox.setOnCheckedChangeListener(null);
+        holder.checkBox.setChecked(selectedItems.contains(item));
+        holder.checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    if (!selectedItems.contains(item)) {
+                        selectedItems.add(item);
+                    }
+                } else {
+                    selectedItems.remove(item);
+                }
+            }
+        });
+
         holder.minusBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-              manager.minusNumberFood(cartItemList, position, new ChangeNumberItemsListener() {
-                  @Override
-                  public void changed() {
-                      notifyDataSetChanged();
-                      changeNumberItemsListener.changed();
-                  }
-              });
+                manager.minusNumberFood(cartItemList, position, new ChangeNumberItemsListener() {
+                    @Override
+                    public void changed() {
+                        notifyDataSetChanged();
+                        changeNumberItemsListener.changed();
+                    }
+                });
             }
         });
 
         holder.plusBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-              manager.plusNumberFood(cartItemList, position, new ChangeNumberItemsListener() {
-                  @Override
-                  public void changed() {
-                      notifyDataSetChanged();
-                      changeNumberItemsListener.changed();
-                  }
-              });
+                manager.plusNumberFood(cartItemList, position, new ChangeNumberItemsListener() {
+                    @Override
+                    public void changed() {
+                        notifyDataSetChanged();
+                        changeNumberItemsListener.changed();
+                    }
+                });
             }
         });
     }
@@ -81,9 +100,20 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
         return cartItemList.size();
     }
 
+    public ArrayList<Food> getSelectedItems() {
+        return selectedItems;
+    }
+    public double getTotalPrice() {
+        double total = 0;
+        for (Food item : selectedItems) {
+            total += item.getFoodPrice();
+        }
+        return total;
+    }
     public static class ViewHolder extends RecyclerView.ViewHolder {
         TextView productName, productPrice, productQuantity;
-        ImageView productImage,minusBtn,plusBtn;
+        ImageView productImage, minusBtn, plusBtn;
+        CheckBox checkBox;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -93,8 +123,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
             productImage = itemView.findViewById(R.id.pic);
             minusBtn = itemView.findViewById(R.id.minusBtn);
             plusBtn = itemView.findViewById(R.id.plusBtn);
+            checkBox = itemView.findViewById(R.id.checkbox);
         }
     }
-
-
 }
