@@ -9,16 +9,14 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.material.imageview.ShapeableImageView;
-
 import java.util.List;
 
-public class FoodItemAdapter extends RecyclerView.Adapter<FoodItemAdapter.ViewHolder> {
+public class OrderItemAdapter extends RecyclerView.Adapter<OrderItemAdapter.ViewHolder> {
 
     private Context context;
     private List<FoodItem> foodItems;
 
-    public FoodItemAdapter(Context context, List<FoodItem> foodItems) {
+    public OrderItemAdapter(Context context, List<FoodItem> foodItems) {
         this.context = context;
         this.foodItems = foodItems;
     }
@@ -26,17 +24,19 @@ public class FoodItemAdapter extends RecyclerView.Adapter<FoodItemAdapter.ViewHo
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(context).inflate(R.layout.item_food, parent, false);
+        View view = LayoutInflater.from(context).inflate(R.layout.item_order_item, parent, false);
         return new ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         FoodItem foodItem = foodItems.get(position);
-        holder.tvFoodDetail.setText(String.valueOf(foodItem.getQuantity()));
-        holder.tvFoodName.setText(foodItem.getName());
-        holder.tvFoodDetails.setText(String.valueOf(foodItem.getPrice()));
-        holder.ivFoodImage.setImageResource(foodItem.getImageResId());
+        holder.tvProductName.setText(foodItem.getName());
+        holder.tvQuantity.setText("" + foodItem.getQuantity());
+
+        // Tính tổng giá tiền của sản phẩm
+        double totalPrice = foodItem.getPrice() * foodItem.getQuantity();
+        holder.tvTotalPrice.setText("" + String.format("%.2f", totalPrice));
     }
 
     @Override
@@ -45,15 +45,13 @@ public class FoodItemAdapter extends RecyclerView.Adapter<FoodItemAdapter.ViewHo
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        TextView tvFoodDetail, tvFoodName, tvFoodDetails;
-        ShapeableImageView ivFoodImage;
+        TextView tvProductName, tvQuantity, tvTotalPrice;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            tvFoodDetail = itemView.findViewById(R.id.tvFoodDetail);
-            tvFoodName = itemView.findViewById(R.id.tvFoodName);
-            tvFoodDetails = itemView.findViewById(R.id.tvFoodDetails);
-            ivFoodImage = itemView.findViewById(R.id.ivFoodImage);
+            tvProductName = itemView.findViewById(R.id.tvProductName);
+            tvQuantity = itemView.findViewById(R.id.tvQuantity);
+            tvTotalPrice = itemView.findViewById(R.id.tvTotalPrice);
         }
     }
 }
