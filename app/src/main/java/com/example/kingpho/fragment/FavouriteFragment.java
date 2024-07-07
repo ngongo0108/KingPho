@@ -3,6 +3,7 @@ package com.example.kingpho.fragment;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -17,20 +18,10 @@ import com.example.kingpho.helper.TinyDB;
 import com.example.kingpho.model.Food;
 
 import java.util.ArrayList;
-
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link FavouriteFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class FavouriteFragment extends Fragment {
     private RecyclerView recyclerView;
     private FavouriteAdapter favouriteAdapter;
     private Manager manager;
-
-
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
@@ -41,16 +32,6 @@ public class FavouriteFragment extends Fragment {
     public FavouriteFragment() {
         // Required empty public constructor
     }
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment FavouriteFragment.
-     */
-    // TODO: Rename and change types and number of parameters
     public static FavouriteFragment newInstance(String param1, String param2) {
         FavouriteFragment fragment = new FavouriteFragment();
         Bundle args = new Bundle();
@@ -78,7 +59,7 @@ public class FavouriteFragment extends Fragment {
         ArrayList<Food> favouritesList = manager.getFavouritesList();
 
         recyclerView = view.findViewById(R.id.recyclerViewFav);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2 ));
         favouriteAdapter = new FavouriteAdapter(favouritesList, manager);
         recyclerView.setAdapter(favouriteAdapter);
 
