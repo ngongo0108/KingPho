@@ -8,7 +8,9 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.example.kingpho.R;
+import com.example.kingpho.model.FoodActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,33 +18,23 @@ import java.util.List;
 public class FoodAdapter extends BaseAdapter {
 
     private Context context;
-    private List<Integer> foodImages;
-    private List<String> titles;
-    private List<Integer> filteredFoodImages;
-    private List<String> filteredTitles;
+    private List<FoodActivity> foodList;
+    private List<FoodActivity> filteredFoodList;
 
-    public FoodAdapter(Context context, List<Integer> foodImages) {
+    public FoodAdapter(Context context, List<FoodActivity> foodList) {
         this.context = context;
-        this.foodImages = foodImages;
-        this.titles = new ArrayList<>();
-
-        // Tạo danh sách titles mặc định
-        for (int i = 0; i < foodImages.size(); i++) {
-            titles.add("Item " + (i + 1));
-        }
-
-        this.filteredFoodImages = new ArrayList<>(foodImages);
-        this.filteredTitles = new ArrayList<>(titles);
+        this.foodList = foodList;
+        this.filteredFoodList = new ArrayList<>(foodList);
     }
 
     @Override
     public int getCount() {
-        return filteredFoodImages.size();
+        return filteredFoodList.size();
     }
 
     @Override
     public Object getItem(int position) {
-        return filteredFoodImages.get(position);
+        return filteredFoodList.get(position);
     }
 
     @Override
@@ -52,37 +44,69 @@ public class FoodAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
+        ViewHolder holder;
+
         if (convertView == null) {
             convertView = LayoutInflater.from(context).inflate(R.layout.card_item, parent, false);
+            holder = new ViewHolder();
+            holder.imageView = convertView.findViewById(R.id.pic);
+            holder.titleTextView = convertView.findViewById(R.id.title);
+            holder.priceTextView = convertView.findViewById(R.id.price);
+            holder.addToCartButton = convertView.findViewById(R.id.addtocartBtn);
+            holder.favouriteButton = convertView.findViewById(R.id.favouriteBtnAdd);
+            convertView.setTag(holder);
+        } else {
+            holder = (ViewHolder) convertView.getTag();
         }
 
-        ImageView imageView = convertView.findViewById(R.id.imageViewList);
-        imageView.setImageResource(filteredFoodImages.get(position));
+        FoodActivity foodActivity = filteredFoodList.get(position);
 
-        TextView textView = convertView.findViewById(R.id.titleTxt);
-        textView.setText(filteredTitles.get(position));
+        holder.titleTextView.setText(foodActivity.getFoodTitle());
+        holder.priceTextView.setText(String.valueOf(foodActivity.getFoodPrice()));
+
+        int drawableResourceId = context.getResources().getIdentifier(foodActivity.getFoodImage(), "drawable", context.getPackageName());
+        Glide.with(context).load(drawableResourceId).into(holder.imageView);
+
+        holder.addToCartButton.setOnClickListener(v -> {
+            // Implement add to cart functionality
+        });
+
+        holder.favouriteButton.setOnClickListener(v -> {
+            // Implement add to favourite functionality
+        });
 
         return convertView;
     }
 
     public void filter(String query) {
-        filteredFoodImages.clear();
-        filteredTitles.clear();
+        filteredFoodList.clear();
 
         if (query.isEmpty()) {
-            filteredFoodImages.addAll(foodImages);
-            filteredTitles.addAll(titles);
+            filteredFoodList.addAll(foodList);
         } else {
             query = query.toLowerCase();
-            for (int i = 0; i < foodImages.size(); i++) {
-                // Lọc dựa trên title
-                if (titles.get(i).toLowerCase().contains(query)) {
-                    filteredFoodImages.add(foodImages.get(i));
-                    filteredTitles.add(titles.get(i));
+            for (FoodActivity foodActivity : foodList) {
+                if (foodActivity.getFoodTitle().toLowerCase().contains(query)) {
+                    filteredFoodList.add(foodActivity);
                 }
             }
         }
         notifyDataSetChanged();
     }
-}
 
+    public void updateData(List<FoodActivity> newFoodList) {
+        this.foodList.clear();
+        this.foodList.addAll(newFoodList);
+        this.filteredFoodList.clear();
+        this.filteredFoodList.addAll(newFoodList);
+        notifyDataSetChanged();
+    }
+
+    static class ViewHolder {
+        ImageView imageView;
+        TextView titleTextView;
+        TextView priceTextView;
+        ImageView addToCartButton;
+        ImageView favouriteButton;
+    }
+}
