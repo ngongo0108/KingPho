@@ -32,7 +32,7 @@
         app:srcCompat="@drawable/phokho" />
 
     <TextView
-        android:id="@+id/title"
+        android:id="@+id/titleMethod"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -70,10 +70,10 @@
         android:textSize="18sp"
         android:textStyle="bold"
         android:textColor="#F44336"
-        app:layout_constraintEnd_toEndOf="@+id/title"
+        app:layout_constraintEnd_toEndOf="@+id/titleMethod"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/title"
-        app:layout_constraintTop_toBottomOf="@+id/title" />
+        app:layout_constraintStart_toStartOf="@+id/titleMethod"
+        app:layout_constraintTop_toBottomOf="@+id/titleMethod" />
 
     <ImageView
         android:id="@+id/minusBtn"

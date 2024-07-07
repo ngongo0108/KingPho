@@ -9,7 +9,6 @@
     import android.widget.Toast;
 
     import androidx.annotation.NonNull;
-    import androidx.constraintlayout.widget.ConstraintLayout;
     import androidx.recyclerview.widget.RecyclerView;
 
     import com.bumptech.glide.Glide;
@@ -57,7 +56,7 @@
             public FavouriteViewHolder(@NonNull View itemView) {
                 super(itemView);
                 foodImage = itemView.findViewById(R.id.pic);
-                foodName = itemView.findViewById(R.id.title);
+                foodName = itemView.findViewById(R.id.titleMethod);
                 foodPrice = itemView.findViewById(R.id.price);
                 removeFavouriteButton = itemView.findViewById(R.id.favBtn);
                 addToCartButton = itemView.findViewById(R.id.addtocartBtn);

@@ -86,6 +86,9 @@ public class AccountActivity extends AppCompatActivity {
         return list;
     }
     private void logoutAction() {
+        Intent intent = new Intent(this, LoginActivity.class);
+        startActivity(intent);
+        finish();
         Toast.makeText(this, "Logout Action", Toast.LENGTH_SHORT).show();
     }
     private void editProfile() {

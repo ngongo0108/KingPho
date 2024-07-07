@@ -50,7 +50,7 @@ public class FoodAdapter extends BaseAdapter {
             convertView = LayoutInflater.from(context).inflate(R.layout.card_item, parent, false);
             holder = new ViewHolder();
             holder.imageView = convertView.findViewById(R.id.pic);
-            holder.titleTextView = convertView.findViewById(R.id.title);
+            holder.titleTextView = convertView.findViewById(R.id.titleMethod);
             holder.priceTextView = convertView.findViewById(R.id.price);
             holder.addToCartButton = convertView.findViewById(R.id.addtocartBtn);
             holder.favouriteButton = convertView.findViewById(R.id.favouriteBtnAdd);

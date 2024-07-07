@@ -64,7 +64,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
         public ProductViewHolder(@NonNull View itemView) {
             super(itemView);
             productImage = itemView.findViewById(R.id.pic);
-            productName = itemView.findViewById(R.id.title);
+            productName = itemView.findViewById(R.id.titleMethod);
             productPrice = itemView.findViewById(R.id.price);
             addToCartButton = itemView.findViewById(R.id.addtocartBtn);
             favouriteButton = itemView.findViewById(R.id.favouriteBtnAdd);

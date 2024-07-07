@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -17,6 +18,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.kingpho.ChatActivity;
 import com.example.kingpho.R;
 import com.example.kingpho.adapter.CategoryAdapter;
 import com.example.kingpho.adapter.ProductAdapter;
@@ -37,6 +39,7 @@ public class HomeFragment extends Fragment {
     private ArrayList<Food> productList;
     private ProductAdapter productAdapter;
     private TextView seeAll;
+    private ImageView imageViewNoti, imageViewMessage;
     private Manager manager;
 
     public HomeFragment() {
@@ -50,6 +53,7 @@ public class HomeFragment extends Fragment {
         TinyDB tinyDB = new TinyDB(requireContext());
         manager = new Manager(requireContext(), tinyDB);
         seeAll = view.findViewById(R.id.seeAll);
+        imageViewMessage = view.findViewById(R.id.imageViewMessage);
         seeAll.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -61,6 +65,14 @@ public class HomeFragment extends Fragment {
                 ((MainActivity) requireActivity()).setActiveButton(((MainActivity) requireActivity()).productsBtn);
             }
         });
+        imageViewMessage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getContext(), ChatActivity.class);
+                startActivity(intent);
+            }
+        });
+
         initializeRecyclerViews(view);
         initializeData();
         return view;
