@@ -21,7 +21,7 @@ public class PaymentActivity extends AppCompatActivity {
     public static final String EXTRA_TOTAL_PRICE = "com.example.kingpho.EXTRA_TOTAL_PRICE";
     private ImageView imgGoBack;
     private ListView lvMethod;
-    private TextView totalPrice;
+    private TextView totalPriceTextView;
     private Button btnCheckout;
     private ArrayList<PaymentMethod> methodArray;
     private PaymentMethodAdapter methodAdapter;
@@ -63,13 +63,13 @@ public class PaymentActivity extends AppCompatActivity {
                 finish();
             }
         });
-        // Get the total price from the intent
-        double total = getIntent().getDoubleExtra(EXTRA_TOTAL_PRICE, 0);
-        totalPrice.setText(String.format("$%.2f", total));
+
+        double totalPrice = getIntent().getDoubleExtra("total_price", 0.0);
+        totalPriceTextView.setText(String.format("%.2fđ", totalPrice));
     }
     private void mapping() {
         imgGoBack = findViewById(R.id.imgGoBack);
-        totalPrice = findViewById(R.id.totalPrice);
+        totalPriceTextView = findViewById(R.id.totalPrice);
         btnCheckout = findViewById(R.id.btnCheckout);
         lvMethod = findViewById(R.id.lvMethod);
     }
