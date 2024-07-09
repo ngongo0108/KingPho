@@ -17,7 +17,7 @@ public class PaymentMethodAdapter extends BaseAdapter {
     private Context context;
     private int layout;
     private List<PaymentMethod> methodList;
-
+    private int selectedItem = -1;
     public PaymentMethodAdapter(Context context, int layout, List<PaymentMethod> methodList) {
         this.context = context;
         this.layout = layout;
@@ -51,6 +51,15 @@ public class PaymentMethodAdapter extends BaseAdapter {
         icon.setImageResource(method.getIcon());
         title.setText(method.getTitle());
 
+        if (position == selectedItem) {
+            convertView.setBackgroundResource(R.drawable.button_border_choose);
+        } else {
+            convertView.setBackgroundResource(R.drawable.border_orange);
+        }
+
         return convertView;
+    }
+    public void setSelectedItem(int position) {
+        selectedItem = position;
     }
 }

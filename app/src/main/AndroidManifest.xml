@@ -26,17 +26,8 @@
         <meta-data android:name="com.google.android.gms.verson"
             android:value="@integer/google_play_services_version"/>
 
-<!--        <activity-->
-<!--            android:name=".WelcomeActivity"-->
-<!--            android:exported="true">-->
-<!--            <intent-filter>-->
-<!--                <action android:name="android.intent.action.MAIN" />-->
-
-<!--                <category android:name="android.intent.category.LAUNCHER" />-->
-<!--            </intent-filter>-->
-<!--        </activity>-->
         <activity
-            android:name=".fragment.MainActivity"
+            android:name=".WelcomeActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -44,7 +35,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".AccountActivity"/>
         <activity android:name=".DetailProductActivity"/>
         <activity android:name=".RatingActivity"/>
         <activity android:name=".ChatActivity"/>
@@ -62,9 +52,9 @@
         <activity
             android:name=".SignUpActivity"
             android:exported="true" />
-<!--        <activity-->
-<!--            android:name=".fragment.MainActivity"-->
-<!--            android:exported="true" />-->
+        <activity
+            android:name=".fragment.MainActivity"
+            android:exported="true" />
         <activity
             android:name=".ForgotPasswordActivity"
             android:exported="true" />

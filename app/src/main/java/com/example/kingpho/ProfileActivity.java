@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -19,7 +20,7 @@ import java.util.ArrayList;
 
 public class ProfileActivity extends AppCompatActivity {
     private ImageView imgGoBack, camera;
-    private TextView save;
+    private Button save;
     private ListView lvInfoUser;
     private ArrayList<MyDetail> arrayInfo;
     private MyDetailAdapt adapter;
@@ -54,7 +55,6 @@ public class ProfileActivity extends AppCompatActivity {
         camera.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
             }
         });
     }

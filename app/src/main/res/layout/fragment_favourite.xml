@@ -30,11 +30,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="48dp"
-            android:gravity="center"
             android:text="My Favourite"
-            android:textSize="20sp"
+            android:textSize="25sp"
             android:textStyle="bold"
-            android:textColor="#000000"
+            android:gravity="center"
             app:layout_constraintEnd_toStartOf="@+id/guideline2"
             app:layout_constraintStart_toStartOf="@+id/guideline"
             app:layout_constraintTop_toTopOf="parent" />
@@ -49,5 +48,17 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textViewFavourite"/>
+
+        <ImageView
+            android:id="@+id/imgEmpty"
+            android:layout_width="0dp"
+            android:layout_height="450dp"
+            android:visibility="gone"
+            android:foregroundGravity="center"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textViewFavourite"
+            app:srcCompat="@drawable/listempty" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>
