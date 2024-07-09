@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import com.example.kingpho.R;
 import com.example.kingpho.adapter.FavouriteAdapter;
@@ -22,10 +23,10 @@ public class FavouriteFragment extends Fragment {
     private RecyclerView recyclerView;
     private FavouriteAdapter favouriteAdapter;
     private Manager manager;
+    private ImageView imgEmpty;
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
-    // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
 
@@ -54,7 +55,7 @@ public class FavouriteFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_favourite, container, false);
-
+        imgEmpty = view.findViewById(R.id.imgEmpty);
         manager = new Manager(getContext(), new TinyDB(getContext()));
         ArrayList<Food> favouritesList = manager.getFavouritesList();
 
@@ -63,6 +64,16 @@ public class FavouriteFragment extends Fragment {
         favouriteAdapter = new FavouriteAdapter(favouritesList, manager);
         recyclerView.setAdapter(favouriteAdapter);
 
+        emptyUI();
+
         return  view;
+    }
+
+    private void emptyUI() {
+        if (manager.getListCart().isEmpty()) {
+            imgEmpty.setVisibility(View.VISIBLE);
+        } else {
+            imgEmpty.setVisibility(View.GONE);
+        }
     }
 }

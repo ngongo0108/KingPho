@@ -13,6 +13,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.kingpho.adapter.PaymentMethodAdapter;
+import com.example.kingpho.fragment.HomeFragment;
 import com.example.kingpho.model.PaymentMethod;
 
 import java.util.ArrayList;
@@ -25,7 +26,7 @@ public class PaymentActivity extends AppCompatActivity {
     private Button btnCheckout;
     private ArrayList<PaymentMethod> methodArray;
     private PaymentMethodAdapter methodAdapter;
-
+    private int index;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,7 +45,12 @@ public class PaymentActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 PaymentMethod payment = methodArray.get(position);
-                Toast.makeText(PaymentActivity.this, payment.getTitle(), Toast.LENGTH_SHORT).show();
+                if (index != -1) {
+                    methodAdapter.setSelectedItem(-1); // Reset previously selected item
+                }
+                methodAdapter.setSelectedItem(position); // Set the new selected item
+                methodAdapter.notifyDataSetChanged();
+                index = position; // Update previously selected position
             }
         });
         imgGoBack.setOnClickListener(new View.OnClickListener() {
@@ -58,9 +64,9 @@ public class PaymentActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Toast.makeText(PaymentActivity.this, "Thanh toan thanh cong", Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(PaymentActivity.this, MyOrderActivity.class);
-                startActivity(intent);
-                finish();
+//                Intent intent = new Intent(PaymentActivity.this, HomeFragment.class);
+//                startActivity(intent);
+//                finish();
             }
         });
 

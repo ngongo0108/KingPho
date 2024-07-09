@@ -134,6 +134,3 @@ public class CartFragment extends Fragment implements ChangeNumberItemsListener,
         updateTotal();
     }
 }
-
-
-

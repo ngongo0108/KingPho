@@ -41,7 +41,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
-        android:text="Edit Profile"
+        android:text="Profile"
         android:textSize="25sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="@+id/imgGoBack"
@@ -91,7 +91,8 @@
             app:tint="#fff" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <TextView
+    <Button
+        style="@style/Widget.MaterialComponents.Button.TextButton"
         android:id="@+id/save"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
