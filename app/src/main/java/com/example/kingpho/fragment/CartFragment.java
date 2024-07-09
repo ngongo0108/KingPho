@@ -1,23 +1,19 @@
-
 package com.example.kingpho.fragment;
-
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.example.kingpho.Interface.ChangeNumberItemsListener;
 import com.example.kingpho.PaymentActivity;
 import com.example.kingpho.helper.Manager;
@@ -25,95 +21,80 @@ import com.example.kingpho.R;
 import com.example.kingpho.adapter.CartAdapter;
 import com.example.kingpho.helper.TinyDB;
 import com.example.kingpho.model.Food;
-
 import java.util.ArrayList;
+import java.util.HashMap;
 
-
-public class CartFragment extends Fragment {
+public class CartFragment extends Fragment implements ChangeNumberItemsListener, CartAdapter.OnItemCheckedChangeListener {
 
     private RecyclerView recyclerViewCart;
-    private CartAdapter cartAdapter;
-    private Manager manager;
-    private TextView textViewCart;
-    private TextView itemTotalTxt;
-    private TextView deliveryTxt;
-    private TextView totalTxt;
-    private TextView itemTotal;
-    private TextView deliveryTotal;
-    private TextView total;
-    private ScrollView scrollView;
+    private TextView itemTotalTxt, itemTotal, deliveryTxt, deliveryTotal, totalTxt, total;
     private Button checkoutBtn;
     private ImageView imageViewEmptyCart;
     private LinearLayout itemTotalLayout, deliveryLayout, totalLayout;
+    private ArrayList<Food> cartList;
+    private Manager manager;
+    private CartAdapter adapter;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_cart, container, false);
-        TinyDB tinyDB = new TinyDB(requireContext());
-        manager = new Manager(requireContext(), tinyDB);
 
-        initView(view);
-        initList();
-
-        recyclerViewCart.setLayoutManager(new LinearLayoutManager(requireContext()));
-        recyclerViewCart.setAdapter(cartAdapter);
-        CalculateCart();
-
-        checkoutBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                double totalPrice = cartAdapter.getTotalPrice();
-                Intent intent = new Intent(requireActivity(), PaymentActivity.class);
-                intent.putExtra(PaymentActivity.EXTRA_TOTAL_PRICE, totalPrice);
-                startActivity(intent);
-            }
-        });
-        return view;
-    }
-
-    private void initView(View view) {
-        recyclerViewCart = view.findViewById(R.id.recyclerViewFav);
-        imageViewEmptyCart = view.findViewById(R.id.emptyCartLayout);
-        textViewCart = view.findViewById(R.id.textViewCart);
-        checkoutBtn = view.findViewById(R.id.checkoutBtn);
+        recyclerViewCart = view.findViewById(R.id.recyclerViewCart);
         itemTotalTxt = view.findViewById(R.id.itemTotalTxt);
-        deliveryTxt = view.findViewById(R.id.deliveryTxt);
-        totalTxt = view.findViewById(R.id.totalTxt);
-        scrollView = view.findViewById(R.id.scrollViewCart);
         itemTotal = view.findViewById(R.id.itemTotal);
+        deliveryTxt = view.findViewById(R.id.deliveryTxt);
         deliveryTotal = view.findViewById(R.id.deliveryTotal);
+        totalTxt = view.findViewById(R.id.totalTxt);
         total = view.findViewById(R.id.total);
-
+        checkoutBtn = view.findViewById(R.id.checkoutBtn);
+        imageViewEmptyCart = view.findViewById(R.id.imageViewEmptyCart);
         itemTotalLayout = view.findViewById(R.id.itemTotalLayout);
         deliveryLayout = view.findViewById(R.id.deliveryLayout);
         totalLayout = view.findViewById(R.id.totalLayout);
-    }
 
-    private void initList() {
-        cartAdapter = new CartAdapter(manager.getListCart(), manager, new ChangeNumberItemsListener() {
-            @Override
-            public void changed() {
-                CalculateCart();
-            }
+        manager = new Manager(getContext(), new TinyDB(getContext()));
+        cartList = manager.getListCart();
+
+        setupRecyclerView();
+        updateTotal();
+
+        checkoutBtn.setOnClickListener(v -> {
+            double finalTotalPrice = calculateFinalTotalPrice();
+            Intent intent = new Intent(getContext(), PaymentActivity.class);
+            intent.putExtra("total_price", finalTotalPrice);
+            startActivity(intent);
         });
 
-        recyclerViewCart.setAdapter(cartAdapter);
-        updateEmptyCartUI();
+        return view;
     }
 
-    private void CalculateCart() {
-        double delivery = 10;
-        double totalPrice = manager.getTotalPrice();
-        double totalAmount = Math.round((totalPrice + delivery) * 100.0) / 100.0;
-        double itemTotalPrice = Math.round(totalPrice * 100.0) / 100.0;
-        itemTotal.setText(String.valueOf(itemTotalPrice) + "đ");
-        deliveryTotal.setText(String.valueOf(delivery) + "đ");
-        total.setText(String.valueOf(totalAmount) + "đ");
+    private void setupRecyclerView() {
+        adapter = new CartAdapter(cartList, manager, this, this);
+        recyclerViewCart.setLayoutManager(new LinearLayoutManager(getContext()));
+        recyclerViewCart.setAdapter(adapter);
     }
 
-    private void updateEmptyCartUI() {
-        if (manager.getListCart().isEmpty()) {
+    private void updateTotal() {
+        double totalPrice = 0;
+        int totalQuantity = 0;
+        HashMap<Integer, Boolean> checkedStates = adapter.getCheckedStates();
+
+        for (int i = 0; i < cartList.size(); i++) {
+            if (checkedStates.getOrDefault(i, false)) {
+                Food item = cartList.get(i);
+                totalPrice += item.getFoodPrice() * item.getNumberInCart();
+                totalQuantity += item.getNumberInCart();
+            }
+        }
+
+        double deliveryFee = totalPrice * 0.2;
+        double totalOrder = totalPrice + deliveryFee;
+
+        itemTotal.setText(String.valueOf(totalQuantity));
+        deliveryTotal.setText(String.format("%.2fđ", deliveryFee));
+        total.setText(String.format("%.2fđ", totalOrder));
+
+        if (cartList.isEmpty()) {
             imageViewEmptyCart.setVisibility(View.VISIBLE);
             recyclerViewCart.setVisibility(View.GONE);
             itemTotalLayout.setVisibility(View.GONE);
@@ -129,6 +110,27 @@ public class CartFragment extends Fragment {
             checkoutBtn.setVisibility(View.VISIBLE);
         }
     }
+
+    private double calculateFinalTotalPrice() {
+        double totalPrice = 0;
+        HashMap<Integer, Boolean> checkedStates = adapter.getCheckedStates();
+        for (int i = 0; i < cartList.size(); i++) {
+            if (checkedStates.getOrDefault(i, false)) {
+                Food item = cartList.get(i);
+                totalPrice += item.getFoodPrice() * item.getNumberInCart();
+            }
+        }
+        double deliveryFee = totalPrice * 0.2;
+        return totalPrice + deliveryFee;
+    }
+
+    @Override
+    public void changed() {
+        updateTotal();
+    }
+
+    @Override
+    public void onItemCheckedChanged() {
+        updateTotal();
+    }
 }
-
-
