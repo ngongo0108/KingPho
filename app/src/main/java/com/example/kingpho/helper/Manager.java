@@ -74,6 +74,7 @@ public class Manager {
 
         tinyDB.putListObject("CartList", list);
 
+
     }
 
     public ArrayList<Food> getListCart(){
@@ -86,26 +87,27 @@ public class Manager {
         changeNumberItemsListener.changed();
     }
 
-    public void minusNumberFood(ArrayList<Food> list , int position, ChangeNumberItemsListener changeNumberItemsListener){
-        if(list.get(position).getNumberInCart() == 1){
+    public void minusNumberFood(ArrayList<Food> list, int position, ChangeNumberItemsListener changeNumberItemsListener) {
+        int currentNumber = list.get(position).getNumberInCart();
+        if (currentNumber > 1) {
+            list.get(position).setNumberInCart(currentNumber - 1);
+        } else if (currentNumber == 1) {
             list.remove(position);
-        }else{
-            list.get(position).setNumberInCart(list.get(position).getNumberInCart() - 1);
         }
-
         tinyDB.putListObject("CartList", list);
         changeNumberItemsListener.changed();
     }
 
 
-    public Double getTotalPrice(){
-        ArrayList<Food> list = getListCart();
-        double price =0;
-        for (int i = 0; i < list.size(); i++){
-            price = price + (list.get(i).getFoodPrice() * list.get(i).getNumberInCart());
-        }
-        return price;
-    }
+
+//    public Double getTotalPrice(){
+//        ArrayList<Food> list = getListCart();
+//        double price =0;
+//        for (int i = 0; i < list.size(); i++){
+//            price = price + (list.get(i).getFoodPrice() * list.get(i).getNumberInCart());
+//        }
+//        return price;
+//    }
 
 }
 
