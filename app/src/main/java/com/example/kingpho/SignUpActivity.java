@@ -94,8 +94,8 @@ public class SignUpActivity extends AppCompatActivity {
         String username = edtNewUsername.getText().toString().trim();
         String email = edtEmail.getText().toString().trim();
         String phone = edtPhone.getText().toString().trim();
-        String password = edtNewPassword.getText().toString().trim();
-        String confirmPassword = edtConfirm.getText().toString().trim();
+        String password = edtNewPassword.getText().toString();
+        String confirmPassword = edtConfirm.getText().toString();
 
         if (TextUtils.isEmpty(fullname)) {
             edtFullname.setError("Full Name is required");
