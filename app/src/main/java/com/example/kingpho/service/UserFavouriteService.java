@@ -14,15 +14,15 @@ import retrofit2.http.Path;
 
 public interface UserFavouriteService {
 
-    @POST("favourites")
-    Call<UserFavourite> addToFavourites(@Body UserFavouriteDTO userFavouriteDTO);
+    @POST("favorites")
+    Call<UserFavouriteDTO> addToFavourites(@Body UserFavouriteDTO userFavouriteDTO);
 
-    @GET("/api/favorites/{userId}")
+    @GET("favorites/{userId}")
     Call<List<UserFavourite>> getUserFavourites(@Path("userId") Integer userId);
 
-    @GET("/api/favorites/{userId}/{productId}")
-    Call<UserFavourite> getUserFavourite(@Path("userId") Integer userId, @Path("productId") Integer productId);
+    @GET("favorites/{userId}/{productId}")
+    Call<UserFavouriteDTO> getUserFavourite(@Path("userId") Integer userId, @Path("productId") Integer productId);
 
-    @DELETE("/api/favorites/{id}")
+    @DELETE("favorites/{id}")
     Call<Void> deleteUserFavourite(@Path("id") Integer id);
 }

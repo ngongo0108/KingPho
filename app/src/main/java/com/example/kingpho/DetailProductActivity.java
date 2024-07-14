@@ -68,8 +68,8 @@ public class DetailProductActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail_product);
 
-        Intent intent = new Intent();
-        int foodId = intent.getIntExtra("foodId", 1);
+        Intent intent = getIntent();
+        int foodId = intent.getIntExtra("foodId", - 1);
 
         Retrofit retrofit = RetrofitClient.getRetrofitInstance(this);
         productService = retrofit.create(ProductService.class);

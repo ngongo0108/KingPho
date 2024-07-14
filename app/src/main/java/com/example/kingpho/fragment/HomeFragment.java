@@ -56,11 +56,12 @@ public class HomeFragment extends Fragment {
     private ArrayList<Category> categoryList;
     private CategoryAdapter categoryAdapter;
     private RecyclerView recyclerViewProducts;
-    private ArrayList<Food> productList;
+    private ArrayList<Product> productList;
     private ProductAdapter productAdapter;
     private TextView seeAll, tvUsername;
     private ImageView imageViewNoti, imageViewMessage;
     private Manager manager;
+    private String username;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -75,6 +76,8 @@ public class HomeFragment extends Fragment {
         seeAll = view.findViewById(R.id.seeAll);
         tvUsername = view.findViewById(R.id.username);
         imageViewMessage = view.findViewById(R.id.imageViewMessage);
+
+        username = SharedPrefManager.getInstance(getContext()).getUser().getUsername();
 
         Retrofit retrofit = RetrofitClient.getRetrofitInstance(getContext());
         userService = retrofit.create(UserService.class);
@@ -129,14 +132,14 @@ public class HomeFragment extends Fragment {
 
         recyclerViewProducts = view.findViewById(R.id.recyclerViewHomeProducts);
         productList = new ArrayList<>();
-        productAdapter = new ProductAdapter(productList, manager);
+        productAdapter = new ProductAdapter(productList, manager, username);
         recyclerViewProducts.setLayoutManager(new GridLayoutManager(requireContext(), 2));
         recyclerViewProducts.setAdapter(productAdapter);
     }
 
     private void initializeData() {
         initializeCategories();
-//        initializeProducts();
+        initializeProducts();
 
         categoryAdapter.notifyDataSetChanged();
         productAdapter.notifyDataSetChanged();
@@ -170,47 +173,38 @@ public class HomeFragment extends Fragment {
     }
 
     private void initializeProducts() {
-//        productList.add(new Food("Phở Nước", "phonuoc", "Món phở nước", 5.0, 1, categoryList.get(0)));
-//        productList.add(new Food("Phở Nước2", "phonuoc", "Món phở nước", 5.0, 1, categoryList.get(0)));
-//        productList.add(new Food("Phở Nước3", "phonuoc", "Món phở nước", 5.0, 1, categoryList.get(0)));
-//        productList.add(new Food("Phở Nước4", "phonuoc", "Món phở nước", 5.0, 1, categoryList.get(0)));
-//        productList.add(new Food("Phở Nước5", "phonuoc", "Món phở nước", 5.0, 1, categoryList.get(0)));
-//
-//        productList.add(new Food("Phở Khô", "phokho", "Món phở khô", 6.0, 1, categoryList.get(1)));
-//        productList.add(new Food("Phở Khô1", "phokho", "Món phở khô", 6.0, 1, categoryList.get(1)));
-//        productList.add(new Food("Phở Khô2", "phokho", "Món phở khô", 6.0, 1, categoryList.get(1)));
-//        productList.add(new Food("Phở Khô3", "phokho", "Món phở khô", 6.0, 1, categoryList.get(1)));
-//        productList.add(new Food("Phở Khô4", "phokho", "Món phở khô", 6.0, 1, categoryList.get(1)));
-//        productList.add(new Food("Phở Khô5", "phokho", "Món phở khô", 6.0, 1, categoryList.get(1)));
-//        productList.add(new Food("Phở Khô6", "phokho", "Món phở khô", 6.0, 1, categoryList.get(1)));
-//        productList.add(new Food("Phở Khô7", "phokho", "Món phở khô", 6.0, 1, categoryList.get(1)));
-//
-//        productList.add(new Food("Phở Rán", "phoran", "Món phở rán", 6.0, 1, categoryList.get(2)));
-//        productList.add(new Food("Phở Rán1", "phoran", "Món phở rán", 6.0, 1, categoryList.get(2)));
-//        productList.add(new Food("Phở Rán2", "phoran", "Món phở rán", 6.0, 1, categoryList.get(2)));
-//        productList.add(new Food("Phở Rán3", "phoran", "Món phở rán", 6.0, 1, categoryList.get(2)));
-//        productList.add(new Food("Phở Rán4", "phoran", "Món phở rán", 6.0, 1, categoryList.get(2)));
-//        productList.add(new Food("Phở Rán5", "phoran", "Món phở rán", 6.0, 1, categoryList.get(2)));
-//
-//        productList.add(new Food("Phở Cuốn1", "phocuon", "Món phở cuốn", 6.0, 1, categoryList.get(3)));
-//        productList.add(new Food("Phở Cuốn2", "phocuon", "Món phở cuốn", 6.0, 1, categoryList.get(3)));
-//        productList.add(new Food("Phở Cuốn3", "phocuon", "Món phở cuốn", 6.0, 1, categoryList.get(3)));
-//        productList.add(new Food("Phở Cuốn4", "phocuon", "Món phở cuốn", 6.0, 1, categoryList.get(3)));
-//
-//        productList.add(new Food("Phở Trộn1", "photron", "Món phở trộn", 6.0, 1, categoryList.get(4)));
-//        productList.add(new Food("Phở Trộn2", "photron", "Món phở trộn", 6.0, 1, categoryList.get(4)));
-//        productList.add(new Food("Phở Trộn3", "photron", "Món phở trộn", 6.0, 1, categoryList.get(4)));
-//        productList.add(new Food("Phở Trộn4", "photron", "Món phở trộn", 6.0, 1, categoryList.get(4)));
-//        productList.add(new Food("Phở Trộn5", "photron", "Món phở trộn", 6.0, 1, categoryList.get(4)));
-//        productList.add(new Food("Phở Trộn6", "photron", "Món phở trộn", 6.0, 1, categoryList.get(4)));
 
+        getAllProducts(new ProductCallback() {
+            @Override
+            public void onListProductFetched(List<Product> productLists) {
+                if (productLists != null) {
+                    for (Product product : productLists) {
+                        productList.add(new Product(product.getId(), product.getName(), product.getDescription(),
+                                product.getPrice(), product.getCategory(), product.getImageUrls()));
+                    }
+
+                    updateProductList(categoryList.get(0));
+                    productAdapter.notifyDataSetChanged();
+                }
+            }
+
+            @Override
+            public void onProductFetched(Product product) {
+
+            }
+
+            @Override
+            public void onError(Throwable throwable) {
+
+            }
+        });
     }
 
     private void updateProductList(Category category) {
-        ArrayList<Food> filteredProducts = new ArrayList<>();
-        for (Food food : productList) {
-            if (food.getCategory().getName().equals(category.getName())) {
-                filteredProducts.add(food);
+        ArrayList<Product> filteredProducts = new ArrayList<>();
+        for (Product product : productList) {
+            if (product.getCategory().getName().equals(category.getName())) {
+                filteredProducts.add(product);
             }
         }
         productAdapter.updateProducts(filteredProducts);

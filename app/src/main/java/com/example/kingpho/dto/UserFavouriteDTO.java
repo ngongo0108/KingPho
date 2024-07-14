@@ -1,25 +1,22 @@
 package com.example.kingpho.dto;
 
-import com.google.gson.annotations.SerializedName;
-
 public class UserFavouriteDTO {
 
-    @SerializedName("id")
     private Integer id;
 
-    @SerializedName("userId")
     private Integer userId;
 
-    @SerializedName("productId")
     private Integer productId;
-    @SerializedName("isFavourite")
-    private Boolean isFavourite;
+    private boolean favorite;
+
+    public UserFavouriteDTO() {
+    }
 
     // Constructor
-    public UserFavouriteDTO(Integer userId, Integer productId, Boolean isFavourite) {
+    public UserFavouriteDTO(Integer userId, Integer productId, boolean favorite) {
         this.userId = userId;
         this.productId = productId;
-        this.isFavourite = isFavourite;
+        this.favorite = favorite;
     }
 
     // Getters and setters (can be generated automatically)
@@ -48,11 +45,11 @@ public class UserFavouriteDTO {
         this.productId = productId;
     }
 
-    public Boolean getFavourite() {
-        return isFavourite;
+    public boolean isFavourite() {
+        return favorite;
     }
 
-    public void setFavourite(Boolean favourite) {
-        isFavourite = favourite;
+    public void setIsFavorite(boolean isFavorite) {
+        this.favorite = isFavorite;
     }
 }
