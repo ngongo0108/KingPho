@@ -76,8 +76,6 @@ public class RatingActivity extends AppCompatActivity {
         return list;
     }
     private void goBack() {
-        Intent intent = new Intent(this, DetailProductActivity.class);
-        startActivity(intent);
         finish();
     }
 }

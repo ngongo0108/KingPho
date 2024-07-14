@@ -10,7 +10,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.example.kingpho.R;
-import com.example.kingpho.model.FoodActivity;
+import com.example.kingpho.model.Product;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,23 +18,23 @@ import java.util.List;
 public class FoodAdapter extends BaseAdapter {
 
     private Context context;
-    private List<FoodActivity> foodList;
-    private List<FoodActivity> filteredFoodList;
+    private List<Product> productList;
+    private List<Product> filteredProductList;
 
-    public FoodAdapter(Context context, List<FoodActivity> foodList) {
+    public FoodAdapter(Context context, List<Product> productList) {
         this.context = context;
-        this.foodList = foodList;
-        this.filteredFoodList = new ArrayList<>(foodList);
+        this.productList = productList;
+        this.filteredProductList = new ArrayList<>(productList);
     }
 
     @Override
     public int getCount() {
-        return filteredFoodList.size();
+        return filteredProductList.size();
     }
 
     @Override
     public Object getItem(int position) {
-        return filteredFoodList.get(position);
+        return filteredProductList.get(position);
     }
 
     @Override
@@ -59,13 +59,26 @@ public class FoodAdapter extends BaseAdapter {
             holder = (ViewHolder) convertView.getTag();
         }
 
-        FoodActivity foodActivity = filteredFoodList.get(position);
+        Product product = filteredProductList.get(position);
 
-        holder.titleTextView.setText(foodActivity.getFoodTitle());
-        holder.priceTextView.setText(String.valueOf(foodActivity.getFoodPrice()));
+        holder.titleTextView.setText(product.getName());
+        holder.priceTextView.setText(String.valueOf(product.getPrice()));
 
-        int drawableResourceId = context.getResources().getIdentifier(foodActivity.getFoodImage(), "drawable", context.getPackageName());
-        Glide.with(context).load(drawableResourceId).into(holder.imageView);
+//        int drawableResourceId = context.getResources().getIdentifier(product.getFoodImage(), "drawable", context.getPackageName());
+//        Glide.with(context).load(drawableResourceId).into(holder.imageView);
+
+        if (product.getImageUrls() != null) {
+            if (!product.getImageUrls().isEmpty()) {
+                String imageProductUrls = product.getImageUrls().get(0);
+                Glide.with(context).load(imageProductUrls).into(holder.imageView);
+            }
+            else {
+                holder.imageView.setImageResource(R.drawable.icon_pho);
+            }
+        }
+        else {
+            holder.imageView.setImageResource(R.drawable.icon_pho);
+        }
 
         holder.addToCartButton.setOnClickListener(v -> {
             // Implement add to cart functionality
@@ -79,26 +92,26 @@ public class FoodAdapter extends BaseAdapter {
     }
 
     public void filter(String query) {
-        filteredFoodList.clear();
+        filteredProductList.clear();
 
         if (query.isEmpty()) {
-            filteredFoodList.addAll(foodList);
+            filteredProductList.addAll(productList);
         } else {
-            query = query.toLowerCase();
-            for (FoodActivity foodActivity : foodList) {
-                if (foodActivity.getFoodTitle().toLowerCase().contains(query)) {
-                    filteredFoodList.add(foodActivity);
+               query = query.toLowerCase();
+            for (Product product : productList) {
+                if (product.getName().toLowerCase().contains(query)) {
+                    filteredProductList.add(product);
                 }
             }
         }
         notifyDataSetChanged();
     }
 
-    public void updateData(List<FoodActivity> newFoodList) {
-        this.foodList.clear();
-        this.foodList.addAll(newFoodList);
-        this.filteredFoodList.clear();
-        this.filteredFoodList.addAll(newFoodList);
+    public void updateData(List<Product> newFoodList) {
+        this.productList.clear();
+        this.productList.addAll(newFoodList);
+        this.filteredProductList.clear();
+        this.filteredProductList.addAll(newFoodList);
         notifyDataSetChanged();
     }
 

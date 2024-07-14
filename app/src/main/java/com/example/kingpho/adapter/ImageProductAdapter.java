@@ -8,15 +8,15 @@ import android.widget.ImageView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.kingpho.R;
-import com.example.kingpho.model.ImageProduct;
 
 import java.util.List;
 
 public class ImageProductAdapter extends RecyclerView.Adapter<ImageProductAdapter.ImageHolder> {
-    private final List<ImageProduct> imgList;
+    private final List<String> imgList;
 
-    public ImageProductAdapter(List<ImageProduct> imgList) {
+    public ImageProductAdapter(List<String> imgList) {
         this.imgList = imgList;
     }
 
@@ -29,11 +29,25 @@ public class ImageProductAdapter extends RecyclerView.Adapter<ImageProductAdapte
 
     @Override
     public void onBindViewHolder(@NonNull ImageHolder holder, int position) {
-        ImageProduct imgProduct = imgList.get(position);
-        if (imgProduct == null) {
-            return;
+        String imgProduct = imgList.get(position);
+//        if (imgProduct == null) {
+//            return;
+//        }
+//        holder.image.setImageResource(imgProduct.getResouceId());
+
+        if (imgProduct != null) {
+            if (!imgProduct.isEmpty()) {
+                Glide.with(holder.itemView.getContext())
+                        .load(imgProduct)
+                        .into(holder.image);
+            }
+            else {
+                holder.image.setImageResource(R.drawable.icon_pho);
+            }
         }
-        holder.image.setImageResource(imgProduct.getResouceId());
+        else {
+            holder.image.setImageResource(R.drawable.icon_pho);
+        }
     }
 
     @Override
