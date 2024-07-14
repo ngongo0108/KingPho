@@ -36,7 +36,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 
-public class FavouriteFragment extends Fragment {
+public class FavouriteFragment extends Fragment implements FavouriteAdapter.OnEmptyListListener {
     private UserFavouriteService userFavouriteService;
     private ProductService productService;
     private UserService userService;
@@ -105,7 +105,7 @@ public class FavouriteFragment extends Fragment {
         HashMap<Integer, Integer> favouriteIdMap = new HashMap<>();
         recyclerView = view.findViewById(R.id.recyclerViewFav);
         recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
-        favouriteAdapter = new FavouriteAdapter(favouritesList, favouriteIdMap , userFavouriteService);
+        favouriteAdapter = new FavouriteAdapter(favouritesList, favouriteIdMap , userFavouriteService, this);
         recyclerView.setAdapter(favouriteAdapter);
 
         getFavourite(userId);
@@ -188,5 +188,10 @@ public class FavouriteFragment extends Fragment {
                 t.printStackTrace();
             }
         });
+    }
+
+    @Override
+    public void onEmptyList() {
+        imgEmpty.setVisibility(View.VISIBLE);
     }
 }

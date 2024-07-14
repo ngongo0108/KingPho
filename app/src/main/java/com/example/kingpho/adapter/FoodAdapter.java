@@ -12,8 +12,11 @@ import com.bumptech.glide.Glide;
 import com.example.kingpho.R;
 import com.example.kingpho.model.Product;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class FoodAdapter extends BaseAdapter {
 
@@ -62,7 +65,7 @@ public class FoodAdapter extends BaseAdapter {
         Product product = filteredProductList.get(position);
 
         holder.titleTextView.setText(product.getName());
-        holder.priceTextView.setText(String.valueOf(product.getPrice()));
+        holder.priceTextView.setText(formatMoney(String.valueOf((int) product.getPrice())));
 
 //        int drawableResourceId = context.getResources().getIdentifier(product.getFoodImage(), "drawable", context.getPackageName());
 //        Glide.with(context).load(drawableResourceId).into(holder.imageView);
@@ -121,5 +124,21 @@ public class FoodAdapter extends BaseAdapter {
         TextView priceTextView;
         ImageView addToCartButton;
         ImageView favouriteButton;
+    }
+
+    public String formatMoney(String moneyString) {
+        try {
+            int moneyAmount = Integer.parseInt(moneyString);
+
+            NumberFormat numberFormat = NumberFormat.getNumberInstance(Locale.getDefault());
+
+            DecimalFormat decimalFormat = (DecimalFormat) numberFormat;
+            decimalFormat.applyPattern("#,###");
+
+            return decimalFormat.format(moneyAmount);
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+            return moneyString;
+        }
     }
 }
