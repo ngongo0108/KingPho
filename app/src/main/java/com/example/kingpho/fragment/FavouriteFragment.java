@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.example.kingpho.R;
 import com.example.kingpho.adapter.FavouriteAdapter;
@@ -63,7 +64,6 @@ public class FavouriteFragment extends Fragment {
         recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2 ));
         favouriteAdapter = new FavouriteAdapter(favouritesList, manager);
         recyclerView.setAdapter(favouriteAdapter);
-
         emptyUI();
 
         return  view;

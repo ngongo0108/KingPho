@@ -64,9 +64,9 @@ public class PaymentActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Toast.makeText(PaymentActivity.this, "Thanh toan thanh cong", Toast.LENGTH_SHORT).show();
-//                Intent intent = new Intent(PaymentActivity.this, HomeFragment.class);
-//                startActivity(intent);
-//                finish();
+                Intent intent = new Intent(PaymentActivity.this, BillingActivity.class);
+                startActivity(intent);
+                finish();
             }
         });
 
