@@ -25,7 +25,10 @@ import com.example.kingpho.service.UserFavouriteService;
 import com.example.kingpho.service.UserService;
 import com.example.kingpho.utils.RetrofitClient;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Locale;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -89,7 +92,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
 
         public void bind(Product product) {
             productName.setText(product.getName());
-            productPrice.setText(String.valueOf(product.getPrice()));
+            productPrice.setText(formatMoney(String.valueOf((int) product.getPrice())));
 
 //            int drawableResourceId = itemView.getContext().getResources().getIdentifier(product.getFoodImage(), "drawable", itemView.getContext().getPackageName());
 
@@ -235,6 +238,22 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
             }
             catch (Exception e) {
                 e.printStackTrace();
+            }
+        }
+
+        public String formatMoney(String moneyString) {
+            try {
+                int moneyAmount = Integer.parseInt(moneyString);
+
+                NumberFormat numberFormat = NumberFormat.getNumberInstance(Locale.getDefault());
+
+                DecimalFormat decimalFormat = (DecimalFormat) numberFormat;
+                decimalFormat.applyPattern("#,###");
+
+                return decimalFormat.format(moneyAmount);
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+                return moneyString;
             }
         }
     }

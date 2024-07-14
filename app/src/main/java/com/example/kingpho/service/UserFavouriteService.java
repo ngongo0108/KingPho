@@ -18,7 +18,7 @@ public interface UserFavouriteService {
     Call<UserFavouriteDTO> addToFavourites(@Body UserFavouriteDTO userFavouriteDTO);
 
     @GET("favorites/{userId}")
-    Call<List<UserFavourite>> getUserFavourites(@Path("userId") Integer userId);
+    Call<List<UserFavouriteDTO>> getUserFavourites(@Path("userId") Integer userId);
 
     @GET("favorites/{userId}/{productId}")
     Call<UserFavouriteDTO> getUserFavourite(@Path("userId") Integer userId, @Path("productId") Integer productId);
