@@ -14,18 +14,30 @@
     import com.bumptech.glide.Glide;
     import com.example.kingpho.DetailProductActivity;
     import com.example.kingpho.R;
-    import com.example.kingpho.helper.Manager;
-    import com.example.kingpho.model.Food;
+    import com.example.kingpho.model.Product;
+    import com.example.kingpho.service.UserFavouriteService;
 
+    import java.text.DecimalFormat;
+    import java.text.NumberFormat;
     import java.util.ArrayList;
+    import java.util.HashMap;
+    import java.util.Locale;
+
+    import retrofit2.Call;
+    import retrofit2.Callback;
+    import retrofit2.Response;
 
     public class FavouriteAdapter extends RecyclerView.Adapter<FavouriteAdapter.FavouriteViewHolder> {
-        private ArrayList<Food> favouritesList;
-        private Manager manager;
+        private ArrayList<Product> favouritesList;
+        private HashMap<Integer, Integer> favouriteIdMap; // Map to store productId to favouriteId
+        private UserFavouriteService userFavouriteService;
+        private OnEmptyListListener onEmptyListListener;
 
-        public FavouriteAdapter(ArrayList<Food> favouritesList, Manager manager) {
+        public FavouriteAdapter(ArrayList<Product> favouritesList, HashMap<Integer, Integer> favouriteIdMap, UserFavouriteService userFavouriteService, OnEmptyListListener onEmptyListListener) {
             this.favouritesList = favouritesList;
-            this.manager = manager;
+            this.favouriteIdMap = favouriteIdMap;
+            this.userFavouriteService = userFavouriteService;
+            this.onEmptyListListener = onEmptyListListener;
         }
 
         @NonNull
@@ -37,8 +49,8 @@
 
         @Override
         public void onBindViewHolder(@NonNull FavouriteViewHolder holder, int position) {
-            Food food = favouritesList.get(position);
-            holder.bind(food);
+            Product product = favouritesList.get(position);
+            holder.bind(product);
         }
 
         @Override
@@ -46,55 +58,97 @@
             return favouritesList.size();
         }
 
+        public void updateFavourites(ArrayList<Product> updatedFavourites, HashMap<Integer, Integer> updatedFavouriteIdMap) {
+            this.favouritesList = updatedFavourites;
+            this.favouriteIdMap = updatedFavouriteIdMap;
+            notifyDataSetChanged();
+        }
+
         class FavouriteViewHolder extends RecyclerView.ViewHolder {
-            private ImageView foodImage;
-            private TextView foodName;
-            private TextView foodPrice;
+            private ImageView productImage;
+            private TextView productName;
+            private TextView productPrice;
             private ImageView removeFavouriteButton;
             private ImageView addToCartButton;
 
             public FavouriteViewHolder(@NonNull View itemView) {
                 super(itemView);
-                foodImage = itemView.findViewById(R.id.pic);
-                foodName = itemView.findViewById(R.id.titleMethod);
-                foodPrice = itemView.findViewById(R.id.price);
+                productImage = itemView.findViewById(R.id.pic);
+                productName = itemView.findViewById(R.id.titleMethod);
+                productPrice = itemView.findViewById(R.id.price);
                 removeFavouriteButton = itemView.findViewById(R.id.favBtn);
                 addToCartButton = itemView.findViewById(R.id.addtocartBtn);
             }
 
-            public void bind(Food food) {
-                foodName.setText(food.getFoodTitle());
-                foodPrice.setText(String.valueOf(food.getFoodPrice()));
+            public void bind(Product product) {
+                productName.setText(product.getName());
+                productPrice.setText(formatMoney(String.valueOf((int) product.getPrice())));
 
-                int drawableResourceId = itemView.getContext().getResources().getIdentifier(food.getFoodImage(), "drawable", itemView.getContext().getPackageName());
-                Glide.with(itemView.getContext())
-                        .load(drawableResourceId)
-                        .into(foodImage);
-                addToCartButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        manager.addToCart(food);
+                if (product.getImageUrls() != null && !product.getImageUrls().isEmpty()) {
+                    Glide.with(itemView.getContext())
+                            .load(product.getImageUrls().get(0))
+                            .into(productImage);
+                } else {
+                    productImage.setImageResource(R.drawable.icon_pho);
+                }
+
+                addToCartButton.setOnClickListener(v -> {
+                    // Add to cart logic here
+                    Toast.makeText(v.getContext(), "Added to cart: " + product.getName(), Toast.LENGTH_SHORT).show();
+                });
+
+                removeFavouriteButton.setImageResource(R.drawable.heart_ic_change);
+                removeFavouriteButton.setOnClickListener(v -> {
+                    Integer favouriteId = favouriteIdMap.get(product.getId());
+                    if (favouriteId != null) {
+                        Call<Void> call = userFavouriteService.deleteUserFavourite(favouriteId);
+                        call.enqueue(new Callback<Void>() {
+                            @Override
+                            public void onResponse(Call<Void> call, Response<Void> response) {
+                                if (response.isSuccessful()) {
+                                    favouritesList.remove(product);
+                                    notifyItemRemoved(getAdapterPosition());
+                                    if (favouritesList.isEmpty()) {
+                                        onEmptyListListener.onEmptyList();
+                                    }
+                                    Toast.makeText(v.getContext(), "Removed from favourites: " + product.getName(), Toast.LENGTH_SHORT).show();
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(Call<Void> call, Throwable t) {
+                                t.printStackTrace();
+                            }
+                        });
                     }
                 });
 
-                if(favouritesList.size() > 0) {
-                    removeFavouriteButton.setImageResource(R.drawable.heart_ic_change);
-                }
-                removeFavouriteButton.setOnClickListener(v -> {
-                    manager.removeFromFavourites(food);
-                    favouritesList.remove(food);
-                    notifyItemRemoved(getAdapterPosition());
-                });
-
-                foodImage.setOnClickListener(v -> {
+                productImage.setOnClickListener(v -> {
                     Intent intent = new Intent(v.getContext(), DetailProductActivity.class);
-//                    intent.putExtra("foodId", product.ge());
+                    // Pass necessary product details
                     v.getContext().startActivity(intent);
-                    Toast.makeText(v.getContext(), "Bạn đã chọn sản phẩm " + food.getFoodTitle(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(v.getContext(), "Selected product: " + product.getName(), Toast.LENGTH_SHORT).show();
                 });
             }
+        }
 
+        public interface OnEmptyListListener {
+            void onEmptyList();
+        }
 
+        public String formatMoney(String moneyString) {
+            try {
+                int moneyAmount = Integer.parseInt(moneyString);
+
+                NumberFormat numberFormat = NumberFormat.getNumberInstance(Locale.getDefault());
+
+                DecimalFormat decimalFormat = (DecimalFormat) numberFormat;
+                decimalFormat.applyPattern("#,###");
+
+                return decimalFormat.format(moneyAmount);
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+                return moneyString;
+            }
         }
     }
-

@@ -6,6 +6,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -18,8 +19,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.kingpho.adapter.ImageProductAdapter;
+import com.example.kingpho.callback.ProductCallback;
 import com.example.kingpho.fragment.MainActivity;
 import com.example.kingpho.model.ImageProduct;
+import com.example.kingpho.model.Product;
+import com.example.kingpho.service.ProductService;
+import com.example.kingpho.utils.RetrofitClient;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -28,8 +33,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 import me.relex.circleindicator.CircleIndicator3;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
 
 public class DetailProductActivity extends AppCompatActivity {
+
+    private ProductService productService;
+
     private ViewPager2 vpListImage;
     private CircleIndicator3 circleIndicator;
     private ImageView imgGoBack, imgTym, imgMinus, imgPlus, imgNext;
@@ -37,8 +49,8 @@ public class DetailProductActivity extends AppCompatActivity {
     private EditText numberProduct;
     private Button btnAddToCard;
     private boolean isFavor = false;
-    private static final int PRICE = 45000;
-    private List<ImageProduct> arrayImage;
+    private static int PRICE = 45000;
+    private List<String> arrayImage;
     private final Handler handler = new Handler(Looper.getMainLooper());
     private final Runnable runnable = new Runnable() {
         @Override
@@ -56,15 +68,18 @@ public class DetailProductActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail_product);
 
+        Intent intent = getIntent();
+        int foodId = intent.getIntExtra("foodId", - 1);
+
+        Retrofit retrofit = RetrofitClient.getRetrofitInstance(this);
+        productService = retrofit.create(ProductService.class);
+
         mapping();
         vpListImage.setOffscreenPageLimit(3);
         vpListImage.setClipToPadding(false);
         vpListImage.setClipChildren(false);
 
-        arrayImage = getListImage();
-        ImageProductAdapter adapter = new ImageProductAdapter(arrayImage);
-        vpListImage.setAdapter(adapter);
-        circleIndicator.setViewPager(vpListImage);
+        arrayImage = new ArrayList<>();
 
         vpListImage.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
             @Override
@@ -75,10 +90,34 @@ public class DetailProductActivity extends AppCompatActivity {
             }
         });
 
-        tvNameProduct.setText("Phở bò tái");
-        price.setText("45,000");
-        sumPrice.setText("45,000");
-        description.setText("Phở bò là món ăn truyền thống của Việt Nam, nổi tiếng với hương vị đậm đà và hương thơm của nước dùng từ xương và thịt bò, được phục vụ cùng với bánh phở mềm và sợi thơm. Đây là một trong những món ăn được yêu thích và được biết đến rộng rãi trên toàn thế giới, thường được thưởng thức vào các buổi sáng để bắt đầu một ngày mới");
+        getProductById(foodId, new ProductCallback() {
+            @Override
+            public void onListProductFetched(List<Product> productList) {
+
+            }
+
+            @Override
+            public void onProductFetched(Product product) {
+                if (product != null) {
+                    tvNameProduct.setText(product.getName());
+                    price.setText(formatMoney(String.valueOf((int) product.getPrice())));
+                    sumPrice.setText(formatMoney(String.valueOf((int) product.getPrice())));
+                    description.setText(product.getDescription());
+                    PRICE = (int) product.getPrice();
+
+                    arrayImage.addAll(product.getImageUrls());
+                    ImageProductAdapter adapter = new ImageProductAdapter(arrayImage);
+                    vpListImage.setAdapter(adapter);
+                    circleIndicator.setViewPager(vpListImage);
+                }
+            }
+
+            @Override
+            public void onError(Throwable throwable) {
+                throwable.printStackTrace();
+            }
+        });
+
         numberProduct.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -161,15 +200,7 @@ public class DetailProductActivity extends AppCompatActivity {
         imgNext = findViewById(R.id.imgNext);
     }
 
-    private List<ImageProduct> getListImage() {
-        List<ImageProduct> list = new ArrayList<>();
-        list.add(new ImageProduct(R.drawable.phonuoc));
-        list.add(new ImageProduct(R.drawable.phokho));
-        list.add(new ImageProduct(R.drawable.phocuon));
-        list.add(new ImageProduct(R.drawable.phoran));
-        list.add(new ImageProduct(R.drawable.photron));
-        return list;
-    }
+
     private void goBack() {
         finish();
     }
@@ -222,6 +253,32 @@ public class DetailProductActivity extends AppCompatActivity {
             return moneyString;
         }
     }
+
+    public void getProductById(int id, ProductCallback callback) {
+        try {
+            Call<Product> call = productService.getProductById(id);
+            call.enqueue(new Callback<Product>() {
+                @Override
+                public void onResponse(Call<Product> call, Response<Product> response) {
+                    if (response.isSuccessful() && response.body() != null) {
+                        Product product = response.body();
+
+                        callback.onProductFetched(product);
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<Product> call, Throwable throwable) {
+                    Toast.makeText(DetailProductActivity.this, "Failed to get product", Toast.LENGTH_LONG).show();
+                    throwable.printStackTrace();
+                }
+            });
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     @Override
     protected void onPause() {
         super.onPause();
