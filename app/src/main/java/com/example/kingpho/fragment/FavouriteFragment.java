@@ -194,4 +194,11 @@ public class FavouriteFragment extends Fragment implements FavouriteAdapter.OnEm
     public void onEmptyList() {
         imgEmpty.setVisibility(View.VISIBLE);
     }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        getFavourite(userId);
+    }
 }

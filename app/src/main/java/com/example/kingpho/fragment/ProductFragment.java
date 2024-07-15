@@ -26,6 +26,7 @@ import com.example.kingpho.model.FoodActivity;
 import com.example.kingpho.model.Product;
 import com.example.kingpho.service.ProductService;
 import com.example.kingpho.utils.RetrofitClient;
+import com.example.kingpho.utils.SharedPrefManager;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -61,27 +62,6 @@ public class ProductFragment extends Fragment {
 
         // Khởi tạo danh sách mẫu
         allProductList = new ArrayList<>();
-//        allProductList.add(new FoodActivity("Phở trộn2", 60.0, "photron"));
-//        allProductList.add(new FoodActivity("Phở trộn3", 60.0, "photron"));
-//        allProductList.add(new FoodActivity("Phở trộn4", 60.0, "photron"));
-//        allProductList.add(new FoodActivity("Phở trộn5", 60.0, "photron"));
-//        allProductList.add(new FoodActivity("Phở trộn6", 60.0, "photron"));
-//        allProductList.add(new FoodActivity("Phở cuốn", 50.0, "phocuon"));
-//        allProductList.add(new FoodActivity("Phở khô", 45.0, "phokho"));
-//        allProductList.add(new FoodActivity("Phở nước", 40.0, "phonuoc"));
-//        allProductList.add(new FoodActivity("Phở rán", 55.0, "phoran"));
-//        allProductList.add(new FoodActivity("Phở trộn", 60.0, "photron"));
-//        allProductList.add(new FoodActivity("Phở trộn", 60.0, "photron"));
-//        allProductList.add(new FoodActivity("Phở trộn2", 60.0, "photron"));
-//        allProductList.add(new FoodActivity("Phở trộn3", 60.0, "photron"));
-//        allProductList.add(new FoodActivity("Phở trộn4", 60.0, "photron"));
-//        allProductList.add(new FoodActivity("Phở trộn5", 60.0, "photron"));
-//        allProductList.add(new FoodActivity("Phở trộn6", 60.0, "photron"));
-//        allProductList.add(new FoodActivity("Phở trộn7", 60.0, "photron"));
-//        allProductList.add(new FoodActivity("Phở trộn", 60.0, "photron"));
-//        allProductList.add(new FoodActivity("Phở trộn", 60.0, "photron"));
-//        allProductList.add(new FoodActivity("Phở trộn", 60.0, "photron"));
-//        allProductList.add(new FoodActivity("Phở trộn", 60.0, "photron"));
 
         getAllProducts(new ProductCallback() {
             @Override

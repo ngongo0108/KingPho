@@ -20,11 +20,17 @@ import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.kingpho.adapter.ImageProductAdapter;
 import com.example.kingpho.callback.ProductCallback;
+import com.example.kingpho.callback.UserCallback;
+import com.example.kingpho.dto.UserFavouriteDTO;
 import com.example.kingpho.fragment.MainActivity;
 import com.example.kingpho.model.ImageProduct;
 import com.example.kingpho.model.Product;
+import com.example.kingpho.model.User;
 import com.example.kingpho.service.ProductService;
+import com.example.kingpho.service.UserFavouriteService;
+import com.example.kingpho.service.UserService;
 import com.example.kingpho.utils.RetrofitClient;
+import com.example.kingpho.utils.SharedPrefManager;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -41,6 +47,9 @@ import retrofit2.Retrofit;
 public class DetailProductActivity extends AppCompatActivity {
 
     private ProductService productService;
+    private UserFavouriteService userFavouriteService;
+    private UserService userService;
+    private int userId;
 
     private ViewPager2 vpListImage;
     private CircleIndicator3 circleIndicator;
@@ -71,8 +80,26 @@ public class DetailProductActivity extends AppCompatActivity {
         Intent intent = getIntent();
         int foodId = intent.getIntExtra("foodId", - 1);
 
+        String username = SharedPrefManager.getInstance(this).getUser().getUsername();
+
         Retrofit retrofit = RetrofitClient.getRetrofitInstance(this);
         productService = retrofit.create(ProductService.class);
+        userFavouriteService = retrofit.create(UserFavouriteService.class);
+        userService = retrofit.create(UserService.class);
+
+        getUserByUsername(username, new UserCallback() {
+            @Override
+            public void onUserFetched(User user) {
+                if (user != null) {
+                    userId = user.getUserId();
+                }
+            }
+
+            @Override
+            public void onError(Throwable throwable) {
+
+            }
+        });
 
         mapping();
         vpListImage.setOffscreenPageLimit(3);
@@ -109,6 +136,8 @@ public class DetailProductActivity extends AppCompatActivity {
                     ImageProductAdapter adapter = new ImageProductAdapter(arrayImage);
                     vpListImage.setAdapter(adapter);
                     circleIndicator.setViewPager(vpListImage);
+
+                    checkIfFavourited(product.getId());
                 }
             }
 
@@ -181,6 +210,122 @@ public class DetailProductActivity extends AppCompatActivity {
                 addToCard();
             }
         });
+
+        imgTym.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (isFavor) {
+                    removeFromFavorites(foodId);
+                } else {
+                    addToFavorites(foodId);
+                }
+                isFavor = !isFavor;
+                updateFavoriteButtonState();
+            }
+        });
+    }
+
+    private void updateFavoriteButtonState() {
+        if (isFavor) {
+            imgTym.setImageResource(R.drawable.favorite);
+        } else {
+            imgTym.setImageResource(R.drawable.tym);
+        }
+    }
+
+    private void addToFavorites(int productId) {
+        try {
+            UserFavouriteDTO userFavouriteDTO = new UserFavouriteDTO();
+            userFavouriteDTO.setUserId(userId);
+            userFavouriteDTO.setProductId(productId);
+            userFavouriteDTO.setIsFavorite(true);
+
+            userFavouriteService.addToFavourites(userFavouriteDTO).enqueue(new Callback<UserFavouriteDTO>() {
+                @Override
+                public void onResponse(Call<UserFavouriteDTO> call, Response<UserFavouriteDTO> response) {
+                    if (response.isSuccessful()) {
+                        Toast.makeText(DetailProductActivity.this, "Added to favorites", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(DetailProductActivity.this, "Failed to add to favorites", Toast.LENGTH_SHORT).show();
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<UserFavouriteDTO> call, Throwable t) {
+                    Toast.makeText(DetailProductActivity.this, "Failed to add to favorites", Toast.LENGTH_SHORT).show();
+                    t.printStackTrace();
+                }
+            });
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void removeFromFavorites(int productId) {
+        try {
+            userFavouriteService.getUserFavourite(userId, productId).enqueue(new Callback<UserFavouriteDTO>() {
+                @Override
+                public void onResponse(Call<UserFavouriteDTO> call, Response<UserFavouriteDTO> response) {
+                    if (response.isSuccessful() && response.body() != null) {
+                        int userFavoriteId = response.body().getId();
+                        userFavouriteService.deleteUserFavourite(userFavoriteId).enqueue(new Callback<Void>() {
+                            @Override
+                            public void onResponse(Call<Void> call, Response<Void> response) {
+                                if (response.isSuccessful()) {
+                                    Toast.makeText(DetailProductActivity.this, "Removed from favorites", Toast.LENGTH_SHORT).show();
+                                } else {
+                                    Toast.makeText(DetailProductActivity.this, "Failed to remove from favorites", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(Call<Void> call, Throwable t) {
+                                Toast.makeText(DetailProductActivity.this, "Failed to remove from favorites", Toast.LENGTH_SHORT).show();
+                                t.printStackTrace();
+                            }
+                        });
+                    } else {
+                        Toast.makeText(DetailProductActivity.this, "Failed to get favorite information", Toast.LENGTH_SHORT).show();
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<UserFavouriteDTO> call, Throwable t) {
+                    Toast.makeText(DetailProductActivity.this, "Failed to get favorite information", Toast.LENGTH_SHORT).show();
+                    t.printStackTrace();
+                }
+            });
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void checkIfFavourited(int productId) {
+        try {
+            userFavouriteService.getUserFavourite(userId, productId).enqueue(new Callback<UserFavouriteDTO>() {
+                @Override
+                public void onResponse(Call<UserFavouriteDTO> call, Response<UserFavouriteDTO> response) {
+                    if (response.isSuccessful() && response.body() != null) {
+                        isFavor = response.body().isFavourite();
+                        updateFavoriteButtonState();
+                    } else {
+                        isFavor = false;
+                        updateFavoriteButtonState();
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<UserFavouriteDTO> call, Throwable t) {
+                    Toast.makeText(DetailProductActivity.this, "Failed to get favorite information", Toast.LENGTH_SHORT).show();
+                    t.printStackTrace();
+                }
+            });
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void mapping() {
@@ -223,14 +368,6 @@ public class DetailProductActivity extends AppCompatActivity {
         num++;
         sumPrice.setText(formatMoney(String.valueOf(PRICE * num)));
     }
-    public void tymAction(View view) {
-        if (isFavor) {
-            imgTym.setImageResource(R.drawable.tym);
-        } else {
-            imgTym.setImageResource(R.drawable.favorite);
-        }
-        isFavor = !isFavor;
-    }
     private void addToCard() {
         Toast.makeText(this, "product added to cart", Toast.LENGTH_SHORT).show();
     }
@@ -270,6 +407,30 @@ public class DetailProductActivity extends AppCompatActivity {
                 @Override
                 public void onFailure(Call<Product> call, Throwable throwable) {
                     Toast.makeText(DetailProductActivity.this, "Failed to get product", Toast.LENGTH_LONG).show();
+                    throwable.printStackTrace();
+                }
+            });
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void getUserByUsername(String username, UserCallback callback) {
+        try {
+            Call<User> call = userService.getUserByUsername(username);
+            call.enqueue(new Callback<User>() {
+                @Override
+                public void onResponse(Call<User> call, Response<User> response) {
+                    if (response.isSuccessful() && response.body() != null) {
+                        User user = response.body();
+
+                        callback.onUserFetched(user);
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<User> call, Throwable throwable) {
                     throwable.printStackTrace();
                 }
             });

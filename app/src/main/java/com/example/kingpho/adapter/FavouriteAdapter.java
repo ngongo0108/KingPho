@@ -126,6 +126,7 @@
                 productImage.setOnClickListener(v -> {
                     Intent intent = new Intent(v.getContext(), DetailProductActivity.class);
                     // Pass necessary product details
+                    intent.putExtra("foodId", product.getId());
                     v.getContext().startActivity(intent);
                     Toast.makeText(v.getContext(), "Selected product: " + product.getName(), Toast.LENGTH_SHORT).show();
                 });
