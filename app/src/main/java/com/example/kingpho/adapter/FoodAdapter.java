@@ -1,16 +1,25 @@
 package com.example.kingpho.adapter;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.kingpho.R;
+import com.example.kingpho.callback.UserCallback;
+import com.example.kingpho.dto.UserFavouriteDTO;
 import com.example.kingpho.model.Product;
+import com.example.kingpho.model.User;
+import com.example.kingpho.service.UserFavouriteService;
+import com.example.kingpho.service.UserService;
+import com.example.kingpho.utils.RetrofitClient;
+import com.example.kingpho.utils.SharedPrefManager;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -18,16 +27,23 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 public class FoodAdapter extends BaseAdapter {
 
     private Context context;
     private List<Product> productList;
     private List<Product> filteredProductList;
+    private String username;
+    private int userId;
 
     public FoodAdapter(Context context, List<Product> productList) {
         this.context = context;
         this.productList = productList;
         this.filteredProductList = new ArrayList<>(productList);
+        this.username = SharedPrefManager.getInstance(context).getUser().getUsername();
     }
 
     @Override
@@ -64,6 +80,42 @@ public class FoodAdapter extends BaseAdapter {
 
         Product product = filteredProductList.get(position);
 
+        getUserByUsername(username, new UserCallback() {
+            @Override
+            public void onUserFetched(User user) {
+                if (user != null) {
+                    userId = user.getUserId();
+                    getFavouriteButton(product);
+                }
+            }
+
+            private void getFavouriteButton(Product product) {
+                UserFavouriteService userFavouriteService = RetrofitClient.getRetrofitInstance(context).create(UserFavouriteService.class);
+                userFavouriteService.getUserFavourite(userId, product.getId()).enqueue(new Callback<UserFavouriteDTO>() {
+                    @Override
+                    public void onResponse(Call<UserFavouriteDTO> call, Response<UserFavouriteDTO> response) {
+                        if (response.isSuccessful() && response.body() != null && response.body().isFavourite()) {
+                            Log.d("Favourite", response.body().isFavourite() + "");
+                            holder.favouriteButton.setImageResource(R.drawable.heart_ic_change);
+                        } else {
+                            holder.favouriteButton.setImageResource(R.drawable.btn3);
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<UserFavouriteDTO> call, Throwable t) {
+                        Toast.makeText(context, "Failed to fetch favourite status: " + product.getName(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+
+            @Override
+            public void onError(Throwable throwable) {
+
+            }
+        });
+
+
         holder.titleTextView.setText(product.getName());
         holder.priceTextView.setText(formatMoney(String.valueOf((int) product.getPrice())));
 
@@ -89,6 +141,85 @@ public class FoodAdapter extends BaseAdapter {
 
         holder.favouriteButton.setOnClickListener(v -> {
             // Implement add to favourite functionality
+            try {
+                UserFavouriteService userFavouriteService = RetrofitClient.getRetrofitInstance(context).create(UserFavouriteService.class);
+                userFavouriteService.getUserFavourite(userId, product.getId()).enqueue(new Callback<UserFavouriteDTO>() {
+                    @Override
+                    public void onResponse(Call<UserFavouriteDTO> call, Response<UserFavouriteDTO> response) {
+                        if (response.isSuccessful() && response.body() != null) {
+                            // Already a favorite, so remove it
+                            userFavouriteService.deleteUserFavourite(response.body().getId()).enqueue(new Callback<Void>() {
+                                @Override
+                                public void onResponse(Call<Void> call, Response<Void> response) {
+                                    if (response.isSuccessful()) {
+                                        Toast.makeText(context, "Removed from favourites: " + product.getName(), Toast.LENGTH_SHORT).show();
+                                        updateFavouriteButton(product);
+                                    } else {
+                                        Toast.makeText(context, "Failed to remove from favourites: " + product.getName(), Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+
+                                @Override
+                                public void onFailure(Call<Void> call, Throwable t) {
+                                    Toast.makeText(context, "Failed to remove from favourites: " + product.getName(), Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                        } else {
+                            // Not a favorite, so add it
+                            UserFavouriteDTO userFavouriteDTO = new UserFavouriteDTO();
+                            userFavouriteDTO.setUserId(userId);
+                            userFavouriteDTO.setProductId(product.getId());
+                            userFavouriteDTO.setIsFavorite(true);
+
+                            userFavouriteService.addToFavourites(userFavouriteDTO).enqueue(new Callback<UserFavouriteDTO>() {
+                                @Override
+                                public void onResponse(Call<UserFavouriteDTO> call, Response<UserFavouriteDTO> response) {
+                                    if (response.isSuccessful()) {
+                                        Toast.makeText(context, "Added to favourites: " + product.getName(), Toast.LENGTH_SHORT).show();
+                                        updateFavouriteButton(product);
+                                    } else {
+                                        Toast.makeText(context, "Failed to add to favourites: " + product.getName(), Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+
+                                @Override
+                                public void onFailure(Call<UserFavouriteDTO> call, Throwable t) {
+                                    t.printStackTrace();
+                                    Toast.makeText(context, "Throwable: Failed to add to favourites: " + product.getName(), Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                        }
+                    }
+
+                    public void updateFavouriteButton(Product product) {
+                        UserFavouriteService userFavouriteService = RetrofitClient.getRetrofitInstance(context).create(UserFavouriteService.class);
+                        userFavouriteService.getUserFavourite(userId, product.getId()).enqueue(new Callback<UserFavouriteDTO>() {
+                            @Override
+                            public void onResponse(Call<UserFavouriteDTO> call, Response<UserFavouriteDTO> response) {
+                                if (response.isSuccessful() && response.body() != null && response.body().isFavourite()) {
+                                    Log.d("Favourite", response.body().isFavourite() + "");
+                                    holder.favouriteButton.setImageResource(R.drawable.heart_ic_change);
+                                } else {
+                                    holder.favouriteButton.setImageResource(R.drawable.btn3);
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(Call<UserFavouriteDTO> call, Throwable t) {
+                                Toast.makeText(context, "Failed to fetch favourite status: " + product.getName(), Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onFailure(Call<UserFavouriteDTO> call, Throwable t) {
+                        Toast.makeText(context, "Failed to fetch favourite status: " + product.getName(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
         });
 
         return convertView;
@@ -124,6 +255,32 @@ public class FoodAdapter extends BaseAdapter {
         TextView priceTextView;
         ImageView addToCartButton;
         ImageView favouriteButton;
+    }
+
+    public void getUserByUsername(String username, UserCallback callback) {
+        UserService userService = RetrofitClient.getRetrofitInstance(context).create(UserService.class);
+
+        try {
+            Call<User> call = userService.getUserByUsername(username);
+            call.enqueue(new Callback<User>() {
+                @Override
+                public void onResponse(Call<User> call, Response<User> response) {
+                    if (response.isSuccessful() && response.body() != null) {
+                        User user = response.body();
+
+                        callback.onUserFetched(user);
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<User> call, Throwable throwable) {
+                    throwable.printStackTrace();
+                }
+            });
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public String formatMoney(String moneyString) {
