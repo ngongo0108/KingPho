@@ -113,11 +113,11 @@ public class HomeFragment extends Fragment {
     }
 
     private void initializeProducts() {
-        productList.add(new Food("Phở Nước", "phonuoc", "Món phở nước", 5.0, 1, categoryList.get(0)));
-        productList.add(new Food("Phở Nước2", "phonuoc", "Món phở nước", 5.0, 1, categoryList.get(0)));
-        productList.add(new Food("Phở Nước3", "phonuoc", "Món phở nước", 5.0, 1, categoryList.get(0)));
-        productList.add(new Food("Phở Nước4", "phonuoc", "Món phở nước", 5.0, 1, categoryList.get(0)));
-        productList.add(new Food("Phở Nước5", "phonuoc", "Món phở nước", 5.0, 1, categoryList.get(0)));
+        productList.add(new Food("Phở Nước", "phonuoc", "Món phở nước", 30000.0, 1, categoryList.get(0)));
+        productList.add(new Food("Phở Nước2", "phonuoc", "Món phở nước", 35000.0, 1, categoryList.get(0)));
+        productList.add(new Food("Phở Nước3", "phonuoc", "Món phở nước", 50000.0, 1, categoryList.get(0)));
+        productList.add(new Food("Phở Nước4", "phonuoc", "Món phở nước", 50000.0, 1, categoryList.get(0)));
+        productList.add(new Food("Phở Nước5", "phonuoc", "Món phở nước", 50000.0, 1, categoryList.get(0)));
 
         productList.add(new Food("Phở Khô", "phokho", "Món phở khô", 6.0, 1, categoryList.get(1)));
         productList.add(new Food("Phở Khô1", "phokho", "Món phở khô", 6.0, 1, categoryList.get(1)));

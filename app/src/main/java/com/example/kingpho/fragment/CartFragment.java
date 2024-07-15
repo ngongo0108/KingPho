@@ -61,6 +61,7 @@ public class CartFragment extends Fragment implements ChangeNumberItemsListener,
         checkoutBtn.setOnClickListener(v -> {
             double finalTotalPrice = calculateFinalTotalPrice();
             Intent intent = new Intent(getContext(), PaymentActivity.class);
+
             intent.putExtra("total_price", finalTotalPrice);
             startActivity(intent);
         });
@@ -91,8 +92,8 @@ public class CartFragment extends Fragment implements ChangeNumberItemsListener,
         double totalOrder = totalPrice + deliveryFee;
 
         itemTotal.setText(String.valueOf(totalQuantity));
-        deliveryTotal.setText(String.format("%.2fđ", deliveryFee));
-        total.setText(String.format("%.2fđ", totalOrder));
+        deliveryTotal.setText(String.format("%.0f", deliveryFee));
+        total.setText(String.format("%.0f", totalOrder));
 
         if (cartList.isEmpty()) {
             imageViewEmptyCart.setVisibility(View.VISIBLE);

@@ -78,7 +78,8 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
                     }
                 });
             }
-        });plusBtn.setOnClickListener(new View.OnClickListener() {
+        });
+            plusBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 int position = getAdapterPosition();
@@ -106,7 +107,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
 
         public void bind(Food item, int position) {
             productName.setText(item.getFoodTitle());
-            productPrice.setText(String.format("%.2fđ", item.getFoodPrice()));
+            productPrice.setText(String.format("%.0f", item.getFoodPrice()));
             productQuantity.setText(String.valueOf(item.getNumberInCart()));
             int drawableResourceId = itemView.getContext().getResources().getIdentifier(item.getFoodImage(), "drawable", itemView.getContext().getPackageName());
             Glide.with(itemView.getContext())
