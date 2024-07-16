@@ -22,6 +22,7 @@ import com.example.kingpho.helper.TinyDB;
 import com.example.kingpho.model.Food;
 import com.example.kingpho.model.Product;
 import com.example.kingpho.model.User;
+import com.example.kingpho.service.CartService;
 import com.example.kingpho.service.ProductService;
 import com.example.kingpho.service.UserFavouriteService;
 import com.example.kingpho.service.UserService;
@@ -41,6 +42,7 @@ public class FavouriteFragment extends Fragment implements FavouriteAdapter.OnEm
     private UserFavouriteService userFavouriteService;
     private ProductService productService;
     private UserService userService;
+    private CartService cartService;
     private RecyclerView recyclerView;
     private FavouriteAdapter favouriteAdapter;
     private ImageView imgEmpty;
@@ -85,6 +87,7 @@ public class FavouriteFragment extends Fragment implements FavouriteAdapter.OnEm
         userFavouriteService = retrofit.create(UserFavouriteService.class);
         productService = retrofit.create(ProductService.class);
         userService = retrofit.create(UserService.class);
+        cartService = retrofit.create(CartService.class);
 
         getUserByUsername(username, new UserCallback() {
             @Override
@@ -106,7 +109,7 @@ public class FavouriteFragment extends Fragment implements FavouriteAdapter.OnEm
         HashMap<Integer, Integer> favouriteIdMap = new HashMap<>();
         recyclerView = view.findViewById(R.id.recyclerViewFav);
         recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
-        favouriteAdapter = new FavouriteAdapter(favouritesList, favouriteIdMap , userFavouriteService, this);
+        favouriteAdapter = new FavouriteAdapter(favouritesList, favouriteIdMap , userFavouriteService, cartService, userId, this, getContext());
         recyclerView.setAdapter(favouriteAdapter);
 
         getFavourite(userId);

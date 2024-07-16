@@ -150,7 +150,7 @@
         android:layout_height="60dp"
         android:layout_marginBottom="16dp"
         android:backgroundTint="#EB8D21"
-        android:text="Add To Card"
+        android:text="Add To Cart"
         android:textAllCaps="false"
         android:textColor="#fff"
         android:textSize="18sp"
