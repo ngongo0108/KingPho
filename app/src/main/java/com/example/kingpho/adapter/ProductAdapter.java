@@ -143,7 +143,6 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
                                 @Override
                                 public void onResponse(Call<Void> call, Response<Void> response) {
                                     if (response.isSuccessful()) {
-                                        Toast.makeText(itemView.getContext(), "Removed from favourites: " + product.getName(), Toast.LENGTH_SHORT).show();
                                         updateFavouriteButton(product);
                                     } else {
                                         Toast.makeText(itemView.getContext(), "Failed to remove from favourites: " + product.getName(), Toast.LENGTH_SHORT).show();
@@ -166,7 +165,6 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
                                 @Override
                                 public void onResponse(Call<UserFavouriteDTO> call, Response<UserFavouriteDTO> response) {
                                     if (response.isSuccessful()) {
-                                        Toast.makeText(itemView.getContext(), "Added to favourites: " + product.getName(), Toast.LENGTH_SHORT).show();
                                         updateFavouriteButton(product);
                                     } else {
                                         Toast.makeText(itemView.getContext(), "Failed to add to favourites: " + product.getName(), Toast.LENGTH_SHORT).show();
@@ -207,7 +205,6 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
                 @Override
                 public void onResponse(Call<UserFavouriteDTO> call, Response<UserFavouriteDTO> response) {
                     if (response.isSuccessful() && response.body() != null && response.body().isFavourite()) {
-                        Log.d("Favourite", response.body().isFavourite() + "");
                         favouriteButton.setImageResource(R.drawable.heart_ic_change);
                     } else {
                         favouriteButton.setImageResource(R.drawable.btn3);

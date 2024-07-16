@@ -18,10 +18,14 @@ import com.example.kingpho.Interface.ChangeNumberItemsListener;
 import com.example.kingpho.PaymentActivity;
 import com.example.kingpho.R;
 import com.example.kingpho.adapter.CartAdapter;
+import com.example.kingpho.callback.UserCallback;
 import com.example.kingpho.dto.CartDTO;
+import com.example.kingpho.model.User;
 import com.example.kingpho.service.CartService;
 import com.example.kingpho.service.ProductService;
+import com.example.kingpho.service.UserService;
 import com.example.kingpho.utils.RetrofitClient;
+import com.example.kingpho.utils.SharedPrefManager;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -45,9 +49,10 @@ public class CartFragment extends Fragment implements ChangeNumberItemsListener,
     private LinearLayout itemTotalLayout, deliveryLayout, totalLayout;
     private ArrayList<CartDTO> cartList;
     private CartAdapter adapter;
-    private int userId = 1;
+    private int userId = -1;
     private CartService cartService;
     private ProductService productService;
+    private UserService userService;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -66,10 +71,27 @@ public class CartFragment extends Fragment implements ChangeNumberItemsListener,
         deliveryLayout = view.findViewById(R.id.deliveryLayout);
         totalLayout = view.findViewById(R.id.totalLayout);
 
+        String username = SharedPrefManager.getInstance(getContext()).getUser().getUsername();
+
         Retrofit retrofit = RetrofitClient.getRetrofitInstance(getContext());
         cartService = retrofit.create(CartService.class);
         productService = retrofit.create(ProductService.class);
-        fetchCartItems();
+        userService = retrofit.create(UserService.class);
+
+        getUserByUsername(username, new UserCallback() {
+            @Override
+            public void onUserFetched(User user) {
+                if (user != null) {
+                    userId = user.getUserId();
+                    fetchCartItems(userId);
+                }
+            }
+
+            @Override
+            public void onError(Throwable throwable) {
+
+            }
+        });
 
         checkoutBtn.setOnClickListener(v -> {
             double finalTotalPrice = adapter.calculateTotalPrice();
@@ -81,7 +103,7 @@ public class CartFragment extends Fragment implements ChangeNumberItemsListener,
         return view;
     }
 
-    private void fetchCartItems() {
+    private void fetchCartItems(int userId) {
         try {
             Call<List<CartDTO>> call = cartService.getCartItems(userId);
             call.enqueue(new Callback<List<CartDTO>>() {
@@ -161,6 +183,30 @@ public class CartFragment extends Fragment implements ChangeNumberItemsListener,
             e.printStackTrace();
             // Handle non-numeric input gracefully
             return moneyString + "đ";
+        }
+    }
+
+    public void getUserByUsername(String username, UserCallback callback) {
+        try {
+            Call<User> call = userService.getUserByUsername(username);
+            call.enqueue(new Callback<User>() {
+                @Override
+                public void onResponse(Call<User> call, Response<User> response) {
+                    if (response.isSuccessful() && response.body() != null) {
+                        User user = response.body();
+
+                        callback.onUserFetched(user);
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<User> call, Throwable throwable) {
+                    throwable.printStackTrace();
+                }
+            });
+        }
+        catch (Exception e) {
+            e.printStackTrace();
         }
     }
 

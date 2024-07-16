@@ -212,10 +212,6 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHo
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Category category = categoryList.get(position);
         holder.categoryName.setText(category.getName());
-//        int drawableResourceId = holder.itemView.getContext().getResources().getIdentifier(category.getImage(), "drawable", holder.itemView.getContext().getPackageName());
-//        Glide.with(holder.itemView.getContext())
-//                .load(drawableResourceId)
-//                .into(holder.categoryPic);
 
         if (category.getImage() != null) {
             if (!category.getImage().isEmpty()) {

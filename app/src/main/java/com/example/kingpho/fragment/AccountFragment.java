@@ -17,6 +17,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
+import com.example.kingpho.LoginActivity;
 import com.example.kingpho.MapActivity;
 import com.example.kingpho.MyOrderActivity;
 import com.example.kingpho.ProfileActivity;
@@ -133,7 +134,10 @@ public class AccountFragment extends Fragment {
         return list;
     }
     private void logoutAction() {
-        Toast.makeText(getContext(), "Logout Action", Toast.LENGTH_SHORT).show();
+//        Toast.makeText(getContext(), "Logout Action", Toast.LENGTH_SHORT).show();
+        Intent intent = new Intent(getContext(), LoginActivity.class);
+        startActivity(intent);
+        SharedPrefManager.getInstance(getContext()).clear();
     }
 
     public void getUserByUsername(String username, UserCallback callback) {
