@@ -1,5 +1,6 @@
     package com.example.kingpho.adapter;
 
+    import android.content.Context;
     import android.content.Intent;
     import android.view.LayoutInflater;
     import android.view.View;
@@ -14,13 +15,17 @@
     import com.bumptech.glide.Glide;
     import com.example.kingpho.DetailProductActivity;
     import com.example.kingpho.R;
+    import com.example.kingpho.dto.CartDTO;
+    import com.example.kingpho.dto.UpdateCartDTO;
     import com.example.kingpho.model.Product;
+    import com.example.kingpho.service.CartService;
     import com.example.kingpho.service.UserFavouriteService;
 
     import java.text.DecimalFormat;
     import java.text.NumberFormat;
     import java.util.ArrayList;
     import java.util.HashMap;
+    import java.util.List;
     import java.util.Locale;
 
     import retrofit2.Call;
@@ -32,12 +37,18 @@
         private HashMap<Integer, Integer> favouriteIdMap; // Map to store productId to favouriteId
         private UserFavouriteService userFavouriteService;
         private OnEmptyListListener onEmptyListListener;
+        private CartService cartService;
+        private int userId;
+        private Context context;
 
-        public FavouriteAdapter(ArrayList<Product> favouritesList, HashMap<Integer, Integer> favouriteIdMap, UserFavouriteService userFavouriteService, OnEmptyListListener onEmptyListListener) {
+        public FavouriteAdapter(ArrayList<Product> favouritesList, HashMap<Integer, Integer> favouriteIdMap, UserFavouriteService userFavouriteService, CartService cartService, int userId, OnEmptyListListener onEmptyListListener, Context context) {
             this.favouritesList = favouritesList;
             this.favouriteIdMap = favouriteIdMap;
             this.userFavouriteService = userFavouriteService;
+            this.cartService = cartService;
+            this.userId = userId;
             this.onEmptyListListener = onEmptyListListener;
+            this.context = context;
         }
 
         @NonNull
@@ -94,7 +105,7 @@
 
                 addToCartButton.setOnClickListener(v -> {
                     // Add to cart logic here
-                    Toast.makeText(v.getContext(), "Added to cart: " + product.getName(), Toast.LENGTH_SHORT).show();
+                    addToCart(product);
                 });
 
                 removeFavouriteButton.setImageResource(R.drawable.heart_ic_change);
@@ -130,6 +141,85 @@
                     v.getContext().startActivity(intent);
                     Toast.makeText(v.getContext(), "Selected product: " + product.getName(), Toast.LENGTH_SHORT).show();
                 });
+            }
+
+            private void addToCart(Product product) {
+                cartService.getCartItems(userId).enqueue(new Callback<List<CartDTO>>() {
+                    @Override
+                    public void onResponse(Call<List<CartDTO>> call, Response<List<CartDTO>> response) {
+                        if (response.isSuccessful()) {
+                            List<CartDTO> cartItems = response.body();
+                            if (cartItems != null) {
+                                handleCartItems(cartItems, product);
+                            }
+                        } else if (response.code() == 404) {
+                            handleCartItems(new ArrayList<>(), product);
+                        } else {
+                            Toast.makeText(context, "Failed to fetch cart items", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<List<CartDTO>> call, Throwable t) {
+                        Toast.makeText(context, "Failed to fetch cart items", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+
+            private void handleCartItems(List<CartDTO> cartItems, Product product) {
+                CartDTO existingCartItem = null;
+
+                for (CartDTO item : cartItems) {
+                    if (item.getProductId() == product.getId()) {
+                        existingCartItem = item;
+                        break;
+                    }
+                }
+
+                if (existingCartItem != null) {
+                    // Only update the quantity field
+                    UpdateCartDTO updatedCartItem = new UpdateCartDTO();
+                    updatedCartItem.setUserId(existingCartItem.getUserId());
+                    updatedCartItem.setProductId(existingCartItem.getProductId());
+                    updatedCartItem.setQuantity(existingCartItem.getQuantity() + 1);
+
+                    cartService.updateCartItemByUserIdAndProductId(updatedCartItem.getUserId(), updatedCartItem.getProductId(), updatedCartItem).enqueue(new Callback<Void>() {
+                        @Override
+                        public void onResponse(Call<Void> call, Response<Void> response) {
+                            if (response.isSuccessful()) {
+                                Toast.makeText(context, "Quantity updated: " + product.getName(), Toast.LENGTH_SHORT).show();
+                            } else {
+                                Toast.makeText(context, "Failed to update quantity: " + product.getName(), Toast.LENGTH_SHORT).show();
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<Void> call, Throwable t) {
+                            Toast.makeText(context, "Failed to update quantity: " + product.getName(), Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                } else {
+                    CartDTO newCartItem = new CartDTO();
+                    newCartItem.setUserId(userId);
+                    newCartItem.setProductId(product.getId());
+                    newCartItem.setQuantity(1);
+
+                    cartService.addToCart(newCartItem).enqueue(new Callback<Void>() {
+                        @Override
+                        public void onResponse(Call<Void> call, Response<Void> response) {
+                            if (response.isSuccessful()) {
+                                Toast.makeText(context, "Added to cart: " + product.getName(), Toast.LENGTH_SHORT).show();
+                            } else {
+                                Toast.makeText(context, "Failed to add to cart: " + product.getName(), Toast.LENGTH_SHORT).show();
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<Void> call, Throwable t) {
+                            Toast.makeText(context, "Failed to add to cart: " + product.getName(), Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
             }
         }
 

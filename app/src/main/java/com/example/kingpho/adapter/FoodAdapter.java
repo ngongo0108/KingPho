@@ -13,9 +13,12 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.example.kingpho.R;
 import com.example.kingpho.callback.UserCallback;
+import com.example.kingpho.dto.CartDTO;
+import com.example.kingpho.dto.UpdateCartDTO;
 import com.example.kingpho.dto.UserFavouriteDTO;
 import com.example.kingpho.model.Product;
 import com.example.kingpho.model.User;
+import com.example.kingpho.service.CartService;
 import com.example.kingpho.service.UserFavouriteService;
 import com.example.kingpho.service.UserService;
 import com.example.kingpho.utils.RetrofitClient;
@@ -38,12 +41,14 @@ public class FoodAdapter extends BaseAdapter {
     private List<Product> filteredProductList;
     private String username;
     private int userId;
+    private CartService cartService;
 
     public FoodAdapter(Context context, List<Product> productList) {
         this.context = context;
         this.productList = productList;
         this.filteredProductList = new ArrayList<>(productList);
         this.username = SharedPrefManager.getInstance(context).getUser().getUsername();
+        this.cartService = RetrofitClient.getRetrofitInstance(context).create(CartService.class);
     }
 
     @Override
@@ -136,11 +141,10 @@ public class FoodAdapter extends BaseAdapter {
         }
 
         holder.addToCartButton.setOnClickListener(v -> {
-            // Implement add to cart functionality
+            addToCart(product);
         });
 
         holder.favouriteButton.setOnClickListener(v -> {
-            // Implement add to favourite functionality
             try {
                 UserFavouriteService userFavouriteService = RetrofitClient.getRetrofitInstance(context).create(UserFavouriteService.class);
                 userFavouriteService.getUserFavourite(userId, product.getId()).enqueue(new Callback<UserFavouriteDTO>() {
@@ -223,6 +227,85 @@ public class FoodAdapter extends BaseAdapter {
         });
 
         return convertView;
+    }
+
+    private void addToCart(Product product) {
+        cartService.getCartItems(userId).enqueue(new Callback<List<CartDTO>>() {
+            @Override
+            public void onResponse(Call<List<CartDTO>> call, Response<List<CartDTO>> response) {
+                if (response.isSuccessful()) {
+                    List<CartDTO> cartItems = response.body();
+                    if (cartItems != null) {
+                        handleCartItems(cartItems, product);
+                    }
+                } else if (response.code() == 404) {
+                    handleCartItems(new ArrayList<>(), product);
+                } else {
+                    Toast.makeText(context, "Failed to fetch cart items", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<CartDTO>> call, Throwable t) {
+                Toast.makeText(context, "Failed to fetch cart items", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void handleCartItems(List<CartDTO> cartItems, Product product) {
+        CartDTO existingCartItem = null;
+
+        for (CartDTO item : cartItems) {
+            if (item.getProductId() == product.getId()) {
+                existingCartItem = item;
+                break;
+            }
+        }
+
+        if (existingCartItem != null) {
+            // Only update the quantity field
+            UpdateCartDTO updatedCartItem = new UpdateCartDTO();
+            updatedCartItem.setUserId(existingCartItem.getUserId());
+            updatedCartItem.setProductId(existingCartItem.getProductId());
+            updatedCartItem.setQuantity(existingCartItem.getQuantity() + 1);
+
+            cartService.updateCartItemByUserIdAndProductId(updatedCartItem.getUserId(), updatedCartItem.getProductId(), updatedCartItem).enqueue(new Callback<Void>() {
+                @Override
+                public void onResponse(Call<Void> call, Response<Void> response) {
+                    if (response.isSuccessful()) {
+                        Toast.makeText(context, "Quantity updated: " + product.getName(), Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(context, "Failed to update quantity: " + product.getName(), Toast.LENGTH_SHORT).show();
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<Void> call, Throwable t) {
+                    Toast.makeText(context, "Failed to update quantity: " + product.getName(), Toast.LENGTH_SHORT).show();
+                }
+            });
+        } else {
+            CartDTO newCartItem = new CartDTO();
+            newCartItem.setUserId(userId);
+            newCartItem.setProductId(product.getId());
+            newCartItem.setQuantity(1);
+
+            cartService.addToCart(newCartItem).enqueue(new Callback<Void>() {
+                @Override
+                public void onResponse(Call<Void> call, Response<Void> response) {
+                    if (response.isSuccessful()) {
+                        Toast.makeText(context, "Added to cart: " + product.getName(), Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(context, "Failed to add to cart: " + product.getName(), Toast.LENGTH_SHORT).show();
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<Void> call, Throwable t) {
+                    Toast.makeText(context, "Failed to add to cart: " + product.getName(), Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
     }
 
     public void filter(String query) {

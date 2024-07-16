@@ -6,7 +6,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -21,11 +20,12 @@ import androidx.viewpager2.widget.ViewPager2;
 import com.example.kingpho.adapter.ImageProductAdapter;
 import com.example.kingpho.callback.ProductCallback;
 import com.example.kingpho.callback.UserCallback;
+import com.example.kingpho.dto.CartDTO;
+import com.example.kingpho.dto.UpdateCartDTO;
 import com.example.kingpho.dto.UserFavouriteDTO;
-import com.example.kingpho.fragment.MainActivity;
-import com.example.kingpho.model.ImageProduct;
 import com.example.kingpho.model.Product;
 import com.example.kingpho.model.User;
+import com.example.kingpho.service.CartService;
 import com.example.kingpho.service.ProductService;
 import com.example.kingpho.service.UserFavouriteService;
 import com.example.kingpho.service.UserService;
@@ -49,6 +49,7 @@ public class DetailProductActivity extends AppCompatActivity {
     private ProductService productService;
     private UserFavouriteService userFavouriteService;
     private UserService userService;
+    private CartService cartService;
     private int userId;
 
     private ViewPager2 vpListImage;
@@ -56,7 +57,7 @@ public class DetailProductActivity extends AppCompatActivity {
     private ImageView imgGoBack, imgTym, imgMinus, imgPlus, imgNext;
     private TextView tvNameProduct, price, sumPrice, description, seeMore;
     private EditText numberProduct;
-    private Button btnAddToCard;
+    private Button btnAddToCart;
     private boolean isFavor = false;
     private static int PRICE = 45000;
     private List<String> arrayImage;
@@ -86,6 +87,7 @@ public class DetailProductActivity extends AppCompatActivity {
         productService = retrofit.create(ProductService.class);
         userFavouriteService = retrofit.create(UserFavouriteService.class);
         userService = retrofit.create(UserService.class);
+        cartService = retrofit.create(CartService.class);
 
         getUserByUsername(username, new UserCallback() {
             @Override
@@ -204,10 +206,10 @@ public class DetailProductActivity extends AppCompatActivity {
                 seeMoreAction();
             }
         });
-        btnAddToCard.setOnClickListener(new View.OnClickListener() {
+        btnAddToCart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                addToCard();
+                addToCart(foodId);
             }
         });
 
@@ -339,7 +341,7 @@ public class DetailProductActivity extends AppCompatActivity {
         numberProduct = findViewById(R.id.numberProduct);
         imgPlus =findViewById(R.id.imgPlus);
         sumPrice = findViewById(R.id.sumPrice);
-        btnAddToCard = findViewById(R.id.btnAddToCard);
+        btnAddToCart = findViewById(R.id.btnAddToCard);
         description = findViewById(R.id.description);
         seeMore = findViewById(R.id.seeMore);
         imgNext = findViewById(R.id.imgNext);
@@ -368,9 +370,73 @@ public class DetailProductActivity extends AppCompatActivity {
         num++;
         sumPrice.setText(formatMoney(String.valueOf(PRICE * num)));
     }
-    private void addToCard() {
-        Toast.makeText(this, "product added to cart", Toast.LENGTH_SHORT).show();
+    private void addToCart(int productId) {
+        String quantityString = numberProduct.getText().toString().trim();
+        int quantity = Integer.parseInt(quantityString);
+
+        cartService.getCartItems(userId).enqueue(new Callback<List<CartDTO>>() {
+            @Override
+            public void onResponse(Call<List<CartDTO>> call, Response<List<CartDTO>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    List<CartDTO> cartItems = response.body();
+                    boolean productExistsInCart = false;
+
+                    for (CartDTO item : cartItems) {
+                        if (item.getProductId() == productId) {
+                            productExistsInCart = true;
+                            int newQuantity = item.getQuantity() + quantity;
+                            UpdateCartDTO updateCartDTO = new UpdateCartDTO();
+                            updateCartDTO.setQuantity(newQuantity);
+                            cartService.updateCartItemByUserIdAndProductId(userId, productId, updateCartDTO).enqueue(new Callback<Void>() {
+                                @Override
+                                public void onResponse(Call<Void> call, Response<Void> response) {
+                                    if (response.isSuccessful()) {
+                                        Toast.makeText(DetailProductActivity.this, "Product quantity updated in cart", Toast.LENGTH_SHORT).show();
+                                    } else {
+                                        Toast.makeText(DetailProductActivity.this, "Failed to update cart", Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+
+                                @Override
+                                public void onFailure(Call<Void> call, Throwable t) {
+                                    Toast.makeText(DetailProductActivity.this, "Failed to update cart", Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                            break;
+                        }
+                    }
+
+                    if (!productExistsInCart) {
+                        CartDTO newCartDTO = new CartDTO(userId, productId, quantity);
+                        cartService.addToCart(newCartDTO).enqueue(new Callback<Void>() {
+                            @Override
+                            public void onResponse(Call<Void> call, Response<Void> response) {
+                                if (response.isSuccessful()) {
+                                    Toast.makeText(DetailProductActivity.this, "Product added to cart", Toast.LENGTH_SHORT).show();
+                                } else {
+                                    Toast.makeText(DetailProductActivity.this, "Failed to add to cart", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(Call<Void> call, Throwable t) {
+                                Toast.makeText(DetailProductActivity.this, "Failed to add to cart", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    }
+                } else {
+                    Toast.makeText(DetailProductActivity.this, "Failed to fetch cart items", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<CartDTO>> call, Throwable t) {
+                Toast.makeText(DetailProductActivity.this, "Failed to fetch cart items", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
+
+
     private void seeMoreAction() {
         Intent intent = new Intent(this, RatingActivity.class);
         startActivity(intent);
