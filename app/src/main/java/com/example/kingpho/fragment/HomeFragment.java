@@ -1,18 +1,14 @@
-
-
 package com.example.kingpho.fragment;
 
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -33,7 +29,6 @@ import com.example.kingpho.dto.CartDTO;
 import com.example.kingpho.helper.Manager;
 import com.example.kingpho.helper.TinyDB;
 import com.example.kingpho.model.Category;
-import com.example.kingpho.model.Food;
 import com.example.kingpho.model.Product;
 import com.example.kingpho.model.User;
 import com.example.kingpho.service.CartService;
@@ -65,13 +60,13 @@ public class HomeFragment extends Fragment {
     private ArrayList<Product> productList;
     private ProductAdapter productAdapter;
     private TextView seeAll, tvUsername;
-    private ImageView imageViewNoti, imageViewMessage;
+    private ImageView imageViewMessage;
     private Manager manager;
     private String username;
     private NotificationUtils notificationUtils;
     private CartService cartService;
     private ArrayList<CartDTO> cartList;
-    private int userId = 1;
+    private int userId = -1;
     public HomeFragment() {
         // Required empty public constructor
     }
@@ -94,13 +89,37 @@ public class HomeFragment extends Fragment {
         productService = retrofit.create(ProductService.class);
         cartService = retrofit.create(CartService.class);
 
-        showNotificationIfNotShown();
+//        showNotificationIfNotShown();
         String username = SharedPrefManager.getInstance(getContext()).getUser().getUsername();
         getUserByUsername(username, new UserCallback() {
             @Override
             public void onUserFetched(User user) {
                 if (user != null) {
                     tvUsername.setText(user.getFullname());
+                    userId = user.getUserId();
+                    SharedPreferences prefs = requireContext().getSharedPreferences("AppPrefs", Context.MODE_PRIVATE);
+                    boolean notificationShown = prefs.getBoolean("notificationShown", false);
+
+                    if (!notificationShown) {
+                        notificationUtils = new NotificationUtils(getContext());
+                        getSizeListCart(userId, new CartCallBack() {
+                            @Override
+                            public void getSizeList(int size) {
+                                if (size != 0) {
+                                    notificationUtils.showNotification("Quickly place an order", "You have items in your cart. Don't forget to check out!");
+                                }
+                                // Set the flag to true after showing the notification
+                                SharedPreferences.Editor editor = prefs.edit();
+                                editor.putBoolean("notificationShown", true);
+                                editor.apply();
+                            }
+
+                            @Override
+                            public void onError(Throwable throwable) {
+                                throwable.printStackTrace();
+                            }
+                        });
+                    }
                 }
             }
 
@@ -279,7 +298,6 @@ public class HomeFragment extends Fragment {
 
                 @Override
                 public void onFailure(Call<List<Product>> call, Throwable throwable) {
-                    Toast.makeText(getContext(), "Fail to get product", Toast.LENGTH_LONG).show();
                     throwable.printStackTrace();
                 }
             });
@@ -288,7 +306,7 @@ public class HomeFragment extends Fragment {
             e.printStackTrace();
         }
     }
-    private void getSizeListCart(CartCallBack cartCallBack) {
+    private void getSizeListCart(int userId, CartCallBack cartCallBack) {
         try {
             Call<List<CartDTO>> call = cartService.getCartItems(userId);
             call.enqueue(new Callback<List<CartDTO>>() {
@@ -313,31 +331,31 @@ public class HomeFragment extends Fragment {
     }
 
 
-    private void showNotificationIfNotShown() {
-        SharedPreferences prefs = requireContext().getSharedPreferences("AppPrefs", Context.MODE_PRIVATE);
-        boolean notificationShown = prefs.getBoolean("notificationShown", false);
-
-        if (!notificationShown) {
-            notificationUtils = new NotificationUtils(getContext());
-            getSizeListCart(new CartCallBack() {
-                @Override
-                public void getSizeList(int size) {
-                    if (size != 0) {
-                        notificationUtils.showNotification("Quickly place an order", "You have items in your cart. Don't forget to check out!");
-                    }
-                    // Set the flag to true after showing the notification
-                    SharedPreferences.Editor editor = prefs.edit();
-                    editor.putBoolean("notificationShown", true);
-                    editor.apply();
-                }
-
-                @Override
-                public void onError(Throwable throwable) {
-                    throwable.printStackTrace();
-                }
-            });
-        }
-    }
+//    private void showNotificationIfNotShown() {
+//        SharedPreferences prefs = requireContext().getSharedPreferences("AppPrefs", Context.MODE_PRIVATE);
+//        boolean notificationShown = prefs.getBoolean("notificationShown", false);
+//
+//        if (!notificationShown) {
+//            notificationUtils = new NotificationUtils(getContext());
+//            getSizeListCart(userId, new CartCallBack() {
+//                @Override
+//                public void getSizeList(int size) {
+//                    if (size != 0) {
+//                        notificationUtils.showNotification("Quickly place an order", "You have items in your cart. Don't forget to check out!");
+//                    }
+//                    // Set the flag to true after showing the notification
+//                    SharedPreferences.Editor editor = prefs.edit();
+//                    editor.putBoolean("notificationShown", true);
+//                    editor.apply();
+//                }
+//
+//                @Override
+//                public void onError(Throwable throwable) {
+//                    throwable.printStackTrace();
+//                }
+//            });
+//        }
+//    }
 
 }
 

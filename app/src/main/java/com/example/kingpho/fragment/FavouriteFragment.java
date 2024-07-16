@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -46,7 +47,7 @@ public class FavouriteFragment extends Fragment implements FavouriteAdapter.OnEm
     private RecyclerView recyclerView;
     private FavouriteAdapter favouriteAdapter;
     private ImageView imgEmpty;
-    private int userId = 1; // Assume you have a way to get the userId
+    private int userId = -1; // Assume you have a way to get the userId
 
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
@@ -94,6 +95,7 @@ public class FavouriteFragment extends Fragment implements FavouriteAdapter.OnEm
             public void onUserFetched(User user) {
                 if (user != null) {
                     userId = user.getUserId();
+                    getFavourite(userId);
                 }
             }
 
@@ -111,8 +113,6 @@ public class FavouriteFragment extends Fragment implements FavouriteAdapter.OnEm
         recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
         favouriteAdapter = new FavouriteAdapter(favouritesList, favouriteIdMap , userFavouriteService, cartService, userId, this, getContext());
         recyclerView.setAdapter(favouriteAdapter);
-
-        getFavourite(userId);
 
         return view;
     }
