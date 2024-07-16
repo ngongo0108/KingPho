@@ -2,6 +2,7 @@
 
 package com.example.kingpho.fragment;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -93,7 +94,7 @@ public class HomeFragment extends Fragment {
         productService = retrofit.create(ProductService.class);
         cartService = retrofit.create(CartService.class);
 
-
+        showNotificationIfNotShown();
         String username = SharedPrefManager.getInstance(getContext()).getUser().getUsername();
         getUserByUsername(username, new UserCallback() {
             @Override
@@ -296,7 +297,6 @@ public class HomeFragment extends Fragment {
                     if (response.isSuccessful() && response.body() != null) {
                         cartList = new ArrayList<>(response.body());
                         cartCallBack.getSizeList(cartList.size());
-                        setNotificationShown();
                     }
                     cartCallBack.getSizeList(0);
                 }
@@ -312,42 +312,33 @@ public class HomeFragment extends Fragment {
         }
     }
 
-    @Override
-    public void onStart() {
-        notificationUtils = new NotificationUtils(getContext());
-        if (!shouldShowNotification()) {
+
+    private void showNotificationIfNotShown() {
+        SharedPreferences prefs = requireContext().getSharedPreferences("AppPrefs", Context.MODE_PRIVATE);
+        boolean notificationShown = prefs.getBoolean("notificationShown", false);
+
+        if (!notificationShown) {
+            notificationUtils = new NotificationUtils(getContext());
             getSizeListCart(new CartCallBack() {
                 @Override
                 public void getSizeList(int size) {
                     if (size != 0) {
                         notificationUtils.showNotification("Quickly place an order", "You have items in your cart. Don't forget to check out!");
                     }
+                    // Set the flag to true after showing the notification
+                    SharedPreferences.Editor editor = prefs.edit();
+                    editor.putBoolean("notificationShown", true);
+                    editor.apply();
                 }
 
                 @Override
                 public void onError(Throwable throwable) {
+                    throwable.printStackTrace();
                 }
             });
         }
-
-        super.onStart();
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-    }
-    private boolean shouldShowNotification() {
-        SharedPreferences prefs = requireContext().getSharedPreferences("MyPrefs", getContext().MODE_PRIVATE);
-        return prefs.getBoolean("notification_shown", false);
-    }
-
-    private void setNotificationShown() {
-        SharedPreferences prefs = requireContext().getSharedPreferences("MyPrefs", getContext().MODE_PRIVATE);
-        SharedPreferences.Editor editor = prefs.edit();
-        editor.putBoolean("notification_shown", true);
-        editor.apply();
-    }
 }
 
 

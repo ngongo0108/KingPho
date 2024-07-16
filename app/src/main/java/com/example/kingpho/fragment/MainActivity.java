@@ -1,5 +1,6 @@
 package com.example.kingpho.fragment;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -44,6 +45,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         // Đặt nút Home làm nút active mặc định
         setActiveButton(homeBtn);
+
+        // Reset the notification shown flag when the app starts
+        SharedPreferences prefs = getSharedPreferences("AppPrefs", MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putBoolean("notificationShown", false);
+        editor.apply();
+
     }
 
     @Override
