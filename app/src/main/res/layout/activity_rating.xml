@@ -23,12 +23,15 @@
 
     <ImageView
         android:id="@+id/imgGoBack"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
         android:layout_marginStart="20dp"
         android:layout_marginTop="20dp"
-        android:scaleType="fitXY"
-        android:background="@drawable/btnrectangle"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:background="@drawable/btn_orange"
+        android:backgroundTint="#E6F19D2C"
+        android:src="@drawable/arrow_left"
+        android:scaleType="centerCrop"
+        app:tint="@color/white"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/arrow_left" />
@@ -41,7 +44,9 @@
         android:text="Rating"
         android:textSize="25sp"
         android:textStyle="bold"
+        android:gravity="center"
         app:layout_constraintBottom_toBottomOf="@+id/imgGoBack"
+        app:layout_constraintEnd_toStartOf="@+id/guideline2"
         app:layout_constraintStart_toEndOf="@+id/imgGoBack"
         app:layout_constraintTop_toTopOf="@+id/imgGoBack" />
 

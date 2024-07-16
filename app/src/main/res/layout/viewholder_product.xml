@@ -30,7 +30,7 @@
             app:srcCompat="@drawable/phokho" />
 
         <TextView
-            android:id="@+id/title"
+            android:id="@+id/titleMethod"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
@@ -47,12 +47,13 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
+            android:layout_marginEnd="10dp"
             android:text="0.0"
             android:textSize="18sp"
             android:textStyle="bold"
             app:layout_constraintEnd_toStartOf="@+id/addtocartBtn"
-            app:layout_constraintStart_toStartOf="@+id/title"
-            app:layout_constraintTop_toBottomOf="@+id/title" />
+            app:layout_constraintStart_toStartOf="@+id/titleMethod"
+            app:layout_constraintTop_toBottomOf="@+id/titleMethod" />
 
         <ImageView
             android:id="@+id/addtocartBtn"
@@ -88,7 +89,7 @@
             android:gravity="center_vertical"
             android:orientation="horizontal"
             android:padding="5dp"
-            app:layout_constraintBottom_toTopOf="@+id/title"
+            app:layout_constraintBottom_toTopOf="@+id/titleMethod"
             app:layout_constraintStart_toStartOf="@+id/pic">
 
             <ImageView

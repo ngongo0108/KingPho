@@ -48,14 +48,12 @@
             app:layout_constraintStart_toStartOf="parent" />
     </LinearLayout>
 
-
-
     <ImageView
         android:id="@+id/imgGoBack"
         android:layout_marginStart="20dp"
         android:layout_marginTop="20dp"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
         android:background="@drawable/btn_orange"
         android:backgroundTint="#E6F19D2C"
         android:src="@drawable/arrow_left"
@@ -82,7 +80,6 @@
         android:layout_width="30dp"
         android:layout_height="30dp"
         android:clickable="true"
-        android:onClick="tymAction"
         app:layout_constraintBottom_toBottomOf="@+id/tvNameProduct"
         app:layout_constraintEnd_toStartOf="@+id/guideline2"
         app:layout_constraintTop_toTopOf="@+id/tvNameProduct"
@@ -153,14 +150,13 @@
         android:layout_height="60dp"
         android:layout_marginBottom="16dp"
         android:backgroundTint="#EB8D21"
-        android:text="Add To Card"
+        android:text="Add To Cart"
         android:textAllCaps="false"
         android:textColor="#fff"
         android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/guideline2"
-        app:layout_constraintStart_toStartOf="@+id/guideline"
-            tools:ignore="HardcodedText" />
+        app:layout_constraintStart_toStartOf="@+id/guideline" />
 
     <LinearLayout
         android:id="@+id/linearLayout2"

@@ -1,27 +1,39 @@
 package com.example.kingpho.model;
 
-public class Category {
-    private String categoryTitle;
-    private String categoryImage;
+import java.io.Serializable;
 
-    public Category(String categoryTitle, String categoryImage) {
-        this.categoryTitle = categoryTitle;
-        this.categoryImage = categoryImage;
+public class Category implements Serializable {
+    private int categoryId;
+    private String name;
+    private String image;
+
+    public Category(int categoryId, String name, String image) {
+        this.categoryId = categoryId;
+        this.name = name;
+        this.image = image;
     }
 
-    public String getCategoryTitle() {
-        return categoryTitle;
+    public int getCategoryId() {
+        return categoryId;
     }
 
-    public void setCategoryTitle(String categoryTitle) {
-        this.categoryTitle = categoryTitle;
+    public void setCategoryId(int categoryId) {
+        this.categoryId = categoryId;
     }
 
-    public String getCategoryImage() {
-        return categoryImage;
+    public String getName() {
+        return name;
     }
 
-    public void setCategoryImage(String categoryImage) {
-        this.categoryImage = categoryImage;
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
     }
 }

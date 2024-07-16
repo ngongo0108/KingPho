@@ -10,6 +10,8 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layout_constraintBottom_toTopOf="@+id/coordinatorLayout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
@@ -50,14 +52,14 @@
                         android:layout_weight="1"
                         app:srcCompat="@drawable/btn1" />
 
-                    <TextView
-                        android:id="@+id/textViewHome"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="Home"
-                        android:textAlignment="center"
-                        android:textColor="#676767"
-                        android:textSize="12dp" />
+                    <!--                    <TextView-->
+                    <!--                        android:id="@+id/textViewHome"-->
+                    <!--                        android:layout_width="match_parent"-->
+                    <!--                        android:layout_height="wrap_content"-->
+                    <!--                        android:text="Home"-->
+                    <!--                        android:textAlignment="center"-->
+                    <!--                        android:textColor="#676767"-->
+                    <!--                        android:textSize="12dp" />-->
                 </LinearLayout>
 
                 <LinearLayout
@@ -75,14 +77,14 @@
                         android:layout_weight="1"
                         app:srcCompat="@drawable/btn2" />
 
-                    <TextView
-                        android:id="@+id/textViewProducts"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="Products"
-                        android:textAlignment="center"
-                        android:textColor="#676767"
-                        android:textSize="12dp" />
+                    <!--                    <TextView-->
+                    <!--                        android:id="@+id/textViewProducts"-->
+                    <!--                        android:layout_width="match_parent"-->
+                    <!--                        android:layout_height="wrap_content"-->
+                    <!--                        android:text="Products"-->
+                    <!--                        android:textAlignment="center"-->
+                    <!--                        android:textColor="#676767"-->
+                    <!--                        android:textSize="12dp" />-->
                 </LinearLayout>
 
                 <LinearLayout
@@ -100,14 +102,14 @@
                         android:layout_weight="1"
                         app:srcCompat="@drawable/btn1" />
 
-                    <TextView
-                        android:id="@+id/textViewCart"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="Home"
-                        android:textAlignment="center"
-                        android:textColor="#676767"
-                        android:textSize="12dp" />
+                    <!--                    <TextView-->
+                    <!--                        android:id="@+id/textViewCart"-->
+                    <!--                        android:layout_width="match_parent"-->
+                    <!--                        android:layout_height="wrap_content"-->
+                    <!--                        android:text="Home"-->
+                    <!--                        android:textAlignment="center"-->
+                    <!--                        android:textColor="#676767"-->
+                    <!--                        android:textSize="12dp" />-->
                 </LinearLayout>
 
                 <LinearLayout
@@ -125,14 +127,14 @@
                         android:layout_weight="1"
                         app:srcCompat="@drawable/btn3" />
 
-                    <TextView
-                        android:id="@+id/textViewFavourite"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="Favourite"
-                        android:textAlignment="center"
-                        android:textColor="#676767"
-                        android:textSize="12dp" />
+                    <!--                    <TextView-->
+                    <!--                        android:id="@+id/textViewFavourite"-->
+                    <!--                        android:layout_width="match_parent"-->
+                    <!--                        android:layout_height="wrap_content"-->
+                    <!--                        android:text="Favourite"-->
+                    <!--                        android:textAlignment="center"-->
+                    <!--                        android:textColor="#676767"-->
+                    <!--                        android:textSize="12dp" />-->
                 </LinearLayout>
 
                 <LinearLayout
@@ -150,14 +152,14 @@
                         android:layout_weight="1"
                         app:srcCompat="@drawable/btn4" />
 
-                    <TextView
-                        android:id="@+id/textViewProfile"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="Profile"
-                        android:textAlignment="center"
-                        android:textColor="#676767"
-                        android:textSize="12dp" />
+                    <!--                    <TextView-->
+                    <!--                        android:id="@+id/textViewProfile"-->
+                    <!--                        android:layout_width="match_parent"-->
+                    <!--                        android:layout_height="wrap_content"-->
+                    <!--                        android:text="Profile"-->
+                    <!--                        android:textAlignment="center"-->
+                    <!--                        android:textColor="#676767"-->
+                    <!--                        android:textSize="12dp" />-->
                 </LinearLayout>
             </LinearLayout>
 

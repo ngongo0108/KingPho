@@ -23,12 +23,15 @@
 
     <ImageView
         android:id="@+id/imgGoBack"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
         android:layout_marginStart="20dp"
         android:layout_marginTop="20dp"
-        android:scaleType="fitXY"
-        android:background="@drawable/btnrectangle"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:background="@drawable/btn_orange"
+        android:backgroundTint="#E6F19D2C"
+        android:src="@drawable/arrow_left"
+        android:scaleType="centerCrop"
+        app:tint="@color/white"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/arrow_left" />
@@ -38,7 +41,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
-        android:text="Edit Profile"
+        android:text="Profile"
         android:textSize="25sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="@+id/imgGoBack"
@@ -58,7 +61,7 @@
         app:shapeAppearanceOverlay="@style/roundedImage">
 
         <com.google.android.material.imageview.ShapeableImageView
-            android:id="@+id/imageView"
+            android:id="@+id/avatar"
             android:layout_width="183dp"
             android:layout_height="186dp"
             android:layout_margin="10dp"
@@ -83,12 +86,13 @@
             android:padding="7dp"
             android:scaleType="centerCrop"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="@+id/imageView"
+            app:layout_constraintEnd_toEndOf="@+id/avatar"
             app:srcCompat="@drawable/camera"
             app:tint="#fff" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <TextView
+    <Button
+        style="@style/Widget.MaterialComponents.Button.TextButton"
         android:id="@+id/save"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

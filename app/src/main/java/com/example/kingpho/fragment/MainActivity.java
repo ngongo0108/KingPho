@@ -1,5 +1,6 @@
 package com.example.kingpho.fragment;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -10,10 +11,7 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.example.kingpho.R;
-import com.example.kingpho.model.Food;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-
-import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -47,6 +45,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         // Đặt nút Home làm nút active mặc định
         setActiveButton(homeBtn);
+
+        // Reset the notification shown flag when the app starts
+        SharedPreferences prefs = getSharedPreferences("AppPrefs", MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putBoolean("notificationShown", false);
+        editor.apply();
+
     }
 
     @Override
@@ -65,7 +70,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             replaceFragment(new FavouriteFragment());
             setActiveButton(favouriteBtn);
         }else if (v.getId() == R.id.profileBtn) {
-            replaceFragment(new ProfileFragment());
+            replaceFragment(new AccountFragment());
             setActiveButton(profileBtn);
         }
     }
@@ -83,5 +88,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
         activeBtn.setBackgroundResource(R.drawable.bg_btn_change);
         activeButton = activeBtn;
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
     }
 }
