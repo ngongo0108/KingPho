@@ -89,4 +89,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         activeBtn.setBackgroundResource(R.drawable.bg_btn_change);
         activeButton = activeBtn;
     }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+    }
 }
