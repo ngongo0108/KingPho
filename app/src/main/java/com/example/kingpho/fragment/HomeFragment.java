@@ -3,6 +3,7 @@
 package com.example.kingpho.fragment;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -10,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -22,26 +24,53 @@ import com.example.kingpho.ChatActivity;
 import com.example.kingpho.R;
 import com.example.kingpho.adapter.CategoryAdapter;
 import com.example.kingpho.adapter.ProductAdapter;
+import com.example.kingpho.callback.CartCallBack;
+import com.example.kingpho.callback.CategoryCallback;
+import com.example.kingpho.callback.ProductCallback;
+import com.example.kingpho.callback.UserCallback;
+import com.example.kingpho.dto.CartDTO;
 import com.example.kingpho.helper.Manager;
 import com.example.kingpho.helper.TinyDB;
 import com.example.kingpho.model.Category;
 import com.example.kingpho.model.Food;
+import com.example.kingpho.model.Product;
+import com.example.kingpho.model.User;
+import com.example.kingpho.service.CartService;
+import com.example.kingpho.service.CategoryService;
+import com.example.kingpho.service.ProductService;
+import com.example.kingpho.service.UserService;
+import com.example.kingpho.utils.NotificationUtils;
+import com.example.kingpho.utils.RetrofitClient;
+import com.example.kingpho.utils.SharedPrefManager;
 
 import java.util.ArrayList;
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
 
 
 public class HomeFragment extends Fragment {
 
+    private UserService userService;
+    private CategoryService categoryService;
+    private ProductService productService;
     private RecyclerView recyclerView;
     private ArrayList<Category> categoryList;
     private CategoryAdapter categoryAdapter;
     private RecyclerView recyclerViewProducts;
-    private ArrayList<Food> productList;
+    private ArrayList<Product> productList;
     private ProductAdapter productAdapter;
-    private TextView seeAll;
+    private TextView seeAll, tvUsername;
     private ImageView imageViewNoti, imageViewMessage;
     private Manager manager;
-
+    private String username;
+    private NotificationUtils notificationUtils;
+    private CartService cartService;
+    private ArrayList<CartDTO> cartList;
+    private int userId = 1;
     public HomeFragment() {
         // Required empty public constructor
     }
@@ -53,7 +82,33 @@ public class HomeFragment extends Fragment {
         TinyDB tinyDB = new TinyDB(requireContext());
         manager = new Manager(requireContext(), tinyDB);
         seeAll = view.findViewById(R.id.seeAll);
+        tvUsername = view.findViewById(R.id.username);
         imageViewMessage = view.findViewById(R.id.imageViewMessage);
+
+        username = SharedPrefManager.getInstance(getContext()).getUser().getUsername();
+
+        Retrofit retrofit = RetrofitClient.getRetrofitInstance(getContext());
+        userService = retrofit.create(UserService.class);
+        categoryService = retrofit.create(CategoryService.class);
+        productService = retrofit.create(ProductService.class);
+        cartService = retrofit.create(CartService.class);
+
+
+        String username = SharedPrefManager.getInstance(getContext()).getUser().getUsername();
+        getUserByUsername(username, new UserCallback() {
+            @Override
+            public void onUserFetched(User user) {
+                if (user != null) {
+                    tvUsername.setText(user.getFullname());
+                }
+            }
+
+            @Override
+            public void onError(Throwable throwable) {
+                throwable.printStackTrace();
+            }
+        });
+
         seeAll.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -87,7 +142,7 @@ public class HomeFragment extends Fragment {
 
         recyclerViewProducts = view.findViewById(R.id.recyclerViewHomeProducts);
         productList = new ArrayList<>();
-        productAdapter = new ProductAdapter(productList, manager);
+        productAdapter = new ProductAdapter(productList, manager, username);
         recyclerViewProducts.setLayoutManager(new GridLayoutManager(requireContext(), 2));
         recyclerViewProducts.setAdapter(productAdapter);
     }
@@ -105,57 +160,193 @@ public class HomeFragment extends Fragment {
     }
 
     private void initializeCategories() {
-        categoryList.add(new Category("Phở Nước", "phonuoc"));
-        categoryList.add(new Category("Phở Khô", "phokho"));
-        categoryList.add(new Category("Phở Rán", "phoran"));
-        categoryList.add(new Category("Phở Cuốn", "phocuon"));
-        categoryList.add(new Category("Phở Trộn", "photron"));
+
+        getAllCategories(new CategoryCallback() {
+            @Override
+            public void onListCategoryFetched(List<Category> categories) {
+                for (Category category : categories) {
+                    categoryList.add(new Category(category.getCategoryId(), category.getName(), category.getImage()));
+                }
+                categoryAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onError(Throwable throwable) {
+                throwable.printStackTrace();
+            }
+        });
     }
 
     private void initializeProducts() {
-        productList.add(new Food("Phở Nước", "phonuoc", "Món phở nước", 5.0, 1, categoryList.get(0)));
-        productList.add(new Food("Phở Nước2", "phonuoc", "Món phở nước", 5.0, 1, categoryList.get(0)));
-        productList.add(new Food("Phở Nước3", "phonuoc", "Món phở nước", 5.0, 1, categoryList.get(0)));
-        productList.add(new Food("Phở Nước4", "phonuoc", "Món phở nước", 5.0, 1, categoryList.get(0)));
-        productList.add(new Food("Phở Nước5", "phonuoc", "Món phở nước", 5.0, 1, categoryList.get(0)));
 
-        productList.add(new Food("Phở Khô", "phokho", "Món phở khô", 6.0, 1, categoryList.get(1)));
-        productList.add(new Food("Phở Khô1", "phokho", "Món phở khô", 6.0, 1, categoryList.get(1)));
-        productList.add(new Food("Phở Khô2", "phokho", "Món phở khô", 6.0, 1, categoryList.get(1)));
-        productList.add(new Food("Phở Khô3", "phokho", "Món phở khô", 6.0, 1, categoryList.get(1)));
-        productList.add(new Food("Phở Khô4", "phokho", "Món phở khô", 6.0, 1, categoryList.get(1)));
-        productList.add(new Food("Phở Khô5", "phokho", "Món phở khô", 6.0, 1, categoryList.get(1)));
-        productList.add(new Food("Phở Khô6", "phokho", "Món phở khô", 6.0, 1, categoryList.get(1)));
-        productList.add(new Food("Phở Khô7", "phokho", "Món phở khô", 6.0, 1, categoryList.get(1)));
+        getAllProducts(new ProductCallback() {
+            @Override
+            public void onListProductFetched(List<Product> productLists) {
+                if (productLists != null) {
+                    for (Product product : productLists) {
+                        productList.add(new Product(product.getId(), product.getName(), product.getDescription(),
+                                product.getPrice(), product.getCategory(), product.getImageUrls()));
+                    }
 
-        productList.add(new Food("Phở Rán", "phoran", "Món phở rán", 6.0, 1, categoryList.get(2)));
-        productList.add(new Food("Phở Rán1", "phoran", "Món phở rán", 6.0, 1, categoryList.get(2)));
-        productList.add(new Food("Phở Rán2", "phoran", "Món phở rán", 6.0, 1, categoryList.get(2)));
-        productList.add(new Food("Phở Rán3", "phoran", "Món phở rán", 6.0, 1, categoryList.get(2)));
-        productList.add(new Food("Phở Rán4", "phoran", "Món phở rán", 6.0, 1, categoryList.get(2)));
-        productList.add(new Food("Phở Rán5", "phoran", "Món phở rán", 6.0, 1, categoryList.get(2)));
+                    updateProductList(categoryList.get(0));
+                    productAdapter.notifyDataSetChanged();
+                }
+            }
 
-        productList.add(new Food("Phở Cuốn1", "phocuon", "Món phở cuốn", 6.0, 1, categoryList.get(3)));
-        productList.add(new Food("Phở Cuốn2", "phocuon", "Món phở cuốn", 6.0, 1, categoryList.get(3)));
-        productList.add(new Food("Phở Cuốn3", "phocuon", "Món phở cuốn", 6.0, 1, categoryList.get(3)));
-        productList.add(new Food("Phở Cuốn4", "phocuon", "Món phở cuốn", 6.0, 1, categoryList.get(3)));
+            @Override
+            public void onProductFetched(Product product) {
 
-        productList.add(new Food("Phở Trộn1", "photron", "Món phở trộn", 6.0, 1, categoryList.get(4)));
-        productList.add(new Food("Phở Trộn2", "photron", "Món phở trộn", 6.0, 1, categoryList.get(4)));
-        productList.add(new Food("Phở Trộn3", "photron", "Món phở trộn", 6.0, 1, categoryList.get(4)));
-        productList.add(new Food("Phở Trộn4", "photron", "Món phở trộn", 6.0, 1, categoryList.get(4)));
-        productList.add(new Food("Phở Trộn5", "photron", "Món phở trộn", 6.0, 1, categoryList.get(4)));
-        productList.add(new Food("Phở Trộn6", "photron", "Món phở trộn", 6.0, 1, categoryList.get(4)));
+            }
+
+            @Override
+            public void onError(Throwable throwable) {
+
+            }
+        });
     }
 
     private void updateProductList(Category category) {
-        ArrayList<Food> filteredProducts = new ArrayList<>();
-        for (Food food : productList) {
-            if (food.getCategory().getCategoryTitle().equals(category.getCategoryTitle())) {
-                filteredProducts.add(food);
+        ArrayList<Product> filteredProducts = new ArrayList<>();
+        for (Product product : productList) {
+            if (product.getCategory().getName().equals(category.getName())) {
+                filteredProducts.add(product);
             }
         }
         productAdapter.updateProducts(filteredProducts);
+    }
+
+    public void getUserByUsername(String username, UserCallback callback) {
+        try {
+            Call<User> call = userService.getUserByUsername(username);
+            call.enqueue(new Callback<User>() {
+                @Override
+                public void onResponse(Call<User> call, Response<User> response) {
+                    if (response.isSuccessful() && response.body() != null) {
+                        User user = response.body();
+
+                        callback.onUserFetched(user);
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<User> call, Throwable throwable) {
+                    throwable.printStackTrace();
+                }
+            });
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void getAllCategories(CategoryCallback callback) {
+        try {
+            Call<List<Category>> call = categoryService.getAllCategories();
+            call.enqueue(new Callback<List<Category>>() {
+                @Override
+                public void onResponse(Call<List<Category>> call, Response<List<Category>> response) {
+                    if (response.isSuccessful() && response.body() != null) {
+                        List<Category> categories = response.body();
+
+                        callback.onListCategoryFetched(categories);
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<List<Category>> call, Throwable throwable) {
+                    throwable.printStackTrace();
+                }
+            });
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void getAllProducts(ProductCallback callback) {
+        try {
+            Call<List<Product>> call = productService.getAllProducts();
+            call.enqueue(new Callback<List<Product>>() {
+                @Override
+                public void onResponse(Call<List<Product>> call, Response<List<Product>> response) {
+                    if (response.isSuccessful() && response.body() != null) {
+                        List<Product> products = response.body();
+
+                        callback.onListProductFetched(products);
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<List<Product>> call, Throwable throwable) {
+                    Toast.makeText(getContext(), "Fail to get product", Toast.LENGTH_LONG).show();
+                    throwable.printStackTrace();
+                }
+            });
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    private void getSizeListCart(CartCallBack cartCallBack) {
+        try {
+            Call<List<CartDTO>> call = cartService.getCartItems(userId);
+            call.enqueue(new Callback<List<CartDTO>>() {
+                @Override
+                public void onResponse(Call<List<CartDTO>> call, Response<List<CartDTO>> response) {
+                    if (response.isSuccessful() && response.body() != null) {
+                        cartList = new ArrayList<>(response.body());
+                        cartCallBack.getSizeList(cartList.size());
+                        setNotificationShown();
+                    }
+                    cartCallBack.getSizeList(0);
+                }
+
+                @Override
+                public void onFailure(Call<List<CartDTO>> call, Throwable t) {
+                    t.printStackTrace();
+                    cartCallBack.getSizeList(0);
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void onStart() {
+        notificationUtils = new NotificationUtils(getContext());
+        if (!shouldShowNotification()) {
+            getSizeListCart(new CartCallBack() {
+                @Override
+                public void getSizeList(int size) {
+                    if (size != 0) {
+                        notificationUtils.showNotification("Quickly place an order", "You have items in your cart. Don't forget to check out!");
+                    }
+                }
+
+                @Override
+                public void onError(Throwable throwable) {
+                }
+            });
+        }
+
+        super.onStart();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+    }
+    private boolean shouldShowNotification() {
+        SharedPreferences prefs = requireContext().getSharedPreferences("MyPrefs", getContext().MODE_PRIVATE);
+        return prefs.getBoolean("notification_shown", false);
+    }
+
+    private void setNotificationShown() {
+        SharedPreferences prefs = requireContext().getSharedPreferences("MyPrefs", getContext().MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putBoolean("notification_shown", true);
+        editor.apply();
     }
 }
 

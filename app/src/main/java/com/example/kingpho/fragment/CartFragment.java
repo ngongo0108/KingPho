@@ -1,7 +1,7 @@
 package com.example.kingpho.fragment;
+
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,20 +9,32 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.example.kingpho.Interface.ChangeNumberItemsListener;
 import com.example.kingpho.PaymentActivity;
-import com.example.kingpho.helper.Manager;
 import com.example.kingpho.R;
 import com.example.kingpho.adapter.CartAdapter;
-import com.example.kingpho.helper.TinyDB;
-import com.example.kingpho.model.Food;
+import com.example.kingpho.dto.CartDTO;
+import com.example.kingpho.service.CartService;
+import com.example.kingpho.service.ProductService;
+import com.example.kingpho.utils.RetrofitClient;
+
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
 
 public class CartFragment extends Fragment implements ChangeNumberItemsListener, CartAdapter.OnItemCheckedChangeListener {
 
@@ -31,9 +43,11 @@ public class CartFragment extends Fragment implements ChangeNumberItemsListener,
     private Button checkoutBtn;
     private ImageView imageViewEmptyCart;
     private LinearLayout itemTotalLayout, deliveryLayout, totalLayout;
-    private ArrayList<Food> cartList;
-    private Manager manager;
+    private ArrayList<CartDTO> cartList;
     private CartAdapter adapter;
+    private int userId = 1;
+    private CartService cartService;
+    private ProductService productService;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -52,14 +66,13 @@ public class CartFragment extends Fragment implements ChangeNumberItemsListener,
         deliveryLayout = view.findViewById(R.id.deliveryLayout);
         totalLayout = view.findViewById(R.id.totalLayout);
 
-        manager = new Manager(getContext(), new TinyDB(getContext()));
-        cartList = manager.getListCart();
-
-        setupRecyclerView();
-        updateTotal();
+        Retrofit retrofit = RetrofitClient.getRetrofitInstance(getContext());
+        cartService = retrofit.create(CartService.class);
+        productService = retrofit.create(ProductService.class);
+        fetchCartItems();
 
         checkoutBtn.setOnClickListener(v -> {
-            double finalTotalPrice = calculateFinalTotalPrice();
+            double finalTotalPrice = adapter.calculateTotalPrice();
             Intent intent = new Intent(getContext(), PaymentActivity.class);
             intent.putExtra("total_price", finalTotalPrice);
             startActivity(intent);
@@ -68,31 +81,43 @@ public class CartFragment extends Fragment implements ChangeNumberItemsListener,
         return view;
     }
 
+    private void fetchCartItems() {
+        try {
+            Call<List<CartDTO>> call = cartService.getCartItems(userId);
+            call.enqueue(new Callback<List<CartDTO>>() {
+                @Override
+                public void onResponse(Call<List<CartDTO>> call, Response<List<CartDTO>> response) {
+                    if (response.isSuccessful() && response.body() != null) {
+                        cartList = new ArrayList<>(response.body());
+                        setupRecyclerView();
+                        updateTotal();
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<List<CartDTO>> call, Throwable t) {
+                    t.printStackTrace();
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     private void setupRecyclerView() {
-        adapter = new CartAdapter(cartList, manager, this, this);
+        adapter = new CartAdapter(cartList, productService, this, this);
         recyclerViewCart.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerViewCart.setAdapter(adapter);
     }
 
     private void updateTotal() {
-        double totalPrice = 0;
-        int totalQuantity = 0;
-        HashMap<Integer, Boolean> checkedStates = adapter.getCheckedStates();
-
-        for (int i = 0; i < cartList.size(); i++) {
-            if (checkedStates.getOrDefault(i, false)) {
-                Food item = cartList.get(i);
-                totalPrice += item.getFoodPrice() * item.getNumberInCart();
-                totalQuantity += item.getNumberInCart();
-            }
-        }
-
+        double totalPrice = adapter.calculateTotalPrice();
         double deliveryFee = totalPrice * 0.2;
-        double totalOrder = totalPrice + deliveryFee;
+        int totalCheckedItems = adapter.calculateTotalCheckedItems();
 
-        itemTotal.setText(String.valueOf(totalQuantity));
-        deliveryTotal.setText(String.format("%.2fđ", deliveryFee));
-        total.setText(String.format("%.2fđ", totalOrder));
+        itemTotal.setText(String.valueOf(totalCheckedItems));
+        deliveryTotal.setText(formatMoney(formatMoney(String.valueOf((int) deliveryFee))));
+        total.setText(formatMoney(String.valueOf((int) totalPrice + deliveryFee)));
 
         if (cartList.isEmpty()) {
             imageViewEmptyCart.setVisibility(View.VISIBLE);
@@ -111,19 +136,6 @@ public class CartFragment extends Fragment implements ChangeNumberItemsListener,
         }
     }
 
-    private double calculateFinalTotalPrice() {
-        double totalPrice = 0;
-        HashMap<Integer, Boolean> checkedStates = adapter.getCheckedStates();
-        for (int i = 0; i < cartList.size(); i++) {
-            if (checkedStates.getOrDefault(i, false)) {
-                Food item = cartList.get(i);
-                totalPrice += item.getFoodPrice() * item.getNumberInCart();
-            }
-        }
-        double deliveryFee = totalPrice * 0.2;
-        return totalPrice + deliveryFee;
-    }
-
     @Override
     public void changed() {
         updateTotal();
@@ -133,4 +145,23 @@ public class CartFragment extends Fragment implements ChangeNumberItemsListener,
     public void onItemCheckedChanged() {
         updateTotal();
     }
+
+    public static String formatMoney(String moneyString) {
+        try {
+            // Parse moneyString to handle commas if present
+            NumberFormat numberFormat = NumberFormat.getNumberInstance(Locale.getDefault());
+            int moneyAmount = numberFormat.parse(moneyString).intValue();
+
+            // Format the number
+            DecimalFormat decimalFormat = (DecimalFormat) numberFormat;
+            decimalFormat.applyPattern("#,###");
+
+            return decimalFormat.format(moneyAmount) + "đ"; // Append 'đ' symbol
+        } catch (ParseException | NumberFormatException e) {
+            e.printStackTrace();
+            // Handle non-numeric input gracefully
+            return moneyString + "đ";
+        }
+    }
+
 }

@@ -1,0 +1,1161 @@
+Index: app/src/main/java/com/example/kingpho/fragment/CartFragment.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.kingpho.fragment;\r\nimport android.content.Intent;\r\nimport android.os.Bundle;\r\nimport android.util.Log;\r\nimport android.view.LayoutInflater;\r\nimport android.view.View;\r\nimport android.view.ViewGroup;\r\nimport android.widget.Button;\r\nimport android.widget.ImageView;\r\nimport android.widget.LinearLayout;\r\nimport android.widget.TextView;\r\nimport android.widget.Toast;\r\n\r\nimport androidx.fragment.app.Fragment;\r\nimport androidx.recyclerview.widget.LinearLayoutManager;\r\nimport androidx.recyclerview.widget.RecyclerView;\r\nimport com.example.kingpho.Interface.ChangeNumberItemsListener;\r\nimport com.example.kingpho.PaymentActivity;\r\nimport com.example.kingpho.helper.Manager;\r\nimport com.example.kingpho.R;\r\nimport com.example.kingpho.adapter.CartAdapter;\r\nimport com.example.kingpho.helper.TinyDB;\r\nimport com.example.kingpho.model.Food;\r\nimport java.util.ArrayList;\r\nimport java.util.HashMap;\r\n\r\npublic class CartFragment extends Fragment implements ChangeNumberItemsListener, CartAdapter.OnItemCheckedChangeListener {\r\n\r\n    private RecyclerView recyclerViewCart;\r\n    private TextView itemTotalTxt, itemTotal, deliveryTxt, deliveryTotal, totalTxt, total;\r\n    private Button checkoutBtn;\r\n    private ImageView imageViewEmptyCart;\r\n    private LinearLayout itemTotalLayout, deliveryLayout, totalLayout;\r\n    private ArrayList<Food> cartList;\r\n    private Manager manager;\r\n    private CartAdapter adapter;\r\n\r\n    @Override\r\n    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {\r\n        View view = inflater.inflate(R.layout.fragment_cart, container, false);\r\n\r\n        recyclerViewCart = view.findViewById(R.id.recyclerViewCart);\r\n        itemTotalTxt = view.findViewById(R.id.itemTotalTxt);\r\n        itemTotal = view.findViewById(R.id.itemTotal);\r\n        deliveryTxt = view.findViewById(R.id.deliveryTxt);\r\n        deliveryTotal = view.findViewById(R.id.deliveryTotal);\r\n        totalTxt = view.findViewById(R.id.totalTxt);\r\n        total = view.findViewById(R.id.total);\r\n        checkoutBtn = view.findViewById(R.id.checkoutBtn);\r\n        imageViewEmptyCart = view.findViewById(R.id.imageViewEmptyCart);\r\n        itemTotalLayout = view.findViewById(R.id.itemTotalLayout);\r\n        deliveryLayout = view.findViewById(R.id.deliveryLayout);\r\n        totalLayout = view.findViewById(R.id.totalLayout);\r\n\r\n        manager = new Manager(getContext(), new TinyDB(getContext()));\r\n        cartList = manager.getListCart();\r\n\r\n        setupRecyclerView();\r\n        updateTotal();\r\n\r\n        checkoutBtn.setOnClickListener(v -> {\r\n            double finalTotalPrice = calculateFinalTotalPrice();\r\n            Intent intent = new Intent(getContext(), PaymentActivity.class);\r\n            intent.putExtra(\"total_price\", finalTotalPrice);\r\n            startActivity(intent);\r\n        });\r\n\r\n        return view;\r\n    }\r\n\r\n    private void setupRecyclerView() {\r\n        adapter = new CartAdapter(cartList, manager, this, this);\r\n        recyclerViewCart.setLayoutManager(new LinearLayoutManager(getContext()));\r\n        recyclerViewCart.setAdapter(adapter);\r\n    }\r\n\r\n    private void updateTotal() {\r\n        double totalPrice = 0;\r\n        int totalQuantity = 0;\r\n        HashMap<Integer, Boolean> checkedStates = adapter.getCheckedStates();\r\n\r\n        for (int i = 0; i < cartList.size(); i++) {\r\n            if (checkedStates.getOrDefault(i, false)) {\r\n                Food item = cartList.get(i);\r\n                totalPrice += item.getFoodPrice() * item.getNumberInCart();\r\n                totalQuantity += item.getNumberInCart();\r\n            }\r\n        }\r\n\r\n        double deliveryFee = totalPrice * 0.2;\r\n        double totalOrder = totalPrice + deliveryFee;\r\n\r\n        itemTotal.setText(String.valueOf(totalQuantity));\r\n        deliveryTotal.setText(String.format(\"%.2fđ\", deliveryFee));\r\n        total.setText(String.format(\"%.2fđ\", totalOrder));\r\n\r\n        if (cartList.isEmpty()) {\r\n            imageViewEmptyCart.setVisibility(View.VISIBLE);\r\n            recyclerViewCart.setVisibility(View.GONE);\r\n            itemTotalLayout.setVisibility(View.GONE);\r\n            deliveryLayout.setVisibility(View.GONE);\r\n            totalLayout.setVisibility(View.GONE);\r\n            checkoutBtn.setVisibility(View.GONE);\r\n        } else {\r\n            imageViewEmptyCart.setVisibility(View.GONE);\r\n            recyclerViewCart.setVisibility(View.VISIBLE);\r\n            itemTotalLayout.setVisibility(View.VISIBLE);\r\n            deliveryLayout.setVisibility(View.VISIBLE);\r\n            totalLayout.setVisibility(View.VISIBLE);\r\n            checkoutBtn.setVisibility(View.VISIBLE);\r\n        }\r\n    }\r\n\r\n    private double calculateFinalTotalPrice() {\r\n        double totalPrice = 0;\r\n        HashMap<Integer, Boolean> checkedStates = adapter.getCheckedStates();\r\n        for (int i = 0; i < cartList.size(); i++) {\r\n            if (checkedStates.getOrDefault(i, false)) {\r\n                Food item = cartList.get(i);\r\n                totalPrice += item.getFoodPrice() * item.getNumberInCart();\r\n            }\r\n        }\r\n        double deliveryFee = totalPrice * 0.2;\r\n        return totalPrice + deliveryFee;\r\n    }\r\n\r\n    @Override\r\n    public void changed() {\r\n        updateTotal();\r\n    }\r\n\r\n    @Override\r\n    public void onItemCheckedChanged() {\r\n        updateTotal();\r\n    }\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/example/kingpho/fragment/CartFragment.java b/app/src/main/java/com/example/kingpho/fragment/CartFragment.java
+--- a/app/src/main/java/com/example/kingpho/fragment/CartFragment.java	(revision 681cd2a8ad5c8c58fd3e891c3c17000c148ceab2)
++++ b/app/src/main/java/com/example/kingpho/fragment/CartFragment.java	(date 1721069323457)
+@@ -21,8 +21,11 @@
+ import com.example.kingpho.adapter.CartAdapter;
+ import com.example.kingpho.helper.TinyDB;
+ import com.example.kingpho.model.Food;
++import com.example.kingpho.utils.NotificationUtils;
++
+ import java.util.ArrayList;
+ import java.util.HashMap;
++import java.util.PrimitiveIterator;
+ 
+ public class CartFragment extends Fragment implements ChangeNumberItemsListener, CartAdapter.OnItemCheckedChangeListener {
+ 
+@@ -34,7 +37,6 @@
+     private ArrayList<Food> cartList;
+     private Manager manager;
+     private CartAdapter adapter;
+-
+     @Override
+     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+         View view = inflater.inflate(R.layout.fragment_cart, container, false);
+Index: app/src/main/java/com/example/kingpho/fragment/HomeFragment.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>\r\n\r\npackage com.example.kingpho.fragment;\r\n\r\nimport android.content.Intent;\r\nimport android.os.Bundle;\r\nimport android.view.LayoutInflater;\r\nimport android.view.View;\r\nimport android.view.ViewGroup;\r\nimport android.widget.ImageView;\r\nimport android.widget.TextView;\r\nimport android.widget.Toast;\r\n\r\nimport androidx.annotation.NonNull;\r\nimport androidx.annotation.Nullable;\r\nimport androidx.fragment.app.Fragment;\r\nimport androidx.recyclerview.widget.GridLayoutManager;\r\nimport androidx.recyclerview.widget.LinearLayoutManager;\r\nimport androidx.recyclerview.widget.RecyclerView;\r\n\r\nimport com.example.kingpho.ChatActivity;\r\nimport com.example.kingpho.R;\r\nimport com.example.kingpho.adapter.CategoryAdapter;\r\nimport com.example.kingpho.adapter.ProductAdapter;\r\nimport com.example.kingpho.callback.CategoryCallback;\r\nimport com.example.kingpho.callback.ProductCallback;\r\nimport com.example.kingpho.callback.UserCallback;\r\nimport com.example.kingpho.helper.Manager;\r\nimport com.example.kingpho.helper.TinyDB;\r\nimport com.example.kingpho.model.Category;\r\nimport com.example.kingpho.model.Food;\r\nimport com.example.kingpho.model.Product;\r\nimport com.example.kingpho.model.User;\r\nimport com.example.kingpho.service.CategoryService;\r\nimport com.example.kingpho.service.ProductService;\r\nimport com.example.kingpho.service.UserService;\r\nimport com.example.kingpho.utils.RetrofitClient;\r\nimport com.example.kingpho.utils.SharedPrefManager;\r\n\r\nimport java.util.ArrayList;\r\nimport java.util.List;\r\n\r\nimport retrofit2.Call;\r\nimport retrofit2.Callback;\r\nimport retrofit2.Response;\r\nimport retrofit2.Retrofit;\r\n\r\n\r\npublic class HomeFragment extends Fragment {\r\n\r\n    private UserService userService;\r\n    private CategoryService categoryService;\r\n    private ProductService productService;\r\n\r\n    private RecyclerView recyclerView;\r\n    private ArrayList<Category> categoryList;\r\n    private CategoryAdapter categoryAdapter;\r\n    private RecyclerView recyclerViewProducts;\r\n    private ArrayList<Product> productList;\r\n    private ProductAdapter productAdapter;\r\n    private TextView seeAll, tvUsername;\r\n    private ImageView imageViewNoti, imageViewMessage;\r\n    private Manager manager;\r\n    private String username;\r\n\r\n    public HomeFragment() {\r\n        // Required empty public constructor\r\n    }\r\n\r\n    @Nullable\r\n    @Override\r\n    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {\r\n        View view = inflater.inflate(R.layout.fragment_home, container, false);\r\n        TinyDB tinyDB = new TinyDB(requireContext());\r\n        manager = new Manager(requireContext(), tinyDB);\r\n        seeAll = view.findViewById(R.id.seeAll);\r\n        tvUsername = view.findViewById(R.id.username);\r\n        imageViewMessage = view.findViewById(R.id.imageViewMessage);\r\n\r\n        username = SharedPrefManager.getInstance(getContext()).getUser().getUsername();\r\n\r\n        Retrofit retrofit = RetrofitClient.getRetrofitInstance(getContext());\r\n        userService = retrofit.create(UserService.class);\r\n        categoryService = retrofit.create(CategoryService.class);\r\n        productService = retrofit.create(ProductService.class);\r\n\r\n        String username = SharedPrefManager.getInstance(getContext()).getUser().getUsername();\r\n        getUserByUsername(username, new UserCallback() {\r\n            @Override\r\n            public void onUserFetched(User user) {\r\n                if (user != null) {\r\n                    tvUsername.setText(user.getFullname());\r\n                }\r\n            }\r\n\r\n            @Override\r\n            public void onError(Throwable throwable) {\r\n                throwable.printStackTrace();\r\n            }\r\n        });\r\n\r\n        seeAll.setOnClickListener(new View.OnClickListener() {\r\n            @Override\r\n            public void onClick(View v) {\r\n                Fragment newFragment = new ProductFragment(); // Replace with your target fragment\r\n                requireActivity().getSupportFragmentManager().beginTransaction()\r\n                        .replace(R.id.fragment_container, newFragment)\r\n                        .addToBackStack(null)\r\n                        .commit();\r\n                ((MainActivity) requireActivity()).setActiveButton(((MainActivity) requireActivity()).productsBtn);\r\n            }\r\n        });\r\n        imageViewMessage.setOnClickListener(new View.OnClickListener() {\r\n            @Override\r\n            public void onClick(View v) {\r\n                Intent intent = new Intent(getContext(), ChatActivity.class);\r\n                startActivity(intent);\r\n            }\r\n        });\r\n\r\n        initializeRecyclerViews(view);\r\n        initializeData();\r\n        return view;\r\n    }\r\n\r\n    private void initializeRecyclerViews(View view) {\r\n        recyclerView = view.findViewById(R.id.recyclerView);\r\n        categoryList = new ArrayList<>();\r\n        categoryAdapter = new CategoryAdapter(categoryList, this::updateProductList);\r\n        recyclerView.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false));\r\n        recyclerView.setAdapter(categoryAdapter);\r\n\r\n        recyclerViewProducts = view.findViewById(R.id.recyclerViewHomeProducts);\r\n        productList = new ArrayList<>();\r\n        productAdapter = new ProductAdapter(productList, manager, username);\r\n        recyclerViewProducts.setLayoutManager(new GridLayoutManager(requireContext(), 2));\r\n        recyclerViewProducts.setAdapter(productAdapter);\r\n    }\r\n\r\n    private void initializeData() {\r\n        initializeCategories();\r\n        initializeProducts();\r\n\r\n        categoryAdapter.notifyDataSetChanged();\r\n        productAdapter.notifyDataSetChanged();\r\n\r\n        if (!categoryList.isEmpty()) {\r\n            updateProductList(categoryList.get(0));\r\n        }\r\n    }\r\n\r\n    private void initializeCategories() {\r\n//        categoryList.add(new Category(\"Phở Nước\", \"phonuoc\"));\r\n//        categoryList.add(new Category(\"Phở Khô\", \"phokho\"));\r\n//        categoryList.add(new Category(\"Phở Rán\", \"phoran\"));\r\n//        categoryList.add(new Category(\"Phở Cuốn\", \"phocuon\"));\r\n//        categoryList.add(new Category(\"Phở Trộn\", \"photron\"));\r\n\r\n        getAllCategories(new CategoryCallback() {\r\n            @Override\r\n            public void onListCategoryFetched(List<Category> categories) {\r\n                for (Category category : categories) {\r\n                    categoryList.add(new Category(category.getCategoryId(), category.getName(), category.getImage()));\r\n                }\r\n                categoryAdapter.notifyDataSetChanged();\r\n            }\r\n\r\n            @Override\r\n            public void onError(Throwable throwable) {\r\n                throwable.printStackTrace();\r\n            }\r\n        });\r\n    }\r\n\r\n    private void initializeProducts() {\r\n\r\n        getAllProducts(new ProductCallback() {\r\n            @Override\r\n            public void onListProductFetched(List<Product> productLists) {\r\n                if (productLists != null) {\r\n                    for (Product product : productLists) {\r\n                        productList.add(new Product(product.getId(), product.getName(), product.getDescription(),\r\n                                product.getPrice(), product.getCategory(), product.getImageUrls()));\r\n                    }\r\n\r\n                    updateProductList(categoryList.get(0));\r\n                    productAdapter.notifyDataSetChanged();\r\n                }\r\n            }\r\n\r\n            @Override\r\n            public void onProductFetched(Product product) {\r\n\r\n            }\r\n\r\n            @Override\r\n            public void onError(Throwable throwable) {\r\n\r\n            }\r\n        });\r\n    }\r\n\r\n    private void updateProductList(Category category) {\r\n        ArrayList<Product> filteredProducts = new ArrayList<>();\r\n        for (Product product : productList) {\r\n            if (product.getCategory().getName().equals(category.getName())) {\r\n                filteredProducts.add(product);\r\n            }\r\n        }\r\n        productAdapter.updateProducts(filteredProducts);\r\n    }\r\n\r\n    public void getUserByUsername(String username, UserCallback callback) {\r\n        try {\r\n            Call<User> call = userService.getUserByUsername(username);\r\n            call.enqueue(new Callback<User>() {\r\n                @Override\r\n                public void onResponse(Call<User> call, Response<User> response) {\r\n                    if (response.isSuccessful() && response.body() != null) {\r\n                        User user = response.body();\r\n\r\n                        callback.onUserFetched(user);\r\n                    }\r\n                }\r\n\r\n                @Override\r\n                public void onFailure(Call<User> call, Throwable throwable) {\r\n                    throwable.printStackTrace();\r\n                }\r\n            });\r\n        }\r\n        catch (Exception e) {\r\n            e.printStackTrace();\r\n        }\r\n    }\r\n\r\n    public void getAllCategories(CategoryCallback callback) {\r\n        try {\r\n            Call<List<Category>> call = categoryService.getAllCategories();\r\n            call.enqueue(new Callback<List<Category>>() {\r\n                @Override\r\n                public void onResponse(Call<List<Category>> call, Response<List<Category>> response) {\r\n                    if (response.isSuccessful() && response.body() != null) {\r\n                        List<Category> categories = response.body();\r\n\r\n                        callback.onListCategoryFetched(categories);\r\n                    }\r\n                }\r\n\r\n                @Override\r\n                public void onFailure(Call<List<Category>> call, Throwable throwable) {\r\n                    throwable.printStackTrace();\r\n                }\r\n            });\r\n        }\r\n        catch (Exception e) {\r\n            e.printStackTrace();\r\n        }\r\n    }\r\n\r\n    public void getAllProducts(ProductCallback callback) {\r\n        try {\r\n            Call<List<Product>> call = productService.getAllProducts();\r\n            call.enqueue(new Callback<List<Product>>() {\r\n                @Override\r\n                public void onResponse(Call<List<Product>> call, Response<List<Product>> response) {\r\n                    if (response.isSuccessful() && response.body() != null) {\r\n                        List<Product> products = response.body();\r\n\r\n                        callback.onListProductFetched(products);\r\n                    }\r\n                }\r\n\r\n                @Override\r\n                public void onFailure(Call<List<Product>> call, Throwable throwable) {\r\n                    Toast.makeText(getContext(), \"Fail to get product\", Toast.LENGTH_LONG).show();\r\n                    throwable.printStackTrace();\r\n                }\r\n            });\r\n        }\r\n        catch (Exception e) {\r\n            e.printStackTrace();\r\n        }\r\n    }\r\n}\r\n\r\n\r\n\r\n\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/example/kingpho/fragment/HomeFragment.java b/app/src/main/java/com/example/kingpho/fragment/HomeFragment.java
+--- a/app/src/main/java/com/example/kingpho/fragment/HomeFragment.java	(revision 681cd2a8ad5c8c58fd3e891c3c17000c148ceab2)
++++ b/app/src/main/java/com/example/kingpho/fragment/HomeFragment.java	(date 1721069323458)
+@@ -34,6 +34,7 @@
+ import com.example.kingpho.service.CategoryService;
+ import com.example.kingpho.service.ProductService;
+ import com.example.kingpho.service.UserService;
++import com.example.kingpho.utils.NotificationUtils;
+ import com.example.kingpho.utils.RetrofitClient;
+ import com.example.kingpho.utils.SharedPrefManager;
+ 
+@@ -51,7 +52,6 @@
+     private UserService userService;
+     private CategoryService categoryService;
+     private ProductService productService;
+-
+     private RecyclerView recyclerView;
+     private ArrayList<Category> categoryList;
+     private CategoryAdapter categoryAdapter;
+@@ -62,6 +62,7 @@
+     private ImageView imageViewNoti, imageViewMessage;
+     private Manager manager;
+     private String username;
++    private NotificationUtils notificationUtils;
+ 
+     public HomeFragment() {
+         // Required empty public constructor
+@@ -84,6 +85,12 @@
+         categoryService = retrofit.create(CategoryService.class);
+         productService = retrofit.create(ProductService.class);
+ 
++        notificationUtils = new NotificationUtils(getContext());
++
++        if (productList != null) {
++            notificationUtils.showNotification("Cart Reminder", "You have items in your cart. Don't forget to check out!");
++        }
++
+         String username = SharedPrefManager.getInstance(getContext()).getUser().getUsername();
+         getUserByUsername(username, new UserCallback() {
+             @Override
+@@ -150,11 +157,6 @@
+     }
+ 
+     private void initializeCategories() {
+-//        categoryList.add(new Category("Phở Nước", "phonuoc"));
+-//        categoryList.add(new Category("Phở Khô", "phokho"));
+-//        categoryList.add(new Category("Phở Rán", "phoran"));
+-//        categoryList.add(new Category("Phở Cuốn", "phocuon"));
+-//        categoryList.add(new Category("Phở Trộn", "photron"));
+ 
+         getAllCategories(new CategoryCallback() {
+             @Override
+@@ -282,6 +284,7 @@
+             e.printStackTrace();
+         }
+     }
++
+ }
+ 
+ 
+Index: app/src/main/java/com/example/kingpho/ProfileActivity.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.kingpho;\r\n\r\nimport android.content.Intent;\r\nimport android.os.Bundle;\r\nimport android.view.View;\r\nimport android.widget.AdapterView;\r\nimport android.widget.Button;\r\nimport android.widget.ImageView;\r\nimport android.widget.ListView;\r\nimport android.widget.TextView;\r\nimport android.widget.Toast;\r\n\r\nimport androidx.annotation.Nullable;\r\nimport androidx.appcompat.app.AppCompatActivity;\r\n\r\nimport com.example.kingpho.adapter.MyDetailAdapt;\r\nimport com.example.kingpho.model.MyDetail;\r\n\r\nimport java.util.ArrayList;\r\n\r\npublic class ProfileActivity extends AppCompatActivity {\r\n    private ImageView imgGoBack, camera;\r\n    private Button save;\r\n    private ListView lvInfoUser;\r\n    private ArrayList<MyDetail> arrayInfo;\r\n    private MyDetailAdapt adapter;\r\n    @Override\r\n    protected void onCreate(@Nullable Bundle savedInstanceState) {\r\n        super.onCreate(savedInstanceState);\r\n        setContentView(R.layout.activity_my_detail);\r\n\r\n        mapping();\r\n\r\n        arrayInfo = getDataList();\r\n        adapter = new MyDetailAdapt(this, R.layout.item_my_detail, arrayInfo);\r\n        lvInfoUser.setAdapter(adapter);\r\n        lvInfoUser.setOnItemClickListener(new AdapterView.OnItemClickListener() {\r\n            @Override\r\n            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {\r\n                MyDetail detail = arrayInfo.get(position);\r\n                detail.setInfo(\"1234\");\r\n            }\r\n        });\r\n        imgGoBack.setOnClickListener(new View.OnClickListener() {\r\n            @Override\r\n            public void onClick(View v) {\r\n                goBack();\r\n            }\r\n        });\r\n        save.setOnClickListener(new View.OnClickListener() {\r\n            @Override\r\n            public void onClick(View v) {\r\n            }\r\n        });\r\n        camera.setOnClickListener(new View.OnClickListener() {\r\n            @Override\r\n            public void onClick(View v) {\r\n            }\r\n        });\r\n    }\r\n    private void mapping() {\r\n        imgGoBack = findViewById(R.id.imgGoBack);\r\n        camera = findViewById(R.id.camera);\r\n        save = findViewById(R.id.save);\r\n        lvInfoUser = findViewById(R.id.lvInfoUser);\r\n    }\r\n    private ArrayList<MyDetail> getDataList() {\r\n        ArrayList<MyDetail> list = new ArrayList<>();\r\n        list.add(new MyDetail(\"Username\", \"Amanda Jane\"));\r\n        list.add(new MyDetail(\"Email\", \"amanda@gmail.com\"));\r\n        list.add(new MyDetail(\"Phone\", \"+65 2311 333\"));\r\n        list.add(new MyDetail(\"Date of birth\", \"20/05/1990\"));\r\n        list.add(new MyDetail(\"Address\", \"123 Royal Street, New York\"));\r\n        return list;\r\n    }\r\n    private void goBack() {\r\n        finish();\r\n    }\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/example/kingpho/ProfileActivity.java b/app/src/main/java/com/example/kingpho/ProfileActivity.java
+--- a/app/src/main/java/com/example/kingpho/ProfileActivity.java	(revision 681cd2a8ad5c8c58fd3e891c3c17000c148ceab2)
++++ b/app/src/main/java/com/example/kingpho/ProfileActivity.java	(date 1721069323456)
+@@ -2,6 +2,7 @@
+ 
+ import android.content.Intent;
+ import android.os.Bundle;
++import android.util.Log;
+ import android.view.View;
+ import android.widget.AdapterView;
+ import android.widget.Button;
+@@ -13,27 +14,65 @@
+ import androidx.annotation.Nullable;
+ import androidx.appcompat.app.AppCompatActivity;
+ 
++import com.bumptech.glide.Glide;
+ import com.example.kingpho.adapter.MyDetailAdapt;
++import com.example.kingpho.callback.DetailUserCallBack;
++import com.example.kingpho.callback.UserCallback;
+ import com.example.kingpho.model.MyDetail;
++import com.example.kingpho.model.User;
++import com.example.kingpho.service.UserService;
++import com.example.kingpho.utils.RetrofitClient;
++import com.example.kingpho.utils.SharedPrefManager;
++import com.google.android.material.imageview.ShapeableImageView;
+ 
++import java.lang.reflect.Executable;
+ import java.util.ArrayList;
++import java.util.List;
++
++import retrofit2.Call;
++import retrofit2.Callback;
++import retrofit2.Response;
++import retrofit2.Retrofit;
+ 
+ public class ProfileActivity extends AppCompatActivity {
+     private ImageView imgGoBack, camera;
+     private Button save;
+     private ListView lvInfoUser;
+-    private ArrayList<MyDetail> arrayInfo;
++    private List<MyDetail> arrayInfo;
+     private MyDetailAdapt adapter;
++    private UserService userService;
++    private ShapeableImageView avatar;
++    private int idUser = -1;
+     @Override
+     protected void onCreate(@Nullable Bundle savedInstanceState) {
+         super.onCreate(savedInstanceState);
+         setContentView(R.layout.activity_my_detail);
+ 
+         mapping();
++        Retrofit retrofit = RetrofitClient.getRetrofitInstance(ProfileActivity.this);
++        userService = retrofit.create(UserService.class);
+ 
+-        arrayInfo = getDataList();
+-        adapter = new MyDetailAdapt(this, R.layout.item_my_detail, arrayInfo);
+-        lvInfoUser.setAdapter(adapter);
++        getDataList(new DetailUserCallBack() {
++            @Override
++            public void onDetailUserFetched(List<MyDetail> detailList) {
++                if (detailList != null) {
++                    arrayInfo = detailList;
++                    adapter = new MyDetailAdapt(ProfileActivity.this, R.layout.item_my_detail, arrayInfo);
++                    lvInfoUser.setAdapter(adapter);
++                } else {
++                    // Handle error case
++                    Log.d("Profile list", "Failed to fetch data");
++                }
++            }
++
++            @Override
++            public void onError(Throwable throwable) {
++
++            }
++        });
++
++        Log.d("ID", idUser + "");
++
+         lvInfoUser.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+             @Override
+             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+@@ -50,11 +89,13 @@
+         save.setOnClickListener(new View.OnClickListener() {
+             @Override
+             public void onClick(View v) {
++
+             }
+         });
+         camera.setOnClickListener(new View.OnClickListener() {
+             @Override
+             public void onClick(View v) {
++
+             }
+         });
+     }
+@@ -63,17 +104,85 @@
+         camera = findViewById(R.id.camera);
+         save = findViewById(R.id.save);
+         lvInfoUser = findViewById(R.id.lvInfoUser);
++        avatar = findViewById(R.id.avatar);
+     }
+-    private ArrayList<MyDetail> getDataList() {
++    private void getDataList(DetailUserCallBack callback) {
+         ArrayList<MyDetail> list = new ArrayList<>();
+-        list.add(new MyDetail("Username", "Amanda Jane"));
+-        list.add(new MyDetail("Email", "amanda@gmail.com"));
+-        list.add(new MyDetail("Phone", "+65 2311 333"));
+-        list.add(new MyDetail("Date of birth", "20/05/1990"));
+-        list.add(new MyDetail("Address", "123 Royal Street, New York"));
+-        return list;
++        String username = SharedPrefManager.getInstance(getApplicationContext()).getUser().getUsername();
++
++        getUserByUsername(username, new UserCallback() {
++            @Override
++            public void onUserFetched(User user) {
++                list.add(new MyDetail("Full Name", user.getFullname()));
++                list.add(new MyDetail("Phone", user.getPhone()));
++                list.add(new MyDetail("Address", user.getAddress()));
++                String userAvatarUrl = user.getAvatar();
++                if (userAvatarUrl != null) {
++                    Glide.with(ProfileActivity.this)
++                            .load(userAvatarUrl)
++                            .placeholder(R.drawable.avatar)
++                            .error(R.drawable.avatar)
++                            .into(avatar);
++                } else {
++                    avatar.setImageResource(R.drawable.avatar);
++                }
++                callback.onDetailUserFetched(list);
++            }
++
++            @Override
++            public void onError(Throwable throwable) {
++                throwable.printStackTrace();
++                callback.onDetailUserFetched(null);  // Return null or handle the error case
++            }
++        });
+     }
+     private void goBack() {
+         finish();
+     }
++
++    public void getUserByUsername(String username, UserCallback callback) {
++        try {
++            Call<User> call = userService.getUserByUsername(username);
++            call.enqueue(new Callback<User>() {
++                @Override
++                public void onResponse(Call<User> call, Response<User> response) {
++                    if (response.isSuccessful() && response.body() != null) {
++                        User user = response.body();
++                        callback.onUserFetched(user);
++                    }
++                }
++
++                @Override
++                public void onFailure(Call<User> call, Throwable throwable) {
++                    throwable.printStackTrace();
++                }
++            });
++        }
++        catch (Exception e) {
++            e.printStackTrace();
++        }
++    }
++
++    public void updateUser(int userId, User userUpdate, UserCallback userCallback) {
++        try {
++            Call<User> call = userService.updateUser(userId, userUpdate);
++            call.enqueue(new Callback<User>() {
++                @Override
++                public void onResponse(Call<User> call, Response<User> response) {
++                    if (response.isSuccessful() && response.body() != null) {
++                        User userUpdate = response.body();
++                        userCallback.onUserFetched(userUpdate);
++                        Toast.makeText(ProfileActivity.this, "Update successful", Toast.LENGTH_SHORT).show();
++                    }
++                }
++
++                @Override
++                public void onFailure(Call<User> call, Throwable throwable) {
++                    throwable.printStackTrace();
++                }
++            });
++        } catch (Exception e) {
++            e.printStackTrace();
++        }
++    }
+ }
+Index: .idea/vcs.xml
+===================================================================
+diff --git a/.idea/vcs.xml b/.idea/vcs.xml
+deleted file mode 100644
+--- a/.idea/vcs.xml	(revision 681cd2a8ad5c8c58fd3e891c3c17000c148ceab2)
++++ /dev/null	(revision 681cd2a8ad5c8c58fd3e891c3c17000c148ceab2)
+@@ -1,6 +0,0 @@
+-<?xml version="1.0" encoding="UTF-8"?>
+-<project version="4">
+-  <component name="VcsDirectoryMappings">
+-    <mapping directory="" vcs="Git" />
+-  </component>
+-</project>
+\ No newline at end of file
+Index: .idea/.gitignore
+===================================================================
+diff --git a/.idea/.gitignore b/.idea/.gitignore
+deleted file mode 100644
+--- a/.idea/.gitignore	(revision 681cd2a8ad5c8c58fd3e891c3c17000c148ceab2)
++++ /dev/null	(revision 681cd2a8ad5c8c58fd3e891c3c17000c148ceab2)
+@@ -1,3 +0,0 @@
+-# Default ignored files
+-/shelf/
+-/workspace.xml
+Index: .idea/misc.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/misc.xml b/.idea/misc.xml
+deleted file mode 100644
+--- a/.idea/misc.xml	(revision 681cd2a8ad5c8c58fd3e891c3c17000c148ceab2)
++++ /dev/null	(revision 681cd2a8ad5c8c58fd3e891c3c17000c148ceab2)
+@@ -1,16 +0,0 @@
+-<project version="4">
+-  <component name="ExternalStorageConfigurationManager" enabled="true" />
+-  <component name="ProjectRootManager" version="2" languageLevel="JDK_17" default="true" project-jdk-name="jbr-17" project-jdk-type="JavaSDK">
+-    <output url="file://$PROJECT_DIR$/build/classes" />
+-  </component>
+-  <component name="ProjectType">
+-    <option name="id" value="Android" />
+-  </component>
+-  <component name="VisualizationToolProject">
+-    <option name="state">
+-      <ProjectState>
+-        <option name="scale" value="0.6935704514363885" />
+-      </ProjectState>
+-    </option>
+-  </component>
+-</project>
+\ No newline at end of file
+Index: .idea/other.xml
+===================================================================
+diff --git a/.idea/other.xml b/.idea/other.xml
+deleted file mode 100644
+--- a/.idea/other.xml	(revision 681cd2a8ad5c8c58fd3e891c3c17000c148ceab2)
++++ /dev/null	(revision 681cd2a8ad5c8c58fd3e891c3c17000c148ceab2)
+@@ -1,263 +0,0 @@
+-<?xml version="1.0" encoding="UTF-8"?>
+-<project version="4">
+-  <component name="direct_access_persist.xml">
+-    <option name="deviceSelectionList">
+-      <list>
+-        <PersistentDeviceSelectionData>
+-          <option name="api" value="27" />
+-          <option name="brand" value="DOCOMO" />
+-          <option name="codename" value="F01L" />
+-          <option name="id" value="F01L" />
+-          <option name="manufacturer" value="FUJITSU" />
+-          <option name="name" value="F-01L" />
+-          <option name="screenDensity" value="360" />
+-          <option name="screenX" value="720" />
+-          <option name="screenY" value="1280" />
+-        </PersistentDeviceSelectionData>
+-        <PersistentDeviceSelectionData>
+-          <option name="api" value="28" />
+-          <option name="brand" value="DOCOMO" />
+-          <option name="codename" value="SH-01L" />
+-          <option name="id" value="SH-01L" />
+-          <option name="manufacturer" value="SHARP" />
+-          <option name="name" value="AQUOS sense2 SH-01L" />
+-          <option name="screenDensity" value="480" />
+-          <option name="screenX" value="1080" />
+-          <option name="screenY" value="2160" />
+-        </PersistentDeviceSelectionData>
+-        <PersistentDeviceSelectionData>
+-          <option name="api" value="31" />
+-          <option name="brand" value="samsung" />
+-          <option name="codename" value="a51" />
+-          <option name="id" value="a51" />
+-          <option name="manufacturer" value="Samsung" />
+-          <option name="name" value="Galaxy A51" />
+-          <option name="screenDensity" value="420" />
+-          <option name="screenX" value="1080" />
+-          <option name="screenY" value="2400" />
+-        </PersistentDeviceSelectionData>
+-        <PersistentDeviceSelectionData>
+-          <option name="api" value="34" />
+-          <option name="brand" value="google" />
+-          <option name="codename" value="akita" />
+-          <option name="id" value="akita" />
+-          <option name="manufacturer" value="Google" />
+-          <option name="name" value="Pixel 8a" />
+-          <option name="screenDensity" value="420" />
+-          <option name="screenX" value="1080" />
+-          <option name="screenY" value="2400" />
+-        </PersistentDeviceSelectionData>
+-        <PersistentDeviceSelectionData>
+-          <option name="api" value="33" />
+-          <option name="brand" value="samsung" />
+-          <option name="codename" value="b0q" />
+-          <option name="id" value="b0q" />
+-          <option name="manufacturer" value="Samsung" />
+-          <option name="name" value="Galaxy S22 Ultra" />
+-          <option name="screenDensity" value="600" />
+-          <option name="screenX" value="1440" />
+-          <option name="screenY" value="3088" />
+-        </PersistentDeviceSelectionData>
+-        <PersistentDeviceSelectionData>
+-          <option name="api" value="32" />
+-          <option name="brand" value="google" />
+-          <option name="codename" value="bluejay" />
+-          <option name="id" value="bluejay" />
+-          <option name="manufacturer" value="Google" />
+-          <option name="name" value="Pixel 6a" />
+-          <option name="screenDensity" value="420" />
+-          <option name="screenX" value="1080" />
+-          <option name="screenY" value="2400" />
+-        </PersistentDeviceSelectionData>
+-        <PersistentDeviceSelectionData>
+-          <option name="api" value="29" />
+-          <option name="brand" value="samsung" />
+-          <option name="codename" value="crownqlteue" />
+-          <option name="id" value="crownqlteue" />
+-          <option name="manufacturer" value="Samsung" />
+-          <option name="name" value="Galaxy Note9" />
+-          <option name="screenDensity" value="420" />
+-          <option name="screenX" value="2220" />
+-          <option name="screenY" value="1080" />
+-        </PersistentDeviceSelectionData>
+-        <PersistentDeviceSelectionData>
+-          <option name="api" value="34" />
+-          <option name="brand" value="samsung" />
+-          <option name="codename" value="dm3q" />
+-          <option name="id" value="dm3q" />
+-          <option name="manufacturer" value="Samsung" />
+-          <option name="name" value="Galaxy S23 Ultra" />
+-          <option name="screenDensity" value="600" />
+-          <option name="screenX" value="1440" />
+-          <option name="screenY" value="3088" />
+-        </PersistentDeviceSelectionData>
+-        <PersistentDeviceSelectionData>
+-          <option name="api" value="33" />
+-          <option name="brand" value="google" />
+-          <option name="codename" value="felix" />
+-          <option name="id" value="felix" />
+-          <option name="manufacturer" value="Google" />
+-          <option name="name" value="Pixel Fold" />
+-          <option name="screenDensity" value="420" />
+-          <option name="screenX" value="2208" />
+-          <option name="screenY" value="1840" />
+-        </PersistentDeviceSelectionData>
+-        <PersistentDeviceSelectionData>
+-          <option name="api" value="33" />
+-          <option name="brand" value="google" />
+-          <option name="codename" value="felix_camera" />
+-          <option name="id" value="felix_camera" />
+-          <option name="manufacturer" value="Google" />
+-          <option name="name" value="Pixel Fold (Camera-enabled)" />
+-          <option name="screenDensity" value="420" />
+-          <option name="screenX" value="2208" />
+-          <option name="screenY" value="1840" />
+-        </PersistentDeviceSelectionData>
+-        <PersistentDeviceSelectionData>
+-          <option name="api" value="33" />
+-          <option name="brand" value="samsung" />
+-          <option name="codename" value="gts8uwifi" />
+-          <option name="id" value="gts8uwifi" />
+-          <option name="manufacturer" value="Samsung" />
+-          <option name="name" value="Galaxy Tab S8 Ultra" />
+-          <option name="screenDensity" value="320" />
+-          <option name="screenX" value="1848" />
+-          <option name="screenY" value="2960" />
+-        </PersistentDeviceSelectionData>
+-        <PersistentDeviceSelectionData>
+-          <option name="api" value="34" />
+-          <option name="brand" value="google" />
+-          <option name="codename" value="husky" />
+-          <option name="id" value="husky" />
+-          <option name="manufacturer" value="Google" />
+-          <option name="name" value="Pixel 8 Pro" />
+-          <option name="screenDensity" value="390" />
+-          <option name="screenX" value="1008" />
+-          <option name="screenY" value="2244" />
+-        </PersistentDeviceSelectionData>
+-        <PersistentDeviceSelectionData>
+-          <option name="api" value="30" />
+-          <option name="brand" value="motorola" />
+-          <option name="codename" value="java" />
+-          <option name="id" value="java" />
+-          <option name="manufacturer" value="Motorola" />
+-          <option name="name" value="G20" />
+-          <option name="screenDensity" value="280" />
+-          <option name="screenX" value="720" />
+-          <option name="screenY" value="1600" />
+-        </PersistentDeviceSelectionData>
+-        <PersistentDeviceSelectionData>
+-          <option name="api" value="33" />
+-          <option name="brand" value="google" />
+-          <option name="codename" value="lynx" />
+-          <option name="id" value="lynx" />
+-          <option name="manufacturer" value="Google" />
+-          <option name="name" value="Pixel 7a" />
+-          <option name="screenDensity" value="420" />
+-          <option name="screenX" value="1080" />
+-          <option name="screenY" value="2400" />
+-        </PersistentDeviceSelectionData>
+-        <PersistentDeviceSelectionData>
+-          <option name="api" value="31" />
+-          <option name="brand" value="google" />
+-          <option name="codename" value="oriole" />
+-          <option name="id" value="oriole" />
+-          <option name="manufacturer" value="Google" />
+-          <option name="name" value="Pixel 6" />
+-          <option name="screenDensity" value="420" />
+-          <option name="screenX" value="1080" />
+-          <option name="screenY" value="2400" />
+-        </PersistentDeviceSelectionData>
+-        <PersistentDeviceSelectionData>
+-          <option name="api" value="33" />
+-          <option name="brand" value="google" />
+-          <option name="codename" value="panther" />
+-          <option name="id" value="panther" />
+-          <option name="manufacturer" value="Google" />
+-          <option name="name" value="Pixel 7" />
+-          <option name="screenDensity" value="420" />
+-          <option name="screenX" value="1080" />
+-          <option name="screenY" value="2400" />
+-        </PersistentDeviceSelectionData>
+-        <PersistentDeviceSelectionData>
+-          <option name="api" value="31" />
+-          <option name="brand" value="samsung" />
+-          <option name="codename" value="q2q" />
+-          <option name="id" value="q2q" />
+-          <option name="manufacturer" value="Samsung" />
+-          <option name="name" value="Galaxy Z Fold3" />
+-          <option name="screenDensity" value="420" />
+-          <option name="screenX" value="1768" />
+-          <option name="screenY" value="2208" />
+-        </PersistentDeviceSelectionData>
+-        <PersistentDeviceSelectionData>
+-          <option name="api" value="34" />
+-          <option name="brand" value="samsung" />
+-          <option name="codename" value="q5q" />
+-          <option name="id" value="q5q" />
+-          <option name="manufacturer" value="Samsung" />
+-          <option name="name" value="Galaxy Z Fold5" />
+-          <option name="screenDensity" value="420" />
+-          <option name="screenX" value="1812" />
+-          <option name="screenY" value="2176" />
+-        </PersistentDeviceSelectionData>
+-        <PersistentDeviceSelectionData>
+-          <option name="api" value="30" />
+-          <option name="brand" value="google" />
+-          <option name="codename" value="r11" />
+-          <option name="id" value="r11" />
+-          <option name="manufacturer" value="Google" />
+-          <option name="name" value="Pixel Watch" />
+-          <option name="screenDensity" value="320" />
+-          <option name="screenX" value="384" />
+-          <option name="screenY" value="384" />
+-          <option name="type" value="WEAR_OS" />
+-        </PersistentDeviceSelectionData>
+-        <PersistentDeviceSelectionData>
+-          <option name="api" value="30" />
+-          <option name="brand" value="google" />
+-          <option name="codename" value="redfin" />
+-          <option name="id" value="redfin" />
+-          <option name="manufacturer" value="Google" />
+-          <option name="name" value="Pixel 5" />
+-          <option name="screenDensity" value="440" />
+-          <option name="screenX" value="1080" />
+-          <option name="screenY" value="2340" />
+-        </PersistentDeviceSelectionData>
+-        <PersistentDeviceSelectionData>
+-          <option name="api" value="34" />
+-          <option name="brand" value="google" />
+-          <option name="codename" value="shiba" />
+-          <option name="id" value="shiba" />
+-          <option name="manufacturer" value="Google" />
+-          <option name="name" value="Pixel 8" />
+-          <option name="screenDensity" value="420" />
+-          <option name="screenX" value="1080" />
+-          <option name="screenY" value="2400" />
+-        </PersistentDeviceSelectionData>
+-        <PersistentDeviceSelectionData>
+-          <option name="api" value="33" />
+-          <option name="brand" value="google" />
+-          <option name="codename" value="tangorpro" />
+-          <option name="id" value="tangorpro" />
+-          <option name="manufacturer" value="Google" />
+-          <option name="name" value="Pixel Tablet" />
+-          <option name="screenDensity" value="320" />
+-          <option name="screenX" value="1600" />
+-          <option name="screenY" value="2560" />
+-        </PersistentDeviceSelectionData>
+-        <PersistentDeviceSelectionData>
+-          <option name="api" value="29" />
+-          <option name="brand" value="samsung" />
+-          <option name="codename" value="x1q" />
+-          <option name="id" value="x1q" />
+-          <option name="manufacturer" value="Samsung" />
+-          <option name="name" value="Galaxy S20" />
+-          <option name="screenDensity" value="480" />
+-          <option name="screenX" value="1440" />
+-          <option name="screenY" value="3200" />
+-        </PersistentDeviceSelectionData>
+-      </list>
+-    </option>
+-  </component>
+-</project>
+\ No newline at end of file
+Index: .idea/deploymentTargetDropDown.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/deploymentTargetDropDown.xml b/.idea/deploymentTargetDropDown.xml
+deleted file mode 100644
+--- a/.idea/deploymentTargetDropDown.xml	(revision 681cd2a8ad5c8c58fd3e891c3c17000c148ceab2)
++++ /dev/null	(revision 681cd2a8ad5c8c58fd3e891c3c17000c148ceab2)
+@@ -1,10 +0,0 @@
+-<?xml version="1.0" encoding="UTF-8"?>
+-<project version="4">
+-  <component name="deploymentTargetDropDown">
+-    <value>
+-      <entry key="app">
+-        <State />
+-      </entry>
+-    </value>
+-  </component>
+-</project>
+\ No newline at end of file
+Index: .idea/deploymentTargetSelector.xml
+===================================================================
+diff --git a/.idea/deploymentTargetSelector.xml b/.idea/deploymentTargetSelector.xml
+deleted file mode 100644
+--- a/.idea/deploymentTargetSelector.xml	(revision 681cd2a8ad5c8c58fd3e891c3c17000c148ceab2)
++++ /dev/null	(revision 681cd2a8ad5c8c58fd3e891c3c17000c148ceab2)
+@@ -1,29 +0,0 @@
+-<?xml version="1.0" encoding="UTF-8"?>
+-<project version="4">
+-  <component name="deploymentTargetSelector">
+-    <selectionStates>
+-      <SelectionState runConfigName="app">
+-        <option name="selectionMode" value="DROPDOWN" />
+-        <DropdownSelection timestamp="2024-07-06T21:22:38.108017400Z">
+-          <Target type="DEFAULT_BOOT">
+-            <handle>
+-              <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\tranl.DESKTOP-6K98OQU\.android\avd\Pixel_7_Pro_API_33.avd" />
+-            </handle>
+-          </Target>
+-        </DropdownSelection>
+-        <DialogSelection />
+-      </SelectionState>
+-      <SelectionState runConfigName="MainActivity">
+-        <option name="selectionMode" value="DROPDOWN" />
+-        <DropdownSelection timestamp="2024-07-06T18:08:53.695217500Z">
+-          <Target type="DEFAULT_BOOT">
+-            <handle>
+-              <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\tranl.DESKTOP-6K98OQU\.android\avd\Pixel_7_Pro_API_33.avd" />
+-            </handle>
+-          </Target>
+-        </DropdownSelection>
+-        <DialogSelection />
+-      </SelectionState>
+-    </selectionStates>
+-  </component>
+-</project>
+\ No newline at end of file
+Index: app/src/main/java/com/example/kingpho/callback/UserCallback.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.kingpho.callback;\r\n\r\nimport com.example.kingpho.model.User;\r\n\r\npublic interface UserCallback {\r\n    void onUserFetched(User user);\r\n    void onError(Throwable throwable);\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/example/kingpho/callback/UserCallback.java b/app/src/main/java/com/example/kingpho/callback/UserCallback.java
+--- a/app/src/main/java/com/example/kingpho/callback/UserCallback.java	(revision 681cd2a8ad5c8c58fd3e891c3c17000c148ceab2)
++++ b/app/src/main/java/com/example/kingpho/callback/UserCallback.java	(date 1721069323457)
+@@ -1,7 +1,9 @@
+ package com.example.kingpho.callback;
+ 
++
+ import com.example.kingpho.model.User;
+ 
++
+ public interface UserCallback {
+     void onUserFetched(User user);
+     void onError(Throwable throwable);
+Index: app/src/main/res/layout/activity_welcome.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n<androidx.constraintlayout.widget.ConstraintLayout xmlns:android=\"http://schemas.android.com/apk/res/android\"\r\n    xmlns:app=\"http://schemas.android.com/apk/res-auto\"\r\n    xmlns:tools=\"http://schemas.android.com/tools\"\r\n    android:layout_width=\"match_parent\"\r\n    android:layout_height=\"match_parent\"\r\n    android:background=\"@drawable/pho_wellcome\" >\r\n\r\n    <LinearLayout\r\n        android:id=\"@+id/linearLayout\"\r\n        android:layout_width=\"match_parent\"\r\n        android:layout_height=\"wrap_content\"\r\n        android:gravity=\"center_vertical\"\r\n        android:orientation=\"vertical\"\r\n        app:layout_constraintBottom_toBottomOf=\"parent\"\r\n        app:layout_constraintEnd_toEndOf=\"parent\"\r\n        app:layout_constraintHorizontal_bias=\"0.0\"\r\n        app:layout_constraintStart_toStartOf=\"parent\"\r\n        app:layout_constraintTop_toTopOf=\"parent\"\r\n        app:layout_constraintVertical_bias=\"0.267\">\r\n\r\n        <Button\r\n            android:id=\"@+id/btnLogin\"\r\n            android:layout_width=\"match_parent\"\r\n            android:layout_height=\"70dp\"\r\n            android:layout_marginStart=\"32dp\"\r\n            android:layout_marginTop=\"8dp\"\r\n            android:layout_marginEnd=\"32dp\"\r\n            android:backgroundTint=\"#CCEB8D21\"\r\n            android:text=\"Log In\"\r\n            android:textAllCaps=\"false\"\r\n            android:textColor=\"#fff\"\r\n            android:textSize=\"24sp\"\r\n            android:textStyle=\"bold\"\r\n            app:layout_constraintTop_toBottomOf=\"@+id/imageView\" />\r\n\r\n        <Button\r\n            android:id=\"@+id/btbSignUp\"\r\n            android:layout_width=\"match_parent\"\r\n            android:layout_height=\"70dp\"\r\n            android:layout_marginStart=\"32dp\"\r\n            android:layout_marginTop=\"8dp\"\r\n            android:layout_marginEnd=\"32dp\"\r\n            android:backgroundTint=\"#FFC107\"\r\n            android:text=\"Register\"\r\n            android:textAllCaps=\"false\"\r\n            android:textColor=\"#fff\"\r\n            android:textSize=\"24sp\"\r\n            android:textStyle=\"bold\"\r\n            app:layout_constraintTop_toBottomOf=\"@+id/imageView\" />\r\n    </LinearLayout>\r\n\r\n</androidx.constraintlayout.widget.ConstraintLayout>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/res/layout/activity_welcome.xml b/app/src/main/res/layout/activity_welcome.xml
+--- a/app/src/main/res/layout/activity_welcome.xml	(revision 681cd2a8ad5c8c58fd3e891c3c17000c148ceab2)
++++ b/app/src/main/res/layout/activity_welcome.xml	(date 1721069323460)
+@@ -32,7 +32,7 @@
+             android:textColor="#fff"
+             android:textSize="24sp"
+             android:textStyle="bold"
+-            app:layout_constraintTop_toBottomOf="@+id/imageView" />
++            app:layout_constraintTop_toBottomOf="@+id/avatar" />
+ 
+         <Button
+             android:id="@+id/btbSignUp"
+@@ -47,7 +47,7 @@
+             android:textColor="#fff"
+             android:textSize="24sp"
+             android:textStyle="bold"
+-            app:layout_constraintTop_toBottomOf="@+id/imageView" />
++            app:layout_constraintTop_toBottomOf="@+id/avatar" />
+     </LinearLayout>
+ 
+ </androidx.constraintlayout.widget.ConstraintLayout>
+\ No newline at end of file
+Index: app/src/main/res/layout/activity_my_detail.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n<androidx.constraintlayout.widget.ConstraintLayout\r\n    xmlns:android=\"http://schemas.android.com/apk/res/android\"\r\n    xmlns:app=\"http://schemas.android.com/apk/res-auto\"\r\n    xmlns:tools=\"http://schemas.android.com/tools\"\r\n    android:layout_width=\"match_parent\"\r\n    android:layout_height=\"match_parent\"\r\n    android:background=\"#fff\">\r\n\r\n    <androidx.constraintlayout.widget.Guideline\r\n        android:id=\"@+id/guideline\"\r\n        android:layout_width=\"match_parent\"\r\n        android:layout_height=\"wrap_content\"\r\n        android:orientation=\"vertical\"\r\n        app:layout_constraintGuide_begin=\"24dp\" />\r\n\r\n    <androidx.constraintlayout.widget.Guideline\r\n        android:id=\"@+id/guideline2\"\r\n        android:layout_width=\"wrap_content\"\r\n        android:layout_height=\"wrap_content\"\r\n        android:orientation=\"vertical\"\r\n        app:layout_constraintGuide_end=\"24dp\" />\r\n\r\n    <ImageView\r\n        android:id=\"@+id/imgGoBack\"\r\n        android:layout_marginStart=\"20dp\"\r\n        android:layout_marginTop=\"20dp\"\r\n        android:layout_width=\"40dp\"\r\n        android:layout_height=\"40dp\"\r\n        android:background=\"@drawable/btn_orange\"\r\n        android:backgroundTint=\"#E6F19D2C\"\r\n        android:src=\"@drawable/arrow_left\"\r\n        android:scaleType=\"centerCrop\"\r\n        app:tint=\"@color/white\"\r\n        app:layout_constraintStart_toStartOf=\"parent\"\r\n        app:layout_constraintTop_toTopOf=\"parent\"\r\n        app:srcCompat=\"@drawable/arrow_left\" />\r\n\r\n    <TextView\r\n        android:id=\"@+id/editProfile\"\r\n        android:layout_width=\"wrap_content\"\r\n        android:layout_height=\"wrap_content\"\r\n        android:layout_marginStart=\"20dp\"\r\n        android:text=\"Profile\"\r\n        android:textSize=\"25sp\"\r\n        android:textStyle=\"bold\"\r\n        app:layout_constraintBottom_toBottomOf=\"@+id/imgGoBack\"\r\n        app:layout_constraintEnd_toStartOf=\"@+id/save\"\r\n        app:layout_constraintStart_toEndOf=\"@+id/imgGoBack\"\r\n        app:layout_constraintTop_toTopOf=\"@+id/imgGoBack\" />\r\n\r\n    <androidx.constraintlayout.widget.ConstraintLayout\r\n        android:id=\"@+id/constraintLayout\"\r\n        android:layout_width=\"0dp\"\r\n        android:layout_height=\"wrap_content\"\r\n        android:layout_marginTop=\"30dp\"\r\n        android:gravity=\"center\"\r\n        app:layout_constraintEnd_toStartOf=\"@+id/guideline2\"\r\n        app:layout_constraintStart_toStartOf=\"@+id/guideline\"\r\n        app:layout_constraintTop_toBottomOf=\"@+id/imgGoBack\"\r\n        app:shapeAppearanceOverlay=\"@style/roundedImage\">\r\n\r\n        <com.google.android.material.imageview.ShapeableImageView\r\n            android:id=\"@+id/imageView\"\r\n            android:layout_width=\"183dp\"\r\n            android:layout_height=\"186dp\"\r\n            android:layout_margin=\"10dp\"\r\n            android:scaleType=\"centerCrop\"\r\n            android:src=\"@drawable/avatar\"\r\n            app:circularflow_radiusInDP=\"20dp\"\r\n            app:layout_constraintBottom_toBottomOf=\"parent\"\r\n            app:layout_constraintEnd_toEndOf=\"parent\"\r\n            app:layout_constraintStart_toStartOf=\"parent\"\r\n            app:layout_constraintTop_toTopOf=\"parent\"\r\n            app:shapeAppearanceOverlay=\"@style/roundedImage\"\r\n            tools:srcCompat=\"@tools:sample/avatars\" />\r\n\r\n        <ImageView\r\n            android:id=\"@+id/camera\"\r\n            android:layout_width=\"40dp\"\r\n            android:layout_height=\"40dp\"\r\n            android:layout_marginEnd=\"5dp\"\r\n            android:layout_marginBottom=\"5dp\"\r\n            android:background=\"@drawable/border_button\"\r\n            android:backgroundTint=\"#EB8D21\"\r\n            android:padding=\"7dp\"\r\n            android:scaleType=\"centerCrop\"\r\n            app:layout_constraintBottom_toBottomOf=\"parent\"\r\n            app:layout_constraintEnd_toEndOf=\"@+id/imageView\"\r\n            app:srcCompat=\"@drawable/camera\"\r\n            app:tint=\"#fff\" />\r\n    </androidx.constraintlayout.widget.ConstraintLayout>\r\n\r\n    <Button\r\n        style=\"@style/Widget.MaterialComponents.Button.TextButton\"\r\n        android:id=\"@+id/save\"\r\n        android:layout_width=\"wrap_content\"\r\n        android:layout_height=\"wrap_content\"\r\n        android:text=\"Save\"\r\n        android:textColor=\"#EB8D21\"\r\n        android:textSize=\"18dp\"\r\n        android:textStyle=\"bold\"\r\n        app:layout_constraintBottom_toBottomOf=\"@+id/imgGoBack\"\r\n        app:layout_constraintEnd_toStartOf=\"@+id/guideline2\"\r\n        app:layout_constraintTop_toTopOf=\"@+id/imgGoBack\" />\r\n\r\n    <ListView\r\n        android:id=\"@+id/lvInfoUser\"\r\n        android:layout_width=\"0dp\"\r\n        android:layout_height=\"0dp\"\r\n        android:layout_marginTop=\"30dp\"\r\n        android:layout_marginBottom=\"30dp\"\r\n        android:scrollbars=\"none\"\r\n        app:layout_constraintBottom_toBottomOf=\"parent\"\r\n        app:layout_constraintEnd_toStartOf=\"@+id/guideline2\"\r\n        app:layout_constraintStart_toStartOf=\"@+id/guideline\"\r\n        app:layout_constraintTop_toBottomOf=\"@+id/constraintLayout\" />\r\n\r\n\r\n</androidx.constraintlayout.widget.ConstraintLayout>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/res/layout/activity_my_detail.xml b/app/src/main/res/layout/activity_my_detail.xml
+--- a/app/src/main/res/layout/activity_my_detail.xml	(revision 681cd2a8ad5c8c58fd3e891c3c17000c148ceab2)
++++ b/app/src/main/res/layout/activity_my_detail.xml	(date 1721069323458)
+@@ -61,7 +61,7 @@
+         app:shapeAppearanceOverlay="@style/roundedImage">
+ 
+         <com.google.android.material.imageview.ShapeableImageView
+-            android:id="@+id/imageView"
++            android:id="@+id/avatar"
+             android:layout_width="183dp"
+             android:layout_height="186dp"
+             android:layout_margin="10dp"
+@@ -86,7 +86,7 @@
+             android:padding="7dp"
+             android:scaleType="centerCrop"
+             app:layout_constraintBottom_toBottomOf="parent"
+-            app:layout_constraintEnd_toEndOf="@+id/imageView"
++            app:layout_constraintEnd_toEndOf="@+id/avatar"
+             app:srcCompat="@drawable/camera"
+             app:tint="#fff" />
+     </androidx.constraintlayout.widget.ConstraintLayout>
+Index: app/src/main/res/layout/fragment_home.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n<ScrollView xmlns:android=\"http://schemas.android.com/apk/res/android\"\r\n    xmlns:app=\"http://schemas.android.com/apk/res-auto\"\r\n    xmlns:tools=\"http://schemas.android.com/tools\"\r\n    android:layout_width=\"match_parent\"\r\n    android:layout_height=\"match_parent\"\r\n    android:scrollbars=\"none\">\r\n\r\n    <androidx.constraintlayout.widget.ConstraintLayout\r\n        android:layout_width=\"match_parent\"\r\n        android:layout_height=\"wrap_content\">\r\n        <androidx.constraintlayout.widget.Guideline\r\n            android:id=\"@+id/guideline\"\r\n            android:layout_width=\"match_parent\"\r\n            android:layout_height=\"wrap_content\"\r\n            android:orientation=\"vertical\"\r\n            app:layout_constraintGuide_begin=\"24dp\" />\r\n\r\n        <androidx.constraintlayout.widget.Guideline\r\n            android:id=\"@+id/guideline2\"\r\n            android:layout_width=\"wrap_content\"\r\n            android:layout_height=\"wrap_content\"\r\n            android:orientation=\"vertical\"\r\n            app:layout_constraintGuide_end=\"24dp\"/>\r\n\r\n        <ImageView\r\n            android:id=\"@+id/imageView\"\r\n            android:layout_width=\"50dp\"\r\n            android:layout_height=\"50dp\"\r\n            android:layout_marginTop=\"24dp\"\r\n            app:layout_constraintStart_toStartOf=\"@+id/guideline\"\r\n            app:layout_constraintTop_toTopOf=\"parent\"\r\n            app:srcCompat=\"@drawable/logo\" />\r\n        <ImageView\r\n            android:id=\"@+id/imageViewMessage\"\r\n            android:layout_width=\"25dp\"\r\n            android:layout_height=\"25dp\"\r\n            app:tint=\"#b9b9b9\"\r\n            app:layout_constraintBottom_toBottomOf=\"@+id/imageView\"\r\n            app:layout_constraintEnd_toEndOf=\"@id/guideline2\"\r\n            app:layout_constraintTop_toTopOf=\"@+id/imageView\"\r\n            app:srcCompat=\"@drawable/message\" />\r\n\r\n        <ImageView\r\n            android:id=\"@+id/imageViewNoti\"\r\n            android:layout_width=\"30dp\"\r\n            android:layout_height=\"30dp\"\r\n            android:layout_marginEnd=\"10dp\"\r\n            app:tint=\"#b9b9b9\"\r\n            app:layout_constraintBottom_toBottomOf=\"@+id/imageViewMessage\"\r\n            app:layout_constraintEnd_toStartOf=\"@+id/imageViewMessage\"\r\n            app:layout_constraintTop_toTopOf=\"@+id/imageViewMessage\"\r\n            app:srcCompat=\"@drawable/notification\" />\r\n        <TextView\r\n            android:id=\"@+id/textView9\"\r\n            android:layout_width=\"wrap_content\"\r\n            android:layout_height=\"wrap_content\"\r\n            android:layout_marginTop=\"20dp\"\r\n            android:text=\"Hello,\"\r\n            android:textSize=\"25sp\"\r\n            android:textStyle=\"bold\"\r\n            app:layout_constraintStart_toStartOf=\"@+id/imageView\"\r\n            app:layout_constraintTop_toBottomOf=\"@+id/imageView\" />\r\n        <TextView\r\n            android:id=\"@+id/username\"\r\n            android:layout_width=\"wrap_content\"\r\n            android:layout_height=\"wrap_content\"\r\n            android:layout_marginStart=\"5dp\"\r\n            android:text=\"Ngo\"\r\n            android:textSize=\"25sp\"\r\n            android:textStyle=\"bold\"\r\n            android:textColor=\"#EB8D21\"\r\n            app:layout_constraintBottom_toBottomOf=\"@+id/textView9\"\r\n            app:layout_constraintStart_toEndOf=\"@+id/textView9\"\r\n            app:layout_constraintTop_toTopOf=\"@+id/textView9\" />\r\n\r\n        <androidx.constraintlayout.widget.ConstraintLayout\r\n            android:id=\"@+id/constraintLayout\"\r\n            android:layout_width=\"0dp\"\r\n            android:layout_height=\"170dp\"\r\n            android:layout_marginTop=\"20dp\"\r\n            android:background=\"@drawable/yellow_banner\"\r\n            app:layout_constraintEnd_toStartOf=\"@+id/guideline2\"\r\n            app:layout_constraintStart_toStartOf=\"@+id/guideline\"\r\n            app:layout_constraintTop_toBottomOf=\"@+id/textView9\">\r\n\r\n            <ImageView\r\n                android:id=\"@+id/imageView4\"\r\n                android:layout_width=\"199dp\"\r\n                android:layout_height=\"121dp\"\r\n                app:layout_constraintBottom_toBottomOf=\"parent\"\r\n                app:layout_constraintStart_toStartOf=\"parent\"\r\n                app:layout_constraintTop_toTopOf=\"parent\"\r\n                app:srcCompat=\"@drawable/img_banner\" />\r\n\r\n            <TextView\r\n                android:id=\"@+id/textView7\"\r\n                android:layout_width=\"wrap_content\"\r\n                android:layout_height=\"wrap_content\"\r\n                android:layout_marginTop=\"16dp\"\r\n                android:text=\"Place Your\"\r\n                android:textSize=\"20sp\"\r\n                android:textStyle=\"bold\"\r\n                android:layout_marginEnd=\"30dp\"\r\n                app:layout_constraintEnd_toEndOf=\"parent\"\r\n                app:layout_constraintTop_toTopOf=\"@+id/imageView4\" />\r\n\r\n            <TextView\r\n                android:id=\"@+id/textView8\"\r\n                android:layout_width=\"wrap_content\"\r\n                android:layout_height=\"wrap_content\"\r\n                android:layout_marginTop=\"4dp\"\r\n                android:text=\" Best Food Order\"\r\n                android:textSize=\"20sp\"\r\n                android:textStyle=\"bold\"\r\n                app:layout_constraintEnd_toEndOf=\"@+id/textView7\"\r\n                app:layout_constraintTop_toBottomOf=\"@+id/textView7\" />\r\n\r\n            <androidx.constraintlayout.widget.ConstraintLayout\r\n                android:layout_width=\"wrap_content\"\r\n                android:layout_height=\"wrap_content\"\r\n                android:background=\"@drawable/yellow_button_banner\"\r\n                app:layout_constraintBottom_toBottomOf=\"parent\"\r\n                app:layout_constraintEnd_toEndOf=\"@+id/textView8\"\r\n                app:layout_constraintStart_toEndOf=\"@+id/imageView4\"\r\n                app:layout_constraintTop_toBottomOf=\"@+id/textView8\">\r\n\r\n                <TextView\r\n                    android:id=\"@+id/textView11\"\r\n                    android:layout_width=\"wrap_content\"\r\n                    android:layout_height=\"wrap_content\"\r\n                    android:layout_marginStart=\"16dp\"\r\n                    android:layout_marginTop=\"8dp\"\r\n                    android:layout_marginEnd=\"16dp\"\r\n                    android:layout_marginBottom=\"8dp\"\r\n                    android:text=\"Order Now\"\r\n                    android:textColor=\"@color/white\"\r\n                    android:textSize=\"15sp\"\r\n                    app:layout_constraintBottom_toBottomOf=\"parent\"\r\n                    app:layout_constraintEnd_toEndOf=\"parent\"\r\n                    app:layout_constraintStart_toStartOf=\"parent\"\r\n                    app:layout_constraintTop_toTopOf=\"parent\"\r\n                     />\r\n            </androidx.constraintlayout.widget.ConstraintLayout>\r\n\r\n\r\n        </androidx.constraintlayout.widget.ConstraintLayout>\r\n\r\n        <TextView\r\n            android:id=\"@+id/textView14\"\r\n            android:layout_width=\"wrap_content\"\r\n            android:layout_height=\"wrap_content\"\r\n            android:text=\"Find By Categories\"\r\n            android:textColor=\"#000000\"\r\n            android:textSize=\"18sp\"\r\n            android:layout_marginTop=\"30dp\"\r\n            android:textStyle=\"bold\"\r\n            app:layout_constraintStart_toStartOf=\"@+id/guideline\"\r\n            app:layout_constraintTop_toBottomOf=\"@+id/constraintLayout\" />\r\n\r\n        <TextView\r\n            android:id=\"@+id/seeAll\"\r\n            android:layout_width=\"wrap_content\"\r\n            android:layout_height=\"wrap_content\"\r\n            android:text=\"See All\"\r\n            android:textColor=\"@color/color_yellow\"\r\n            app:layout_constraintBottom_toBottomOf=\"@+id/textView14\"\r\n            app:layout_constraintEnd_toStartOf=\"@+id/guideline2\"\r\n            app:layout_constraintTop_toTopOf=\"@+id/textView14\" />\r\n\r\n\r\n        <androidx.recyclerview.widget.RecyclerView\r\n            android:id=\"@+id/recyclerView\"\r\n            android:layout_width=\"0dp\"\r\n            android:layout_height=\"100dp\"\r\n            android:layout_marginTop=\"20dp\"\r\n            app:layout_constraintEnd_toEndOf=\"parent\"\r\n            app:layout_constraintStart_toStartOf=\"@+id/guideline\"\r\n            app:layout_constraintTop_toBottomOf=\"@+id/textView14\" >\r\n\r\n\r\n        </androidx.recyclerview.widget.RecyclerView>\r\n\r\n        <androidx.recyclerview.widget.RecyclerView\r\n            android:id=\"@+id/recyclerViewHomeProducts\"\r\n            android:layout_width=\"0dp\"\r\n            android:layout_height=\"match_parent\"\r\n            android:layout_marginStart=\"6dp\"\r\n            android:layout_marginEnd=\"6dp\"\r\n            android:layout_marginBottom=\"16dp\"\r\n            android:clipToPadding=\"false\"\r\n            app:layout_constraintBottom_toBottomOf=\"parent\"\r\n            app:layout_constraintEnd_toEndOf=\"parent\"\r\n            app:layout_constraintStart_toStartOf=\"parent\"\r\n            app:layout_constraintTop_toBottomOf=\"@+id/recyclerView\"/>\r\n    </androidx.constraintlayout.widget.ConstraintLayout>\r\n</ScrollView>\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/res/layout/fragment_home.xml b/app/src/main/res/layout/fragment_home.xml
+--- a/app/src/main/res/layout/fragment_home.xml	(revision 681cd2a8ad5c8c58fd3e891c3c17000c148ceab2)
++++ b/app/src/main/res/layout/fragment_home.xml	(date 1721069323460)
+@@ -24,7 +24,7 @@
+             app:layout_constraintGuide_end="24dp"/>
+ 
+         <ImageView
+-            android:id="@+id/imageView"
++            android:id="@+id/avatar"
+             android:layout_width="50dp"
+             android:layout_height="50dp"
+             android:layout_marginTop="24dp"
+@@ -36,9 +36,9 @@
+             android:layout_width="25dp"
+             android:layout_height="25dp"
+             app:tint="#b9b9b9"
+-            app:layout_constraintBottom_toBottomOf="@+id/imageView"
++            app:layout_constraintBottom_toBottomOf="@+id/avatar"
+             app:layout_constraintEnd_toEndOf="@id/guideline2"
+-            app:layout_constraintTop_toTopOf="@+id/imageView"
++            app:layout_constraintTop_toTopOf="@+id/avatar"
+             app:srcCompat="@drawable/message" />
+ 
+         <ImageView
+@@ -59,8 +59,8 @@
+             android:text="Hello,"
+             android:textSize="25sp"
+             android:textStyle="bold"
+-            app:layout_constraintStart_toStartOf="@+id/imageView"
+-            app:layout_constraintTop_toBottomOf="@+id/imageView" />
++            app:layout_constraintStart_toStartOf="@+id/avatar"
++            app:layout_constraintTop_toBottomOf="@+id/avatar" />
+         <TextView
+             android:id="@+id/username"
+             android:layout_width="wrap_content"
+Index: app/src/main/java/com/example/kingpho/service/UserService.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.kingpho.service;\r\n\r\nimport com.example.kingpho.dto.RegisterDTO;\r\nimport com.example.kingpho.model.User;\r\n\r\nimport retrofit2.Call;\r\nimport retrofit2.http.Body;\r\nimport retrofit2.http.GET;\r\nimport retrofit2.http.POST;\r\nimport retrofit2.http.Path;\r\n\r\npublic interface UserService {\r\n\r\n    @POST(\"users/register\")\r\n    Call<User> registerUser(@Body RegisterDTO registerDTO);\r\n\r\n    @GET(\"users/username/{username}\")\r\n    Call<User> getUserByUsername(@Path(\"username\") String username);\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/example/kingpho/service/UserService.java b/app/src/main/java/com/example/kingpho/service/UserService.java
+--- a/app/src/main/java/com/example/kingpho/service/UserService.java	(revision 681cd2a8ad5c8c58fd3e891c3c17000c148ceab2)
++++ b/app/src/main/java/com/example/kingpho/service/UserService.java	(date 1721069323458)
+@@ -7,6 +7,7 @@
+ import retrofit2.http.Body;
+ import retrofit2.http.GET;
+ import retrofit2.http.POST;
++import retrofit2.http.PUT;
+ import retrofit2.http.Path;
+ 
+ public interface UserService {
+@@ -16,4 +17,10 @@
+ 
+     @GET("users/username/{username}")
+     Call<User> getUserByUsername(@Path("username") String username);
++
++    @GET("users/{id}")
++    Call<User> getUserById(@Path("id") int id);
++
++    @PUT("user/update/{id}")
++    Call<User> updateUser(@Path("id") int id, @Body User user);
+ }
+Index: app/src/main/java/com/example/kingpho/BillingActivity.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.kingpho;\r\n\r\nimport android.os.Bundle;\r\nimport android.view.View;\r\nimport android.widget.ImageView;\r\nimport android.widget.TextView;\r\n\r\nimport androidx.annotation.Nullable;\r\nimport androidx.appcompat.app.AppCompatActivity;\r\nimport androidx.recyclerview.widget.LinearLayoutManager;\r\nimport androidx.recyclerview.widget.RecyclerView;\r\n\r\nimport com.example.kingpho.adapter.BillingAdapter;\r\nimport com.example.kingpho.model.Billing;\r\n\r\nimport java.util.ArrayList;\r\n\r\npublic class BillingActivity extends AppCompatActivity {\r\n    private ImageView imgGoBack;\r\n    private TextView tvAddressUser, priceBilling, deliveryFee, totalBilling, methodPayment;\r\n    private RecyclerView lvPurchase;\r\n    private BillingAdapter adapter;\r\n    private ArrayList<Billing> arrayBilling;\r\n\r\n    @Override\r\n    protected void onCreate(@Nullable Bundle savedInstanceState) {\r\n        super.onCreate(savedInstanceState);\r\n        setContentView(R.layout.activity_billing);\r\n\r\n        mapping();\r\n\r\n        arrayBilling = getArrayBilling();\r\n        adapter = new BillingAdapter(this, R.layout.item_billing, arrayBilling);\r\n        lvPurchase.setLayoutManager(new LinearLayoutManager(this));\r\n        lvPurchase.setAdapter(adapter);\r\n        imgGoBack.setOnClickListener(new View.OnClickListener() {\r\n            @Override\r\n            public void onClick(View v) {\r\n                finish();\r\n            }\r\n        });\r\n    }\r\n\r\n    private void mapping() {\r\n        imgGoBack = findViewById(R.id.imgGoBack);\r\n        tvAddressUser = findViewById(R.id.tvAddressUser);\r\n        priceBilling = findViewById(R.id.priceBilling);\r\n        deliveryFee = findViewById(R.id.deliveryFee);\r\n        lvPurchase = findViewById(R.id.lvPurchase);\r\n        totalBilling = findViewById(R.id.totalBilling);\r\n        methodPayment = findViewById(R.id.methodPayment);\r\n    }\r\n    private ArrayList<Billing> getArrayBilling() {\r\n        ArrayList<Billing> list = new ArrayList<>();\r\n        list.add(new Billing(\"Pho bo tai nam Pho bo tai nam Pho bo tai nam Pho bo tai nam Pho bo tai nam Pho bo tai nam\", \"12\"));\r\n        list.add(new Billing(\"Pho bo tai nam\", \"12\"));\r\n        list.add(new Billing(\"Pho bo tai nam\", \"12\"));\r\n        list.add(new Billing(\"Pho bo tai nam\", \"12\"));\r\n        list.add(new Billing(\"Pho bo tai nam\", \"12\"));\r\n        list.add(new Billing(\"Pho bo tai nam\", \"12\"));\r\n        list.add(new Billing(\"Pho bo tai nam Pho bo tai nam Pho bo tai nam Pho bo tai nam Pho bo tai nam Pho bo tai nam\", \"12\"));\r\n        list.add(new Billing(\"Pho bo tai nam\", \"12\"));\r\n        list.add(new Billing(\"Pho bo tai nam\", \"12\"));\r\n        list.add(new Billing(\"Pho bo tai nam\", \"12\"));\r\n        list.add(new Billing(\"Pho bo tai nam\", \"12\"));\r\n        list.add(new Billing(\"Pho bo tai nam\", \"12\"));\r\n        return list;\r\n    }\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/example/kingpho/BillingActivity.java b/app/src/main/java/com/example/kingpho/BillingActivity.java
+--- a/app/src/main/java/com/example/kingpho/BillingActivity.java	(revision 681cd2a8ad5c8c58fd3e891c3c17000c148ceab2)
++++ b/app/src/main/java/com/example/kingpho/BillingActivity.java	(date 1721069323456)
+@@ -53,17 +53,8 @@
+     private ArrayList<Billing> getArrayBilling() {
+         ArrayList<Billing> list = new ArrayList<>();
+         list.add(new Billing("Pho bo tai nam Pho bo tai nam Pho bo tai nam Pho bo tai nam Pho bo tai nam Pho bo tai nam", "12"));
+-        list.add(new Billing("Pho bo tai nam", "12"));
+-        list.add(new Billing("Pho bo tai nam", "12"));
+-        list.add(new Billing("Pho bo tai nam", "12"));
+-        list.add(new Billing("Pho bo tai nam", "12"));
+-        list.add(new Billing("Pho bo tai nam", "12"));
+         list.add(new Billing("Pho bo tai nam Pho bo tai nam Pho bo tai nam Pho bo tai nam Pho bo tai nam Pho bo tai nam", "12"));
+-        list.add(new Billing("Pho bo tai nam", "12"));
+-        list.add(new Billing("Pho bo tai nam", "12"));
+-        list.add(new Billing("Pho bo tai nam", "12"));
+-        list.add(new Billing("Pho bo tai nam", "12"));
+-        list.add(new Billing("Pho bo tai nam", "12"));
++
+         return list;
+     }
+ }
+Index: app/src/main/res/layout/activity_sign_up.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><androidx.constraintlayout.widget.ConstraintLayout xmlns:android=\"http://schemas.android.com/apk/res/android\"\r\n    xmlns:app=\"http://schemas.android.com/apk/res-auto\"\r\n    xmlns:tools=\"http://schemas.android.com/tools\"\r\n    android:id=\"@+id/main\"\r\n    android:layout_width=\"match_parent\"\r\n    android:layout_height=\"match_parent\"\r\n    android:background=\"#B6A7A7\"\r\n    tools:context=\".MainActivity\">\r\n\r\n    <ImageView\r\n        android:id=\"@+id/imageView2\"\r\n        android:layout_width=\"match_parent\"\r\n        android:layout_height=\"550dp\"\r\n        android:layout_marginTop=\"-210dp\"\r\n        app:layout_constraintTop_toTopOf=\"parent\"\r\n        app:srcCompat=\"@drawable/background_img2\"\r\n        android:scaleType=\"centerCrop\" />\r\n\r\n    <FrameLayout\r\n        android:id=\"@+id/rounded_background\"\r\n        android:layout_width=\"0dp\"\r\n        android:layout_height=\"650dp\"\r\n        android:background=\"@drawable/rounded_background\"\r\n        app:layout_constraintBottom_toBottomOf=\"parent\"\r\n        app:layout_constraintEnd_toEndOf=\"parent\"\r\n        app:layout_constraintHorizontal_bias=\"0.0\"\r\n        app:layout_constraintStart_toStartOf=\"parent\"\r\n        app:layout_constraintTop_toTopOf=\"parent\"\r\n        app:layout_constraintVertical_bias=\"1.0\">\r\n\r\n        <LinearLayout\r\n            android:id=\"@+id/linearLayout2\"\r\n            android:layout_width=\"match_parent\"\r\n            android:layout_height=\"wrap_content\"\r\n            android:orientation=\"vertical\"\r\n            android:layout_marginTop=\"28dp\"\r\n            app:layout_constraintTop_toTopOf=\"@+id/rounded_background\"\r\n            tools:layout_editor_absoluteX=\"0dp\">\r\n\r\n            <TextView\r\n                android:id=\"@+id/textView2\"\r\n                android:layout_width=\"match_parent\"\r\n                android:layout_height=\"wrap_content\"\r\n                android:layout_marginStart=\"32dp\"\r\n                android:text=\"Create Account\"\r\n                android:textColor=\"@color/black\"\r\n                android:textSize=\"33dp\"\r\n                android:textStyle=\"bold\" />\r\n\r\n            <TextView\r\n                android:id=\"@+id/textView3\"\r\n                android:layout_width=\"match_parent\"\r\n                android:layout_height=\"wrap_content\"\r\n                android:layout_marginStart=\"32dp\"\r\n                android:text=\"Hello theAre, Sign Up to continue!\"\r\n                android:textSize=\"18dp\" />\r\n        </LinearLayout>\r\n\r\n        <LinearLayout\r\n            android:id=\"@+id/linearLayout\"\r\n            android:layout_width=\"match_parent\"\r\n            android:layout_height=\"wrap_content\"\r\n            android:layout_marginBottom=\"15dp\"\r\n            android:orientation=\"vertical\"\r\n            android:layout_gravity=\"bottom\">\r\n\r\n            <EditText\r\n                android:id=\"@+id/edtFullname\"\r\n                android:layout_width=\"match_parent\"\r\n                android:layout_height=\"50dp\"\r\n                android:layout_marginStart=\"32dp\"\r\n                android:layout_marginTop=\"8dp\"\r\n                android:layout_marginEnd=\"32dp\"\r\n                android:layout_marginBottom=\"10dp\"\r\n                android:background=\"@drawable/edittext_background\"\r\n                android:drawableLeft=\"@drawable/baseline_drive_file_rename_outline_24\"\r\n                android:drawablePadding=\"13dp\"\r\n                android:ems=\"10\"\r\n                android:hint=\"Full Name\"\r\n                android:inputType=\"textPersonName\"\r\n                android:paddingStart=\"20dp\"\r\n                android:textColorHint=\"#80000000\" />\r\n\r\n            <EditText\r\n                android:id=\"@+id/edtNewUsername\"\r\n                android:layout_width=\"match_parent\"\r\n                android:layout_height=\"50dp\"\r\n                android:layout_marginStart=\"32dp\"\r\n                android:layout_marginTop=\"8dp\"\r\n                android:layout_marginEnd=\"32dp\"\r\n                android:layout_marginBottom=\"10dp\"\r\n                android:background=\"@drawable/edittext_background\"\r\n                android:drawableLeft=\"@drawable/baseline_account_circle_24\"\r\n                android:drawablePadding=\"13dp\"\r\n                android:ems=\"10\"\r\n                android:hint=\"Username\"\r\n                android:inputType=\"textPersonName\"\r\n                android:paddingStart=\"20dp\"\r\n                android:textColorHint=\"#80000000\" />\r\n\r\n            <EditText\r\n                android:id=\"@+id/edtEmail\"\r\n                android:layout_width=\"match_parent\"\r\n                android:layout_height=\"50dp\"\r\n                android:layout_marginStart=\"32dp\"\r\n                android:layout_marginTop=\"8dp\"\r\n                android:layout_marginEnd=\"32dp\"\r\n                android:layout_marginBottom=\"10dp\"\r\n                android:background=\"@drawable/edittext_background\"\r\n                android:drawableLeft=\"@drawable/baseline_email_24\"\r\n                android:drawablePadding=\"13dp\"\r\n                android:ems=\"10\"\r\n                android:hint=\"Email Address\"\r\n                android:inputType=\"textPersonName\"\r\n                android:paddingStart=\"20dp\"\r\n                android:textColorHint=\"#80000000\" />\r\n\r\n            <EditText\r\n                android:id=\"@+id/edtPhone\"\r\n                android:layout_width=\"match_parent\"\r\n                android:layout_height=\"50dp\"\r\n                android:layout_marginStart=\"32dp\"\r\n                android:layout_marginTop=\"8dp\"\r\n                android:layout_marginEnd=\"32dp\"\r\n                android:layout_marginBottom=\"10dp\"\r\n                android:background=\"@drawable/edittext_background\"\r\n                android:drawableLeft=\"@drawable/baseline_local_phone_24\"\r\n                android:drawablePadding=\"13dp\"\r\n                android:ems=\"10\"\r\n                android:hint=\"Phone Number\"\r\n                android:inputType=\"textPersonName\"\r\n                android:paddingStart=\"20dp\"\r\n                android:textColorHint=\"#80000000\" />\r\n\r\n            <RelativeLayout\r\n                android:layout_width=\"match_parent\"\r\n                android:layout_height=\"match_parent\"\r\n                android:layout_marginStart=\"32dp\"\r\n                android:layout_marginTop=\"8dp\"\r\n                android:layout_marginEnd=\"32dp\"\r\n                android:layout_marginBottom=\"10dp\"\r\n                android:background=\"@drawable/edittext_background\">\r\n\r\n                <ImageView\r\n                    android:id=\"@+id/ivKey1\"\r\n                    android:layout_width=\"24dp\"\r\n                    android:layout_height=\"24dp\"\r\n                    android:layout_alignParentStart=\"true\"\r\n                    android:layout_centerVertical=\"true\"\r\n                    android:layout_marginStart=\"20dp\"\r\n                    android:src=\"@drawable/baseline_key_24\" />\r\n\r\n                <EditText\r\n                    android:id=\"@+id/edtNewPassword\"\r\n                    android:layout_width=\"0dp\"\r\n                    android:layout_height=\"50dp\"\r\n                    android:layout_centerVertical=\"true\"\r\n                    android:layout_marginStart=\"8dp\"\r\n                    android:layout_marginEnd=\"8dp\"\r\n                    android:layout_toStartOf=\"@id/ivEye1\"\r\n                    android:layout_toEndOf=\"@id/ivKey1\"\r\n                    android:background=\"@drawable/password\"\r\n                    android:ems=\"10\"\r\n                    android:gravity=\"center_vertical\"\r\n                    android:hint=\"Password\"\r\n                    android:inputType=\"textPassword\"\r\n                    android:paddingStart=\"6dp\"\r\n                    android:textColorHint=\"#80000000\" />\r\n\r\n                <ImageView\r\n                    android:id=\"@+id/ivEye1\"\r\n                    android:layout_width=\"24dp\"\r\n                    android:layout_height=\"24dp\"\r\n                    android:layout_alignParentEnd=\"true\"\r\n                    android:layout_centerVertical=\"true\"\r\n                    android:layout_marginEnd=\"8dp\"\r\n                    android:src=\"@drawable/baseline_remove_red_eye_24\" />\r\n            </RelativeLayout>\r\n\r\n            <RelativeLayout\r\n                android:layout_width=\"match_parent\"\r\n                android:layout_height=\"wrap_content\"\r\n                android:layout_marginStart=\"32dp\"\r\n                android:layout_marginTop=\"8dp\"\r\n                android:layout_marginEnd=\"32dp\"\r\n                android:layout_marginBottom=\"8dp\"\r\n                android:background=\"@drawable/edittext_background\">\r\n\r\n                <ImageView\r\n                    android:id=\"@+id/ivKey\"\r\n                    android:layout_width=\"24dp\"\r\n                    android:layout_height=\"24dp\"\r\n                    android:layout_alignParentStart=\"true\"\r\n                    android:layout_centerVertical=\"true\"\r\n                    android:layout_marginStart=\"20dp\"\r\n                    android:src=\"@drawable/baseline_key_24\" />\r\n\r\n                <EditText\r\n                    android:id=\"@+id/edtConfirm\"\r\n                    android:layout_width=\"0dp\"\r\n                    android:layout_height=\"50dp\"\r\n                    android:layout_centerVertical=\"true\"\r\n                    android:layout_marginStart=\"8dp\"\r\n                    android:layout_marginEnd=\"8dp\"\r\n                    android:layout_toStartOf=\"@id/ivEye\"\r\n                    android:layout_toEndOf=\"@id/ivKey\"\r\n                    android:background=\"@drawable/password\"\r\n                    android:ems=\"10\"\r\n                    android:gravity=\"center_vertical\"\r\n                    android:hint=\"Confirm Password\"\r\n                    android:inputType=\"textPassword\"\r\n                    android:paddingStart=\"6dp\"\r\n                    android:textColorHint=\"#80000000\" />\r\n\r\n                <ImageView\r\n                    android:id=\"@+id/ivEye\"\r\n                    android:layout_width=\"24dp\"\r\n                    android:layout_height=\"24dp\"\r\n                    android:layout_alignParentEnd=\"true\"\r\n                    android:layout_centerVertical=\"true\"\r\n                    android:layout_marginEnd=\"8dp\"\r\n                    android:src=\"@drawable/baseline_remove_red_eye_24\" />\r\n            </RelativeLayout>\r\n\r\n            <Button\r\n                android:id=\"@+id/btnSignUp\"\r\n                android:layout_width=\"match_parent\"\r\n                android:layout_height=\"55dp\"\r\n                android:layout_marginStart=\"32dp\"\r\n                android:layout_marginTop=\"16dp\"\r\n                android:layout_marginEnd=\"32dp\"\r\n                android:text=\"Register\"\r\n                android:textStyle=\"bold\"\r\n                android:layout_marginBottom=\"16dp\"\r\n                android:backgroundTint=\"#EB8D21\"\r\n                android:textAllCaps=\"false\"\r\n                android:textColor=\"#fff\"\r\n                android:textSize=\"18sp\"\r\n                app:layout_constraintTop_toBottomOf=\"@+id/imageView\" />\r\n\r\n            <LinearLayout\r\n                android:layout_width=\"match_parent\"\r\n                android:layout_height=\"wrap_content\"\r\n                android:layout_marginTop=\"10dp\"\r\n                android:layout_marginBottom=\"10dp\"\r\n                android:gravity=\"center\"\r\n                android:orientation=\"horizontal\">\r\n\r\n                <TextView\r\n                    android:layout_width=\"wrap_content\"\r\n                    android:layout_height=\"wrap_content\"\r\n                    android:text=\"Already have an account?\"\r\n                    android:textAlignment=\"center\" />\r\n\r\n                <TextView\r\n                    android:id=\"@+id/tvLogin\"\r\n                    android:layout_width=\"wrap_content\"\r\n                    android:layout_height=\"wrap_content\"\r\n                    android:layout_marginStart=\"8dp\"\r\n                    android:text=\"Login\"\r\n                    android:textAlignment=\"center\"\r\n                    android:textColor=\"#f19d2c\" />\r\n            </LinearLayout>\r\n        </LinearLayout>\r\n    </FrameLayout>\r\n</androidx.constraintlayout.widget.ConstraintLayout>\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/res/layout/activity_sign_up.xml b/app/src/main/res/layout/activity_sign_up.xml
+--- a/app/src/main/res/layout/activity_sign_up.xml	(revision 681cd2a8ad5c8c58fd3e891c3c17000c148ceab2)
++++ b/app/src/main/res/layout/activity_sign_up.xml	(date 1721069323460)
+@@ -236,7 +236,7 @@
+                 android:textAllCaps="false"
+                 android:textColor="#fff"
+                 android:textSize="18sp"
+-                app:layout_constraintTop_toBottomOf="@+id/imageView" />
++                app:layout_constraintTop_toBottomOf="@+id/avatar" />
+ 
+             <LinearLayout
+                 android:layout_width="match_parent"
+Index: app/src/main/java/com/example/kingpho/LoginActivity.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.kingpho;\r\n\r\nimport android.content.Intent;\r\nimport android.content.SharedPreferences;\r\nimport android.os.Bundle;\r\nimport android.text.InputType;\r\nimport android.util.Log;\r\nimport android.view.View;\r\nimport android.widget.Button;\r\nimport android.widget.CheckBox;\r\nimport android.widget.EditText;\r\nimport android.widget.ImageView;\r\nimport android.widget.TextView;\r\nimport android.widget.Toast;\r\n\r\nimport androidx.appcompat.app.AppCompatActivity;\r\n\r\nimport com.example.kingpho.dto.LoginDTO;\r\nimport com.example.kingpho.fragment.HomeFragment;\r\nimport com.example.kingpho.fragment.MainActivity;\r\nimport com.example.kingpho.model.UserAuthentication;\r\nimport com.example.kingpho.service.AuthService;\r\nimport com.example.kingpho.utils.JwtUtils;\r\nimport com.example.kingpho.utils.RetrofitClient;\r\nimport com.example.kingpho.utils.SharedPrefManager;\r\n\r\nimport retrofit2.Call;\r\nimport retrofit2.Callback;\r\nimport retrofit2.Response;\r\nimport retrofit2.Retrofit;\r\n\r\npublic class LoginActivity extends AppCompatActivity {\r\n\r\n    private AuthService authService;\r\n\r\n    EditText edtUsername, edtPassword;\r\n    Button btnLogin;\r\n    TextView tvForgotPassword, tvCreate;\r\n    CheckBox checkboxRememberMe;\r\n    ImageView ivEye;\r\n    boolean isPasswordVisible = false;\r\n    SharedPreferences sharedPreferences;\r\n    DatabaseHelper dbHelper;\r\n\r\n    @Override\r\n    protected void onCreate(Bundle savedInstanceState) {\r\n        super.onCreate(savedInstanceState);\r\n        setContentView(R.layout.activity_login);\r\n\r\n        Retrofit retrofit = RetrofitClient.getRetrofitInstance(this);\r\n        authService = retrofit.create(AuthService.class);\r\n\r\n        edtUsername = findViewById(R.id.edtUsername);\r\n        edtPassword = findViewById(R.id.edtPassword);\r\n        btnLogin = findViewById(R.id.btnLogin);\r\n        tvForgotPassword = findViewById(R.id.tvForgotPassword);\r\n        tvCreate = findViewById(R.id.tvCreate);\r\n        checkboxRememberMe = findViewById(R.id.checkboxRememberMe);\r\n        ivEye = findViewById(R.id.ivEye);\r\n\r\n        dbHelper = new DatabaseHelper(this);\r\n        sharedPreferences = getSharedPreferences(\"LoginPrefs\", MODE_PRIVATE);\r\n\r\n        loadPreferences();\r\n\r\n        tvForgotPassword.setOnClickListener(new View.OnClickListener() {\r\n            @Override\r\n            public void onClick(View v) {\r\n                Intent intent = new Intent(LoginActivity.this, ForgotPasswordActivity.class);\r\n                startActivity(intent);\r\n            }\r\n        });\r\n\r\n        btnLogin.setOnClickListener(new View.OnClickListener() {\r\n            @Override\r\n            public void onClick(View v) {\r\n                String username = edtUsername.getText().toString().trim();\r\n                String password = edtPassword.getText().toString();\r\n\r\n                if (username.isEmpty() || password.isEmpty()) {\r\n                    Toast.makeText(LoginActivity.this, \"Please enter username and password\", Toast.LENGTH_SHORT).show();\r\n                } else {\r\n//                    if (dbHelper.checkUser(username, password)) {\r\n//                        // Save username and remember me preference if checked\r\n//                        if (checkboxRememberMe.isChecked()) {\r\n//                            savePreferences(username, password);\r\n//                        } else {\r\n//                            clearPreferences();\r\n//                        }\r\n//\r\n//                        // Navigate to MainActivity upon successful login\r\n//                        Intent intent = new Intent(LoginActivity.this, MainActivity.class);\r\n//                        startActivity(intent);\r\n//                        finish();\r\n//                    } else {\r\n//                        Toast.makeText(LoginActivity.this, \"Invalid username or password\", Toast.LENGTH_SHORT).show();\r\n//                    }\r\n\r\n                    LoginDTO loginDTO = new LoginDTO(username, password);\r\n                    signInUser(loginDTO);\r\n                }\r\n            }\r\n        });\r\n\r\n        tvCreate.setOnClickListener(new View.OnClickListener() {\r\n            @Override\r\n            public void onClick(View v) {\r\n                Intent intent = new Intent(LoginActivity.this, SignUpActivity.class);\r\n                startActivity(intent);\r\n            }\r\n        });\r\n\r\n        ivEye.setOnClickListener(new View.OnClickListener() {\r\n            @Override\r\n            public void onClick(View v) {\r\n                togglePasswordVisibility();\r\n            }\r\n        });\r\n    }\r\n\r\n    private void signInUser(LoginDTO loginDTO) {\r\n        try {\r\n            Call<UserAuthentication> call = authService.signInUser(loginDTO);\r\n            call.enqueue(new Callback<UserAuthentication>() {\r\n                @Override\r\n                public void onResponse(Call<UserAuthentication> call, Response<UserAuthentication> response) {\r\n                    if (response.isSuccessful() && response.body() != null) {\r\n                        UserAuthentication userAuthentication = response.body();\r\n\r\n                        String username = JwtUtils.getUsernameFromToken(userAuthentication.getToken());\r\n                        if (username != null) {\r\n                            SharedPrefManager.getInstance(LoginActivity.this).saveUser(userAuthentication);\r\n                            Intent intent = new Intent(LoginActivity.this, MainActivity.class);\r\n                            startActivity(intent);\r\n                            finish();\r\n                        }\r\n                        else {\r\n                            Toast.makeText(LoginActivity.this,\"Failed to get user\", Toast.LENGTH_SHORT).show();\r\n                        }\r\n                    }\r\n                    else {\r\n                        Toast.makeText(LoginActivity.this, \"Invalid email or password!\", Toast.LENGTH_LONG).show();\r\n                    }\r\n                }\r\n                @Override\r\n                public void onFailure(Call<UserAuthentication> call, Throwable throwable) {\r\n                    Toast.makeText(LoginActivity.this, \"An error has been occurred!\", Toast.LENGTH_LONG).show();\r\n                    throwable.printStackTrace();\r\n                }\r\n            });\r\n        }\r\n        catch (Exception e) {\r\n            Log.e(\"Login Error\", e.getMessage());\r\n        }\r\n    }\r\n\r\n    private void savePreferences(String username, String password) {\r\n        SharedPreferences.Editor editor = sharedPreferences.edit();\r\n        editor.putString(\"username\", username);\r\n        editor.putString(\"password\", password);\r\n        editor.putBoolean(\"rememberMe\", true);\r\n        editor.apply();\r\n    }\r\n\r\n    private void clearPreferences() {\r\n        SharedPreferences.Editor editor = sharedPreferences.edit();\r\n        editor.clear();\r\n        editor.apply();\r\n    }\r\n\r\n    private void loadPreferences() {\r\n        boolean rememberMe = sharedPreferences.getBoolean(\"rememberMe\", false);\r\n        if (rememberMe) {\r\n            String username = sharedPreferences.getString(\"username\", \"\");\r\n            String password = sharedPreferences.getString(\"password\", \"\");\r\n            edtUsername.setText(username);\r\n            edtPassword.setText(password);\r\n            checkboxRememberMe.setChecked(true);\r\n        }\r\n    }\r\n\r\n    private void togglePasswordVisibility() {\r\n        if (isPasswordVisible) {\r\n            edtPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);\r\n            ivEye.setImageResource(R.drawable.baseline_remove_red_eye_24);\r\n            isPasswordVisible = false;\r\n        } else {\r\n            edtPassword.setInputType(InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);\r\n//            ivEye.setImageResource(R.drawable.baseline_remove_circle_24);\r\n            isPasswordVisible = true;\r\n        }\r\n    }\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/example/kingpho/LoginActivity.java b/app/src/main/java/com/example/kingpho/LoginActivity.java
+--- a/app/src/main/java/com/example/kingpho/LoginActivity.java	(revision 681cd2a8ad5c8c58fd3e891c3c17000c148ceab2)
++++ b/app/src/main/java/com/example/kingpho/LoginActivity.java	(date 1721069323456)
+@@ -40,7 +40,7 @@
+     ImageView ivEye;
+     boolean isPasswordVisible = false;
+     SharedPreferences sharedPreferences;
+-    DatabaseHelper dbHelper;
++//    DatabaseHelper dbHelper;
+ 
+     @Override
+     protected void onCreate(Bundle savedInstanceState) {
+@@ -58,7 +58,7 @@
+         checkboxRememberMe = findViewById(R.id.checkboxRememberMe);
+         ivEye = findViewById(R.id.ivEye);
+ 
+-        dbHelper = new DatabaseHelper(this);
++//        dbHelper = new DatabaseHelper(this);
+         sharedPreferences = getSharedPreferences("LoginPrefs", MODE_PRIVATE);
+ 
+         loadPreferences();
+@@ -80,22 +80,6 @@
+                 if (username.isEmpty() || password.isEmpty()) {
+                     Toast.makeText(LoginActivity.this, "Please enter username and password", Toast.LENGTH_SHORT).show();
+                 } else {
+-//                    if (dbHelper.checkUser(username, password)) {
+-//                        // Save username and remember me preference if checked
+-//                        if (checkboxRememberMe.isChecked()) {
+-//                            savePreferences(username, password);
+-//                        } else {
+-//                            clearPreferences();
+-//                        }
+-//
+-//                        // Navigate to MainActivity upon successful login
+-//                        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+-//                        startActivity(intent);
+-//                        finish();
+-//                    } else {
+-//                        Toast.makeText(LoginActivity.this, "Invalid username or password", Toast.LENGTH_SHORT).show();
+-//                    }
+-
+                     LoginDTO loginDTO = new LoginDTO(username, password);
+                     signInUser(loginDTO);
+                 }
+@@ -153,20 +137,20 @@
+             Log.e("Login Error", e.getMessage());
+         }
+     }
+-
+-    private void savePreferences(String username, String password) {
+-        SharedPreferences.Editor editor = sharedPreferences.edit();
+-        editor.putString("username", username);
+-        editor.putString("password", password);
+-        editor.putBoolean("rememberMe", true);
+-        editor.apply();
+-    }
+-
+-    private void clearPreferences() {
+-        SharedPreferences.Editor editor = sharedPreferences.edit();
+-        editor.clear();
+-        editor.apply();
+-    }
++//
++//    private void savePreferences(String username, String password) {
++//        SharedPreferences.Editor editor = sharedPreferences.edit();
++//        editor.putString("username", username);
++//        editor.putString("password", password);
++//        editor.putBoolean("rememberMe", true);
++//        editor.apply();
++//    }
++//
++//    private void clearPreferences() {
++//        SharedPreferences.Editor editor = sharedPreferences.edit();
++//        editor.clear();
++//        editor.apply();
++//    }
+ 
+     private void loadPreferences() {
+         boolean rememberMe = sharedPreferences.getBoolean("rememberMe", false);
+@@ -186,7 +170,6 @@
+             isPasswordVisible = false;
+         } else {
+             edtPassword.setInputType(InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
+-//            ivEye.setImageResource(R.drawable.baseline_remove_circle_24);
+             isPasswordVisible = true;
+         }
+     }
+Index: app/src/main/java/com/example/kingpho/fragment/AccountFragment.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.kingpho.fragment;\r\n\r\nimport android.content.Intent;\r\nimport android.os.Bundle;\r\nimport android.view.LayoutInflater;\r\nimport android.view.View;\r\nimport android.view.ViewGroup;\r\nimport android.widget.AdapterView;\r\nimport android.widget.Button;\r\nimport android.widget.ImageView;\r\nimport android.widget.ListView;\r\nimport android.widget.TextView;\r\nimport android.widget.Toast;\r\n\r\nimport androidx.annotation.NonNull;\r\nimport androidx.annotation.Nullable;\r\nimport androidx.fragment.app.Fragment;\r\n\r\nimport com.example.kingpho.MapActivity;\r\nimport com.example.kingpho.MyOrderActivity;\r\nimport com.example.kingpho.ProfileActivity;\r\nimport com.example.kingpho.R;\r\nimport com.example.kingpho.adapter.AccountItemAdapter;\r\nimport com.example.kingpho.model.AccountItem;\r\nimport com.google.android.material.imageview.ShapeableImageView;\r\n\r\nimport java.util.ArrayList;\r\n\r\npublic class AccountFragment extends Fragment {\r\n    private ShapeableImageView imgAvatar;\r\n    private ImageView imgEdit;\r\n    private TextView tvName, tvEmail;\r\n    private ListView lvItem;\r\n    private Button btnLogOut;\r\n    private ArrayList<AccountItem> arrayItem;\r\n    private AccountItemAdapter adapter;\r\n\r\n    @Override\r\n    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {\r\n        View view = inflater.inflate(R.layout.activity_account, container, false);\r\n\r\n        mapping(view);\r\n        arrayItem = getDataList();\r\n        adapter = new AccountItemAdapter(getContext(), R.layout.item_function_user, arrayItem);\r\n        lvItem.setAdapter(adapter);\r\n\r\n        lvItem.setOnItemClickListener(new AdapterView.OnItemClickListener() {\r\n            @Override\r\n            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {\r\n                AccountItem item = arrayItem.get(position);\r\n                if (item.getName().equals(\"Order\")){\r\n                    Intent intent = new Intent(getContext(), MyOrderActivity.class);\r\n                    startActivity(intent);\r\n                } else if (item.getName().equals(\"My Details\")) {\r\n                    Intent intent = new Intent(getContext(), ProfileActivity.class);\r\n                    startActivity(intent);\r\n                } else if (item.getName().equals(\"Delivery Address\")) {\r\n                    Intent intent = new Intent(getContext(), MapActivity.class);\r\n                    startActivity(intent);\r\n                }\r\n            }\r\n        });\r\n\r\n        // set value\r\n        imgAvatar.setImageResource(R.drawable.avatar);\r\n        tvName.setText(\"Thu Huong\");\r\n        tvEmail.setText(\"huong@gmail.com\");\r\n        imgEdit.setOnClickListener(new View.OnClickListener() {\r\n            @Override\r\n            public void onClick(View v) {\r\n                editProfile();\r\n            }\r\n        });\r\n\r\n        btnLogOut.setOnClickListener(new View.OnClickListener() {\r\n            @Override\r\n            public void onClick(View v) {\r\n                logoutAction();\r\n            }\r\n        });\r\n        return view;\r\n    }\r\n\r\n    private void mapping(View view) {\r\n        imgAvatar = view.findViewById(R.id.imgAvatar);\r\n        imgEdit = view.findViewById(R.id.imgEdit);\r\n        tvName = view.findViewById(R.id.tvName);\r\n        tvEmail = view.findViewById(R.id.tvEmail);\r\n        lvItem = view.findViewById(R.id.lvItem);\r\n        btnLogOut = view.findViewById(R.id.btnLogOut);\r\n    }\r\n\r\n    private ArrayList<AccountItem> getDataList() {\r\n        ArrayList<AccountItem> list = new ArrayList<>();\r\n        list.add(new AccountItem(R.drawable.orders, \"Order\"));\r\n        list.add(new AccountItem(R.drawable.mydetails, \"My Details\"));\r\n        list.add(new AccountItem(R.drawable.delivery, \"Delivery Address\"));\r\n        list.add(new AccountItem(R.drawable.payment, \"Payment Methods\"));\r\n        list.add(new AccountItem(R.drawable.promo, \"Promo Cord\"));\r\n        list.add(new AccountItem(R.drawable.bell, \"Notification\"));\r\n        list.add(new AccountItem(R.drawable.help, \"Help\"));\r\n        list.add(new AccountItem(R.drawable.about, \"About\"));\r\n        return list;\r\n    }\r\n    private void logoutAction() {\r\n        Toast.makeText(getContext(), \"Logout Action\", Toast.LENGTH_SHORT).show();\r\n    }\r\n    private void editProfile() {\r\n        Intent intent = new Intent(getContext(), ProfileActivity.class);\r\n        startActivity(intent);\r\n    }\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/example/kingpho/fragment/AccountFragment.java b/app/src/main/java/com/example/kingpho/fragment/AccountFragment.java
+--- a/app/src/main/java/com/example/kingpho/fragment/AccountFragment.java	(revision 681cd2a8ad5c8c58fd3e891c3c17000c148ceab2)
++++ b/app/src/main/java/com/example/kingpho/fragment/AccountFragment.java	(date 1721069323457)
+@@ -16,30 +16,71 @@
+ import androidx.annotation.Nullable;
+ import androidx.fragment.app.Fragment;
+ 
++import com.bumptech.glide.Glide;
+ import com.example.kingpho.MapActivity;
+ import com.example.kingpho.MyOrderActivity;
+ import com.example.kingpho.ProfileActivity;
+ import com.example.kingpho.R;
+ import com.example.kingpho.adapter.AccountItemAdapter;
++import com.example.kingpho.callback.UserCallback;
+ import com.example.kingpho.model.AccountItem;
++import com.example.kingpho.model.User;
++import com.example.kingpho.service.UserService;
++import com.example.kingpho.utils.RetrofitClient;
++import com.example.kingpho.utils.SharedPrefManager;
+ import com.google.android.material.imageview.ShapeableImageView;
+ 
+ import java.util.ArrayList;
+ 
++import retrofit2.Call;
++import retrofit2.Callback;
++import retrofit2.Response;
++import retrofit2.Retrofit;
++
+ public class AccountFragment extends Fragment {
+     private ShapeableImageView imgAvatar;
+-    private ImageView imgEdit;
+     private TextView tvName, tvEmail;
+     private ListView lvItem;
+     private Button btnLogOut;
+     private ArrayList<AccountItem> arrayItem;
+     private AccountItemAdapter adapter;
+-
++    private UserService userService;
+     @Override
+     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+         View view = inflater.inflate(R.layout.activity_account, container, false);
+ 
+         mapping(view);
++
++        Retrofit retrofit = RetrofitClient.getRetrofitInstance(getContext());
++        userService = retrofit.create(UserService.class);
++
++        String username = SharedPrefManager.getInstance(getContext()).getUser().getUsername();
++        getUserByUsername(username, new UserCallback() {
++            @Override
++            public void onUserFetched(User user) {
++                if (user != null) {
++                    tvName.setText(user.getFullname());
++                    tvEmail.setText(user.getEmail());
++                    String userAvatarUrl = user.getAvatar();
++                    if (userAvatarUrl != null) {
++                        Glide.with(getContext())
++                                .load(userAvatarUrl)
++                                .placeholder(R.drawable.avatar)
++                                .error(R.drawable.avatar)
++                                .into(imgAvatar);
++                    }
++                    else {
++                        imgAvatar.setImageResource(R.drawable.avatar);
++                    }
++                }
++            }
++
++            @Override
++            public void onError(Throwable throwable) {
++                throwable.printStackTrace();
++            }
++        });
++
+         arrayItem = getDataList();
+         adapter = new AccountItemAdapter(getContext(), R.layout.item_function_user, arrayItem);
+         lvItem.setAdapter(adapter);
+@@ -61,16 +102,6 @@
+             }
+         });
+ 
+-        // set value
+-        imgAvatar.setImageResource(R.drawable.avatar);
+-        tvName.setText("Thu Huong");
+-        tvEmail.setText("huong@gmail.com");
+-        imgEdit.setOnClickListener(new View.OnClickListener() {
+-            @Override
+-            public void onClick(View v) {
+-                editProfile();
+-            }
+-        });
+ 
+         btnLogOut.setOnClickListener(new View.OnClickListener() {
+             @Override
+@@ -83,7 +114,6 @@
+ 
+     private void mapping(View view) {
+         imgAvatar = view.findViewById(R.id.imgAvatar);
+-        imgEdit = view.findViewById(R.id.imgEdit);
+         tvName = view.findViewById(R.id.tvName);
+         tvEmail = view.findViewById(R.id.tvEmail);
+         lvItem = view.findViewById(R.id.lvItem);
+@@ -105,8 +135,28 @@
+     private void logoutAction() {
+         Toast.makeText(getContext(), "Logout Action", Toast.LENGTH_SHORT).show();
+     }
+-    private void editProfile() {
+-        Intent intent = new Intent(getContext(), ProfileActivity.class);
+-        startActivity(intent);
++
++    public void getUserByUsername(String username, UserCallback callback) {
++        try {
++            Call<User> call = userService.getUserByUsername(username);
++            call.enqueue(new Callback<User>() {
++                @Override
++                public void onResponse(Call<User> call, Response<User> response) {
++                    if (response.isSuccessful() && response.body() != null) {
++                        User user = response.body();
++
++                        callback.onUserFetched(user);
++                    }
++                }
++
++                @Override
++                public void onFailure(Call<User> call, Throwable throwable) {
++                    throwable.printStackTrace();
++                }
++            });
++        }
++        catch (Exception e) {
++            e.printStackTrace();
++        }
+     }
+ }
+Index: app/src/main/res/layout/activity_account.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n<androidx.constraintlayout.widget.ConstraintLayout xmlns:android=\"http://schemas.android.com/apk/res/android\"\r\n    xmlns:app=\"http://schemas.android.com/apk/res-auto\"\r\n    xmlns:tools=\"http://schemas.android.com/tools\"\r\n    android:layout_width=\"match_parent\"\r\n    android:layout_height=\"match_parent\"\r\n    android:background=\"#fff\">\r\n\r\n    <com.google.android.material.imageview.ShapeableImageView\r\n        android:id=\"@+id/imgAvatar\"\r\n        android:layout_width=\"63dp\"\r\n        android:layout_height=\"63dp\"\r\n        android:layout_marginStart=\"25dp\"\r\n        android:layout_marginTop=\"50dp\"\r\n        android:backgroundTint=\"@color/black\"\r\n        android:src=\"@drawable/avatar\"\r\n        app:shapeAppearanceOverlay=\"@style/roundedImage\"\r\n        app:layout_constraintStart_toStartOf=\"parent\"\r\n        app:layout_constraintTop_toTopOf=\"parent\"\r\n        tools:srcCompat=\"@tools:sample/avatars\" />\r\n\r\n    <TextView\r\n        android:id=\"@+id/tvName\"\r\n        android:layout_width=\"wrap_content\"\r\n        android:layout_height=\"wrap_content\"\r\n        android:layout_marginStart=\"20dp\"\r\n        android:layout_marginTop=\"15dp\"\r\n        android:text=\"TextView\"\r\n        android:textColor=\"#000000\"\r\n        android:textStyle=\"bold\"\r\n        android:textSize=\"20sp\"\r\n        app:layout_constraintStart_toEndOf=\"@+id/imgAvatar\"\r\n        app:layout_constraintTop_toTopOf=\"@+id/imgAvatar\" />\r\n\r\n    <ImageView\r\n        android:id=\"@+id/imgEdit\"\r\n        android:layout_width=\"wrap_content\"\r\n        android:layout_height=\"wrap_content\"\r\n        android:layout_marginStart=\"5dp\"\r\n        android:textColor=\"#80000000\"\r\n        android:textSize=\"13sp\"\r\n        app:tint=\"#EB8D21\"\r\n        app:layout_constraintBottom_toBottomOf=\"@+id/tvName\"\r\n        app:layout_constraintStart_toEndOf=\"@+id/tvName\"\r\n        app:layout_constraintTop_toTopOf=\"@+id/tvName\"\r\n        app:srcCompat=\"@drawable/edit\" />\r\n\r\n    <TextView\r\n        android:id=\"@+id/tvEmail\"\r\n        android:layout_width=\"wrap_content\"\r\n        android:layout_height=\"wrap_content\"\r\n        android:text=\"TextView\"\r\n        android:textColor=\"#80000000\"\r\n        app:layout_constraintStart_toStartOf=\"@+id/tvName\"\r\n        app:layout_constraintTop_toBottomOf=\"@+id/tvName\" />\r\n\r\n    <ListView\r\n        android:id=\"@+id/lvItem\"\r\n        android:layout_width=\"0dp\"\r\n        android:layout_height=\"0dp\"\r\n        android:layout_marginTop=\"30dp\"\r\n        android:layout_marginBottom=\"10dp\"\r\n        app:layout_constraintBottom_toTopOf=\"@+id/btnLogOut\"\r\n        app:layout_constraintEnd_toEndOf=\"parent\"\r\n        app:layout_constraintStart_toStartOf=\"parent\"\r\n        app:layout_constraintTop_toBottomOf=\"@+id/imgAvatar\" />\r\n\r\n    <Button\r\n        android:id=\"@+id/btnLogOut\"\r\n        android:layout_width=\"0dp\"\r\n        android:layout_height=\"wrap_content\"\r\n        android:layout_marginHorizontal=\"25dp\"\r\n        android:layout_marginBottom=\"20dp\"\r\n        android:backgroundTint=\"#EB8D21\"\r\n        android:drawableTint=\"@color/black\"\r\n        android:paddingHorizontal=\"5dp\"\r\n        android:paddingVertical=\"15dp\"\r\n        android:paddingStart=\"20dp\"\r\n        android:text=\"Log Out\"\r\n        android:textAllCaps=\"false\"\r\n        android:textColor=\"#fff\"\r\n        app:icon=\"@drawable/exits\"\r\n        app:iconTint=\"#fff\"\r\n        android:textSize=\"18sp\"\r\n        app:layout_constraintBottom_toBottomOf=\"parent\"\r\n        app:layout_constraintEnd_toEndOf=\"parent\"\r\n        app:layout_constraintStart_toStartOf=\"parent\" />\r\n</androidx.constraintlayout.widget.ConstraintLayout>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/res/layout/activity_account.xml b/app/src/main/res/layout/activity_account.xml
+--- a/app/src/main/res/layout/activity_account.xml	(revision 681cd2a8ad5c8c58fd3e891c3c17000c148ceab2)
++++ b/app/src/main/res/layout/activity_account.xml	(date 1721069323458)
+@@ -32,19 +32,6 @@
+         app:layout_constraintStart_toEndOf="@+id/imgAvatar"
+         app:layout_constraintTop_toTopOf="@+id/imgAvatar" />
+ 
+-    <ImageView
+-        android:id="@+id/imgEdit"
+-        android:layout_width="wrap_content"
+-        android:layout_height="wrap_content"
+-        android:layout_marginStart="5dp"
+-        android:textColor="#80000000"
+-        android:textSize="13sp"
+-        app:tint="#EB8D21"
+-        app:layout_constraintBottom_toBottomOf="@+id/tvName"
+-        app:layout_constraintStart_toEndOf="@+id/tvName"
+-        app:layout_constraintTop_toTopOf="@+id/tvName"
+-        app:srcCompat="@drawable/edit" />
+-
+     <TextView
+         android:id="@+id/tvEmail"
+         android:layout_width="wrap_content"
+Index: app/src/main/AndroidManifest.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n<manifest xmlns:android=\"http://schemas.android.com/apk/res/android\"\r\n    xmlns:tools=\"http://schemas.android.com/tools\">\r\n\r\n    <uses-feature android:glEsVersion=\"0x00020000\" android:required=\"false\"/>\r\n\r\n    <uses-permission android:name=\"android.permission.INTERNET\"/>\r\n    <uses-permission android:name=\"android.permission.ACCESS_FINE_LOCATION\"/>\r\n    <uses-permission android:name=\"android.permission.ACCESS_COARSE_LOCATION\"/>\r\n    <uses-permission\r\n        android:name=\"android.permission.WRITE_EXTERNAL_STORAGE\"\r\n        android:maxSdkVersion=\"32\" />\r\n    <application\r\n        android:allowBackup=\"true\"\r\n        android:dataExtractionRules=\"@xml/data_extraction_rules\"\r\n        android:fullBackupContent=\"@xml/backup_rules\"\r\n        android:icon=\"@mipmap/ic_launcher\"\r\n        android:label=\"@string/app_name\"\r\n        android:roundIcon=\"@mipmap/ic_launcher_round\"\r\n        android:supportsRtl=\"true\"\r\n        android:theme=\"@style/Theme.KingPho\"\r\n        android:usesCleartextTraffic=\"true\"\r\n        tools:targetApi=\"31\">\r\n\r\n        <meta-data android:name=\"com.google.android.geo.API_KEY\"\r\n            android:value=\"@string/google_map_api_key\"/>\r\n        <meta-data android:name=\"com.google.android.gms.verson\"\r\n            android:value=\"@integer/google_play_services_version\"/>\r\n        <activity\r\n            android:name=\".WelcomeActivity\"\r\n            android:exported=\"true\">\r\n            <intent-filter>\r\n                <action android:name=\"android.intent.action.MAIN\" />\r\n\r\n                <category android:name=\"android.intent.category.LAUNCHER\" />\r\n            </intent-filter>\r\n        </activity>\r\n        <activity android:name=\".DetailProductActivity\"/>\r\n        <activity android:name=\".RatingActivity\"/>\r\n        <activity android:name=\".ChatActivity\"/>\r\n        <activity android:name=\".ProfileActivity\"/>\r\n        <activity android:name=\".MapActivity\"/>\r\n        <activity android:name=\".MyOrderActivity\"/>\r\n        <activity android:name=\".PaymentActivity\"/>\r\n        <activity android:name=\".TrackingActivity\"/>\r\n        <activity android:name=\".BillingActivity\"/>\r\n        <activity\r\n            android:name=\".FeedbackActivity\"\r\n            android:exported=\"true\" />\r\n        <activity\r\n            android:name=\".LoginActivity\"\r\n            android:exported=\"true\"/>\r\n        <activity\r\n            android:name=\".SignUpActivity\"\r\n            android:exported=\"true\" />\r\n        <activity\r\n            android:name=\".fragment.MainActivity\"\r\n            android:exported=\"true\" />\r\n        <activity\r\n            android:name=\".fragment.MainActivity\"\r\n            android:exported=\"true\" />\r\n        <activity\r\n            android:name=\".ForgotPasswordActivity\"\r\n            android:exported=\"true\" />\r\n        <activity\r\n            android:name=\".CheckEmailActivity\"\r\n            android:exported=\"true\" />\r\n        <activity\r\n            android:name=\".ResetPasswordActivity\"\r\n            android:exported=\"true\" />\r\n    </application>\r\n\r\n</manifest>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/AndroidManifest.xml b/app/src/main/AndroidManifest.xml
+--- a/app/src/main/AndroidManifest.xml	(revision 681cd2a8ad5c8c58fd3e891c3c17000c148ceab2)
++++ b/app/src/main/AndroidManifest.xml	(date 1721069323455)
+@@ -7,6 +7,7 @@
+     <uses-permission android:name="android.permission.INTERNET"/>
+     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
++    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+     <uses-permission
+         android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+         android:maxSdkVersion="32" />
+@@ -52,9 +53,6 @@
+             android:exported="true"/>
+         <activity
+             android:name=".SignUpActivity"
+-            android:exported="true" />
+-        <activity
+-            android:name=".fragment.MainActivity"
+             android:exported="true" />
+         <activity
+             android:name=".fragment.MainActivity"

@@ -2,6 +2,7 @@ package com.example.kingpho.fragment;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -20,20 +21,32 @@ import androidx.fragment.app.Fragment;
 import com.example.kingpho.DetailProductActivity;
 import com.example.kingpho.R;
 import com.example.kingpho.adapter.FoodAdapter;
+import com.example.kingpho.callback.ProductCallback;
 import com.example.kingpho.model.FoodActivity;
+import com.example.kingpho.model.Product;
+import com.example.kingpho.service.ProductService;
+import com.example.kingpho.utils.RetrofitClient;
+import com.example.kingpho.utils.SharedPrefManager;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+
 public class ProductFragment extends Fragment {
+
+    private ProductService productService;
 
     private SearchView searchView;
     private GridView gridView;
     private FoodAdapter adapter;
-    private List<FoodActivity> allFoodList;
-    private List<FoodActivity> filteredFoodList;
+    private List<Product> allProductList;
+    private List<Product> filteredProductList;
     private ImageButton filterButton;
 
     @Override
@@ -44,35 +57,41 @@ public class ProductFragment extends Fragment {
         gridView = view.findViewById(R.id.gridView);
         filterButton = view.findViewById(R.id.filterButton);
 
+        Retrofit retrofit = RetrofitClient.getRetrofitInstance(getContext());
+        productService = retrofit.create(ProductService.class);
+
         // Khởi tạo danh sách mẫu
-        allFoodList = new ArrayList<>();
-        allFoodList.add(new FoodActivity("Phở trộn2", 60.0, "photron"));
-        allFoodList.add(new FoodActivity("Phở trộn3", 60.0, "photron"));
-        allFoodList.add(new FoodActivity("Phở trộn4", 60.0, "photron"));
-        allFoodList.add(new FoodActivity("Phở trộn5", 60.0, "photron"));
-        allFoodList.add(new FoodActivity("Phở trộn6", 60.0, "photron"));
-        allFoodList.add(new FoodActivity("Phở cuốn", 50.0, "phocuon"));
-        allFoodList.add(new FoodActivity("Phở khô", 45.0, "phokho"));
-        allFoodList.add(new FoodActivity("Phở nước", 40.0, "phonuoc"));
-        allFoodList.add(new FoodActivity("Phở rán", 55.0, "phoran"));
-        allFoodList.add(new FoodActivity("Phở trộn", 60.0, "photron"));
-        allFoodList.add(new FoodActivity("Phở trộn", 60.0, "photron"));
-        allFoodList.add(new FoodActivity("Phở trộn2", 60.0, "photron"));
-        allFoodList.add(new FoodActivity("Phở trộn3", 60.0, "photron"));
-        allFoodList.add(new FoodActivity("Phở trộn4", 60.0, "photron"));
-        allFoodList.add(new FoodActivity("Phở trộn5", 60.0, "photron"));
-        allFoodList.add(new FoodActivity("Phở trộn6", 60.0, "photron"));
-        allFoodList.add(new FoodActivity("Phở trộn7", 60.0, "photron"));
-        allFoodList.add(new FoodActivity("Phở trộn", 60.0, "photron"));
-        allFoodList.add(new FoodActivity("Phở trộn", 60.0, "photron"));
-        allFoodList.add(new FoodActivity("Phở trộn", 60.0, "photron"));
-        allFoodList.add(new FoodActivity("Phở trộn", 60.0, "photron"));
+        allProductList = new ArrayList<>();
+
+        getAllProducts(new ProductCallback() {
+            @Override
+            public void onListProductFetched(List<Product> productList) {
+                for (Product product : productList) {
+                    allProductList.add(new Product(product.getId(), product.getName(), product.getDescription(),
+                            product.getPrice(), product.getCategory(), product.getImageUrls()));
+                }
+
+                filteredProductList = new ArrayList<>(allProductList);
+                adapter.updateData(filteredProductList);
+            }
+
+            @Override
+            public void onProductFetched(Product product) {
+
+            }
+
+            @Override
+            public void onError(Throwable throwable) {
+                throwable.printStackTrace();
+            }
+        });
 
         // Khởi tạo danh sách filteredFoodList ban đầu
-        filteredFoodList = new ArrayList<>(allFoodList);
+        filteredProductList = new ArrayList<>();
+        Log.d("Filter Product Size", filteredProductList.size() + "");
 
         // Khởi tạo adapter
-        adapter = new FoodAdapter(getContext(), filteredFoodList);
+        adapter = new FoodAdapter(getContext(), filteredProductList);
         gridView.setAdapter(adapter);
 
         // Xử lý khi nhấn vào nút filterButton
@@ -86,12 +105,12 @@ public class ProductFragment extends Fragment {
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                FoodActivity selectedFood = (FoodActivity) parent.getItemAtPosition(position);
+                Product selectedProduct = (Product) parent.getItemAtPosition(position);
                 Intent intent = new Intent(getContext(), DetailProductActivity.class);
                 // Truyền thông tin extra nếu cần thiết
-                intent.putExtra("foodId", selectedFood.getFoodId());
+                intent.putExtra("foodId", selectedProduct.getId());
                 startActivity(intent);
-                Toast.makeText(getContext(), "Bạn đã chọn sản phẩm: " + selectedFood.getFoodTitle(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Bạn đã chọn sản phẩm: " + selectedProduct.getName(), Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -140,24 +159,24 @@ public class ProductFragment extends Fragment {
     }
 
     private void filterData(String filterOption) {
-        List<FoodActivity> sortedList = new ArrayList<>(allFoodList); // Tạo một bản sao của danh sách gốc
+        List<Product> sortedList = new ArrayList<>(allProductList); // Tạo một bản sao của danh sách gốc
 
         switch (filterOption) {
             case "Tên A-Z":
                 // Sắp xếp danh sách theo tên từ A-Z
-                Collections.sort(sortedList, new Comparator<FoodActivity>() {
+                Collections.sort(sortedList, new Comparator<Product>() {
                     @Override
-                    public int compare(FoodActivity food1, FoodActivity food2) {
-                        return food1.getFoodTitle().compareTo(food2.getFoodTitle());
+                    public int compare(Product food1, Product food2) {
+                        return food1.getName().compareTo(food2.getName());
                     }
                 });
                 break;
             case "Giá tiền":
                 // Sắp xếp danh sách theo giá tiền
-                Collections.sort(sortedList, new Comparator<FoodActivity>() {
+                Collections.sort(sortedList, new Comparator<Product>() {
                     @Override
-                    public int compare(FoodActivity food1, FoodActivity food2) {
-                        return Double.compare(food1.getFoodPrice(), food2.getFoodPrice());
+                    public int compare(Product food1, Product food2) {
+                        return Double.compare(food1.getPrice(), food2.getPrice());
                     }
                 });
                 break;
@@ -167,5 +186,33 @@ public class ProductFragment extends Fragment {
 
         // Cập nhật lại adapter sau khi sắp xếp
         adapter.updateData(sortedList);
+    }
+
+    private void getAllProducts(ProductCallback callback) {
+        try {
+            Call<List<Product>> call = productService.getAllProducts();
+            call.enqueue(new Callback<List<Product>>() {
+                @Override
+                public void onResponse(Call<List<Product>> call, Response<List<Product>> response) {
+                    if (response.isSuccessful() && response.body() != null) {
+                        List<Product> productList = response.body();
+
+                        callback.onListProductFetched(productList);
+                    }
+                    else {
+                        Toast.makeText(getContext(), "Empty product", Toast.LENGTH_SHORT).show();
+                        Log.w("Product", "Empty Product");
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<List<Product>> call, Throwable throwable) {
+                    throwable.printStackTrace();
+                }
+            });
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

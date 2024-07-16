@@ -6,6 +6,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -18,8 +19,18 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.kingpho.adapter.ImageProductAdapter;
+import com.example.kingpho.callback.ProductCallback;
+import com.example.kingpho.callback.UserCallback;
+import com.example.kingpho.dto.UserFavouriteDTO;
 import com.example.kingpho.fragment.MainActivity;
 import com.example.kingpho.model.ImageProduct;
+import com.example.kingpho.model.Product;
+import com.example.kingpho.model.User;
+import com.example.kingpho.service.ProductService;
+import com.example.kingpho.service.UserFavouriteService;
+import com.example.kingpho.service.UserService;
+import com.example.kingpho.utils.RetrofitClient;
+import com.example.kingpho.utils.SharedPrefManager;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -28,8 +39,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 import me.relex.circleindicator.CircleIndicator3;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
 
 public class DetailProductActivity extends AppCompatActivity {
+
+    private ProductService productService;
+    private UserFavouriteService userFavouriteService;
+    private UserService userService;
+    private int userId;
+
     private ViewPager2 vpListImage;
     private CircleIndicator3 circleIndicator;
     private ImageView imgGoBack, imgTym, imgMinus, imgPlus, imgNext;
@@ -37,8 +58,8 @@ public class DetailProductActivity extends AppCompatActivity {
     private EditText numberProduct;
     private Button btnAddToCard;
     private boolean isFavor = false;
-    private static final int PRICE = 45000;
-    private List<ImageProduct> arrayImage;
+    private static int PRICE = 45000;
+    private List<String> arrayImage;
     private final Handler handler = new Handler(Looper.getMainLooper());
     private final Runnable runnable = new Runnable() {
         @Override
@@ -56,15 +77,36 @@ public class DetailProductActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail_product);
 
+        Intent intent = getIntent();
+        int foodId = intent.getIntExtra("foodId", - 1);
+
+        String username = SharedPrefManager.getInstance(this).getUser().getUsername();
+
+        Retrofit retrofit = RetrofitClient.getRetrofitInstance(this);
+        productService = retrofit.create(ProductService.class);
+        userFavouriteService = retrofit.create(UserFavouriteService.class);
+        userService = retrofit.create(UserService.class);
+
+        getUserByUsername(username, new UserCallback() {
+            @Override
+            public void onUserFetched(User user) {
+                if (user != null) {
+                    userId = user.getUserId();
+                }
+            }
+
+            @Override
+            public void onError(Throwable throwable) {
+
+            }
+        });
+
         mapping();
         vpListImage.setOffscreenPageLimit(3);
         vpListImage.setClipToPadding(false);
         vpListImage.setClipChildren(false);
 
-        arrayImage = getListImage();
-        ImageProductAdapter adapter = new ImageProductAdapter(arrayImage);
-        vpListImage.setAdapter(adapter);
-        circleIndicator.setViewPager(vpListImage);
+        arrayImage = new ArrayList<>();
 
         vpListImage.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
             @Override
@@ -75,10 +117,36 @@ public class DetailProductActivity extends AppCompatActivity {
             }
         });
 
-        tvNameProduct.setText("Phở bò tái");
-        price.setText("45,000");
-        sumPrice.setText("45,000");
-        description.setText("Phở bò là món ăn truyền thống của Việt Nam, nổi tiếng với hương vị đậm đà và hương thơm của nước dùng từ xương và thịt bò, được phục vụ cùng với bánh phở mềm và sợi thơm. Đây là một trong những món ăn được yêu thích và được biết đến rộng rãi trên toàn thế giới, thường được thưởng thức vào các buổi sáng để bắt đầu một ngày mới");
+        getProductById(foodId, new ProductCallback() {
+            @Override
+            public void onListProductFetched(List<Product> productList) {
+
+            }
+
+            @Override
+            public void onProductFetched(Product product) {
+                if (product != null) {
+                    tvNameProduct.setText(product.getName());
+                    price.setText(formatMoney(String.valueOf((int) product.getPrice())));
+                    sumPrice.setText(formatMoney(String.valueOf((int) product.getPrice())));
+                    description.setText(product.getDescription());
+                    PRICE = (int) product.getPrice();
+
+                    arrayImage.addAll(product.getImageUrls());
+                    ImageProductAdapter adapter = new ImageProductAdapter(arrayImage);
+                    vpListImage.setAdapter(adapter);
+                    circleIndicator.setViewPager(vpListImage);
+
+                    checkIfFavourited(product.getId());
+                }
+            }
+
+            @Override
+            public void onError(Throwable throwable) {
+                throwable.printStackTrace();
+            }
+        });
+
         numberProduct.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -142,6 +210,122 @@ public class DetailProductActivity extends AppCompatActivity {
                 addToCard();
             }
         });
+
+        imgTym.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (isFavor) {
+                    removeFromFavorites(foodId);
+                } else {
+                    addToFavorites(foodId);
+                }
+                isFavor = !isFavor;
+                updateFavoriteButtonState();
+            }
+        });
+    }
+
+    private void updateFavoriteButtonState() {
+        if (isFavor) {
+            imgTym.setImageResource(R.drawable.favorite);
+        } else {
+            imgTym.setImageResource(R.drawable.tym);
+        }
+    }
+
+    private void addToFavorites(int productId) {
+        try {
+            UserFavouriteDTO userFavouriteDTO = new UserFavouriteDTO();
+            userFavouriteDTO.setUserId(userId);
+            userFavouriteDTO.setProductId(productId);
+            userFavouriteDTO.setIsFavorite(true);
+
+            userFavouriteService.addToFavourites(userFavouriteDTO).enqueue(new Callback<UserFavouriteDTO>() {
+                @Override
+                public void onResponse(Call<UserFavouriteDTO> call, Response<UserFavouriteDTO> response) {
+                    if (response.isSuccessful()) {
+                        Toast.makeText(DetailProductActivity.this, "Added to favorites", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(DetailProductActivity.this, "Failed to add to favorites", Toast.LENGTH_SHORT).show();
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<UserFavouriteDTO> call, Throwable t) {
+                    Toast.makeText(DetailProductActivity.this, "Failed to add to favorites", Toast.LENGTH_SHORT).show();
+                    t.printStackTrace();
+                }
+            });
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void removeFromFavorites(int productId) {
+        try {
+            userFavouriteService.getUserFavourite(userId, productId).enqueue(new Callback<UserFavouriteDTO>() {
+                @Override
+                public void onResponse(Call<UserFavouriteDTO> call, Response<UserFavouriteDTO> response) {
+                    if (response.isSuccessful() && response.body() != null) {
+                        int userFavoriteId = response.body().getId();
+                        userFavouriteService.deleteUserFavourite(userFavoriteId).enqueue(new Callback<Void>() {
+                            @Override
+                            public void onResponse(Call<Void> call, Response<Void> response) {
+                                if (response.isSuccessful()) {
+                                    Toast.makeText(DetailProductActivity.this, "Removed from favorites", Toast.LENGTH_SHORT).show();
+                                } else {
+                                    Toast.makeText(DetailProductActivity.this, "Failed to remove from favorites", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(Call<Void> call, Throwable t) {
+                                Toast.makeText(DetailProductActivity.this, "Failed to remove from favorites", Toast.LENGTH_SHORT).show();
+                                t.printStackTrace();
+                            }
+                        });
+                    } else {
+                        Toast.makeText(DetailProductActivity.this, "Failed to get favorite information", Toast.LENGTH_SHORT).show();
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<UserFavouriteDTO> call, Throwable t) {
+                    Toast.makeText(DetailProductActivity.this, "Failed to get favorite information", Toast.LENGTH_SHORT).show();
+                    t.printStackTrace();
+                }
+            });
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void checkIfFavourited(int productId) {
+        try {
+            userFavouriteService.getUserFavourite(userId, productId).enqueue(new Callback<UserFavouriteDTO>() {
+                @Override
+                public void onResponse(Call<UserFavouriteDTO> call, Response<UserFavouriteDTO> response) {
+                    if (response.isSuccessful() && response.body() != null) {
+                        isFavor = response.body().isFavourite();
+                        updateFavoriteButtonState();
+                    } else {
+                        isFavor = false;
+                        updateFavoriteButtonState();
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<UserFavouriteDTO> call, Throwable t) {
+                    Toast.makeText(DetailProductActivity.this, "Failed to get favorite information", Toast.LENGTH_SHORT).show();
+                    t.printStackTrace();
+                }
+            });
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void mapping() {
@@ -161,15 +345,7 @@ public class DetailProductActivity extends AppCompatActivity {
         imgNext = findViewById(R.id.imgNext);
     }
 
-    private List<ImageProduct> getListImage() {
-        List<ImageProduct> list = new ArrayList<>();
-        list.add(new ImageProduct(R.drawable.phonuoc));
-        list.add(new ImageProduct(R.drawable.phokho));
-        list.add(new ImageProduct(R.drawable.phocuon));
-        list.add(new ImageProduct(R.drawable.phoran));
-        list.add(new ImageProduct(R.drawable.photron));
-        return list;
-    }
+
     private void goBack() {
         finish();
     }
@@ -191,14 +367,6 @@ public class DetailProductActivity extends AppCompatActivity {
         numberProduct.setText(String.valueOf(num + 1));
         num++;
         sumPrice.setText(formatMoney(String.valueOf(PRICE * num)));
-    }
-    public void tymAction(View view) {
-        if (isFavor) {
-            imgTym.setImageResource(R.drawable.tym);
-        } else {
-            imgTym.setImageResource(R.drawable.favorite);
-        }
-        isFavor = !isFavor;
     }
     private void addToCard() {
         Toast.makeText(this, "product added to cart", Toast.LENGTH_SHORT).show();
@@ -222,6 +390,56 @@ public class DetailProductActivity extends AppCompatActivity {
             return moneyString;
         }
     }
+
+    public void getProductById(int id, ProductCallback callback) {
+        try {
+            Call<Product> call = productService.getProductById(id);
+            call.enqueue(new Callback<Product>() {
+                @Override
+                public void onResponse(Call<Product> call, Response<Product> response) {
+                    if (response.isSuccessful() && response.body() != null) {
+                        Product product = response.body();
+
+                        callback.onProductFetched(product);
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<Product> call, Throwable throwable) {
+                    Toast.makeText(DetailProductActivity.this, "Failed to get product", Toast.LENGTH_LONG).show();
+                    throwable.printStackTrace();
+                }
+            });
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void getUserByUsername(String username, UserCallback callback) {
+        try {
+            Call<User> call = userService.getUserByUsername(username);
+            call.enqueue(new Callback<User>() {
+                @Override
+                public void onResponse(Call<User> call, Response<User> response) {
+                    if (response.isSuccessful() && response.body() != null) {
+                        User user = response.body();
+
+                        callback.onUserFetched(user);
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<User> call, Throwable throwable) {
+                    throwable.printStackTrace();
+                }
+            });
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     @Override
     protected void onPause() {
         super.onPause();

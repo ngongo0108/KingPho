@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class User {
-    private String userId;
+    private int userId;
     private String username;
     private String email;
     private String fullname;
@@ -12,7 +12,7 @@ public class User {
     private String address;
     private String avatar;
 
-    public User(String userId, String username, String email, String fullname, String phone, String address, String avatar) {
+    public User(int userId, String username, String email, String fullname, String phone, String address, String avatar) {
         this.userId = userId;
         this.username = username;
         this.email = email;
@@ -31,11 +31,11 @@ public class User {
         this.avatar = avatar;
     }
 
-    public String getUserId() {
+    public int getUserId() {
         return userId;
     }
 
-    public void setUserId(String userId) {
+    public void setUserId(int userId) {
         this.userId = userId;
     }
 
