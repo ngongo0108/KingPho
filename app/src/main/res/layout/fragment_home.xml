@@ -41,16 +41,16 @@
             app:layout_constraintTop_toTopOf="@+id/avatar"
             app:srcCompat="@drawable/message" />
 
-        <ImageView
-            android:id="@+id/imageViewNoti"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:layout_marginEnd="10dp"
-            app:tint="#b9b9b9"
-            app:layout_constraintBottom_toBottomOf="@+id/imageViewMessage"
-            app:layout_constraintEnd_toStartOf="@+id/imageViewMessage"
-            app:layout_constraintTop_toTopOf="@+id/imageViewMessage"
-            app:srcCompat="@drawable/notification" />
+<!--        <ImageView-->
+<!--            android:id="@+id/imageViewNoti"-->
+<!--            android:layout_width="30dp"-->
+<!--            android:layout_height="30dp"-->
+<!--            android:layout_marginEnd="10dp"-->
+<!--            app:tint="#b9b9b9"-->
+<!--            app:layout_constraintBottom_toBottomOf="@+id/imageViewMessage"-->
+<!--            app:layout_constraintEnd_toStartOf="@+id/imageViewMessage"-->
+<!--            app:layout_constraintTop_toTopOf="@+id/imageViewMessage"-->
+<!--            app:srcCompat="@drawable/notification" />-->
         <TextView
             android:id="@+id/textView9"
             android:layout_width="wrap_content"
