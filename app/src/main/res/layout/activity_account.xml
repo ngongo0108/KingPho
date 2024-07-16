@@ -32,19 +32,6 @@
         app:layout_constraintStart_toEndOf="@+id/imgAvatar"
         app:layout_constraintTop_toTopOf="@+id/imgAvatar" />
 
-    <ImageView
-        android:id="@+id/imgEdit"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="5dp"
-        android:textColor="#80000000"
-        android:textSize="13sp"
-        app:tint="#EB8D21"
-        app:layout_constraintBottom_toBottomOf="@+id/tvName"
-        app:layout_constraintStart_toEndOf="@+id/tvName"
-        app:layout_constraintTop_toTopOf="@+id/tvName"
-        app:srcCompat="@drawable/edit" />
-
     <TextView
         android:id="@+id/tvEmail"
         android:layout_width="wrap_content"

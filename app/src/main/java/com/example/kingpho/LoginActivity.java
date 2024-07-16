@@ -40,7 +40,7 @@ public class LoginActivity extends AppCompatActivity {
     ImageView ivEye;
     boolean isPasswordVisible = false;
     SharedPreferences sharedPreferences;
-    DatabaseHelper dbHelper;
+//    DatabaseHelper dbHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,7 +58,7 @@ public class LoginActivity extends AppCompatActivity {
         checkboxRememberMe = findViewById(R.id.checkboxRememberMe);
         ivEye = findViewById(R.id.ivEye);
 
-        dbHelper = new DatabaseHelper(this);
+//        dbHelper = new DatabaseHelper(this);
         sharedPreferences = getSharedPreferences("LoginPrefs", MODE_PRIVATE);
 
         loadPreferences();
@@ -80,22 +80,6 @@ public class LoginActivity extends AppCompatActivity {
                 if (username.isEmpty() || password.isEmpty()) {
                     Toast.makeText(LoginActivity.this, "Please enter username and password", Toast.LENGTH_SHORT).show();
                 } else {
-//                    if (dbHelper.checkUser(username, password)) {
-//                        // Save username and remember me preference if checked
-//                        if (checkboxRememberMe.isChecked()) {
-//                            savePreferences(username, password);
-//                        } else {
-//                            clearPreferences();
-//                        }
-//
-//                        // Navigate to MainActivity upon successful login
-//                        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-//                        startActivity(intent);
-//                        finish();
-//                    } else {
-//                        Toast.makeText(LoginActivity.this, "Invalid username or password", Toast.LENGTH_SHORT).show();
-//                    }
-
                     LoginDTO loginDTO = new LoginDTO(username, password);
                     signInUser(loginDTO);
                 }
@@ -153,20 +137,20 @@ public class LoginActivity extends AppCompatActivity {
             Log.e("Login Error", e.getMessage());
         }
     }
-
-    private void savePreferences(String username, String password) {
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString("username", username);
-        editor.putString("password", password);
-        editor.putBoolean("rememberMe", true);
-        editor.apply();
-    }
-
-    private void clearPreferences() {
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.clear();
-        editor.apply();
-    }
+//
+//    private void savePreferences(String username, String password) {
+//        SharedPreferences.Editor editor = sharedPreferences.edit();
+//        editor.putString("username", username);
+//        editor.putString("password", password);
+//        editor.putBoolean("rememberMe", true);
+//        editor.apply();
+//    }
+//
+//    private void clearPreferences() {
+//        SharedPreferences.Editor editor = sharedPreferences.edit();
+//        editor.clear();
+//        editor.apply();
+//    }
 
     private void loadPreferences() {
         boolean rememberMe = sharedPreferences.getBoolean("rememberMe", false);
@@ -186,7 +170,6 @@ public class LoginActivity extends AppCompatActivity {
             isPasswordVisible = false;
         } else {
             edtPassword.setInputType(InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
-//            ivEye.setImageResource(R.drawable.baseline_remove_circle_24);
             isPasswordVisible = true;
         }
     }

@@ -16,30 +16,71 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.bumptech.glide.Glide;
 import com.example.kingpho.MapActivity;
 import com.example.kingpho.MyOrderActivity;
 import com.example.kingpho.ProfileActivity;
 import com.example.kingpho.R;
 import com.example.kingpho.adapter.AccountItemAdapter;
+import com.example.kingpho.callback.UserCallback;
 import com.example.kingpho.model.AccountItem;
+import com.example.kingpho.model.User;
+import com.example.kingpho.service.UserService;
+import com.example.kingpho.utils.RetrofitClient;
+import com.example.kingpho.utils.SharedPrefManager;
 import com.google.android.material.imageview.ShapeableImageView;
 
 import java.util.ArrayList;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+
 public class AccountFragment extends Fragment {
     private ShapeableImageView imgAvatar;
-    private ImageView imgEdit;
     private TextView tvName, tvEmail;
     private ListView lvItem;
     private Button btnLogOut;
     private ArrayList<AccountItem> arrayItem;
     private AccountItemAdapter adapter;
-
+    private UserService userService;
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.activity_account, container, false);
 
         mapping(view);
+
+        Retrofit retrofit = RetrofitClient.getRetrofitInstance(getContext());
+        userService = retrofit.create(UserService.class);
+
+        String username = SharedPrefManager.getInstance(getContext()).getUser().getUsername();
+        getUserByUsername(username, new UserCallback() {
+            @Override
+            public void onUserFetched(User user) {
+                if (user != null) {
+                    tvName.setText(user.getFullname());
+                    tvEmail.setText(user.getEmail());
+                    String userAvatarUrl = user.getAvatar();
+                    if (userAvatarUrl != null) {
+                        Glide.with(getContext())
+                                .load(userAvatarUrl)
+                                .placeholder(R.drawable.avatar)
+                                .error(R.drawable.avatar)
+                                .into(imgAvatar);
+                    }
+                    else {
+                        imgAvatar.setImageResource(R.drawable.avatar);
+                    }
+                }
+            }
+
+            @Override
+            public void onError(Throwable throwable) {
+                throwable.printStackTrace();
+            }
+        });
+
         arrayItem = getDataList();
         adapter = new AccountItemAdapter(getContext(), R.layout.item_function_user, arrayItem);
         lvItem.setAdapter(adapter);
@@ -61,16 +102,6 @@ public class AccountFragment extends Fragment {
             }
         });
 
-        // set value
-        imgAvatar.setImageResource(R.drawable.avatar);
-        tvName.setText("Thu Huong");
-        tvEmail.setText("huong@gmail.com");
-        imgEdit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                editProfile();
-            }
-        });
 
         btnLogOut.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -83,7 +114,6 @@ public class AccountFragment extends Fragment {
 
     private void mapping(View view) {
         imgAvatar = view.findViewById(R.id.imgAvatar);
-        imgEdit = view.findViewById(R.id.imgEdit);
         tvName = view.findViewById(R.id.tvName);
         tvEmail = view.findViewById(R.id.tvEmail);
         lvItem = view.findViewById(R.id.lvItem);
@@ -105,8 +135,28 @@ public class AccountFragment extends Fragment {
     private void logoutAction() {
         Toast.makeText(getContext(), "Logout Action", Toast.LENGTH_SHORT).show();
     }
-    private void editProfile() {
-        Intent intent = new Intent(getContext(), ProfileActivity.class);
-        startActivity(intent);
+
+    public void getUserByUsername(String username, UserCallback callback) {
+        try {
+            Call<User> call = userService.getUserByUsername(username);
+            call.enqueue(new Callback<User>() {
+                @Override
+                public void onResponse(Call<User> call, Response<User> response) {
+                    if (response.isSuccessful() && response.body() != null) {
+                        User user = response.body();
+
+                        callback.onUserFetched(user);
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<User> call, Throwable throwable) {
+                    throwable.printStackTrace();
+                }
+            });
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

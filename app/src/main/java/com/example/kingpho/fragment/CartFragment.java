@@ -46,7 +46,6 @@ public class CartFragment extends Fragment implements ChangeNumberItemsListener,
     private ArrayList<CartDTO> cartList;
     private CartAdapter adapter;
     private int userId = 1;
-
     private CartService cartService;
     private ProductService productService;
 

@@ -53,17 +53,8 @@ public class BillingActivity extends AppCompatActivity {
     private ArrayList<Billing> getArrayBilling() {
         ArrayList<Billing> list = new ArrayList<>();
         list.add(new Billing("Pho bo tai nam Pho bo tai nam Pho bo tai nam Pho bo tai nam Pho bo tai nam Pho bo tai nam", "12"));
-        list.add(new Billing("Pho bo tai nam", "12"));
-        list.add(new Billing("Pho bo tai nam", "12"));
-        list.add(new Billing("Pho bo tai nam", "12"));
-        list.add(new Billing("Pho bo tai nam", "12"));
-        list.add(new Billing("Pho bo tai nam", "12"));
         list.add(new Billing("Pho bo tai nam Pho bo tai nam Pho bo tai nam Pho bo tai nam Pho bo tai nam Pho bo tai nam", "12"));
-        list.add(new Billing("Pho bo tai nam", "12"));
-        list.add(new Billing("Pho bo tai nam", "12"));
-        list.add(new Billing("Pho bo tai nam", "12"));
-        list.add(new Billing("Pho bo tai nam", "12"));
-        list.add(new Billing("Pho bo tai nam", "12"));
+
         return list;
     }
 }

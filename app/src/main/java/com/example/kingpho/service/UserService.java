@@ -7,6 +7,7 @@ import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
+import retrofit2.http.PUT;
 import retrofit2.http.Path;
 
 public interface UserService {
@@ -16,4 +17,10 @@ public interface UserService {
 
     @GET("users/username/{username}")
     Call<User> getUserByUsername(@Path("username") String username);
+
+    @GET("users/{id}")
+    Call<User> getUserById(@Path("id") int id);
+
+    @PUT("user/update/{id}")
+    Call<User> updateUser(@Path("id") int id, @Body User user);
 }

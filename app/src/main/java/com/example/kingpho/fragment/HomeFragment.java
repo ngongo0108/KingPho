@@ -3,7 +3,9 @@
 package com.example.kingpho.fragment;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,18 +24,22 @@ import com.example.kingpho.ChatActivity;
 import com.example.kingpho.R;
 import com.example.kingpho.adapter.CategoryAdapter;
 import com.example.kingpho.adapter.ProductAdapter;
+import com.example.kingpho.callback.CartCallBack;
 import com.example.kingpho.callback.CategoryCallback;
 import com.example.kingpho.callback.ProductCallback;
 import com.example.kingpho.callback.UserCallback;
+import com.example.kingpho.dto.CartDTO;
 import com.example.kingpho.helper.Manager;
 import com.example.kingpho.helper.TinyDB;
 import com.example.kingpho.model.Category;
 import com.example.kingpho.model.Food;
 import com.example.kingpho.model.Product;
 import com.example.kingpho.model.User;
+import com.example.kingpho.service.CartService;
 import com.example.kingpho.service.CategoryService;
 import com.example.kingpho.service.ProductService;
 import com.example.kingpho.service.UserService;
+import com.example.kingpho.utils.NotificationUtils;
 import com.example.kingpho.utils.RetrofitClient;
 import com.example.kingpho.utils.SharedPrefManager;
 
@@ -51,7 +57,6 @@ public class HomeFragment extends Fragment {
     private UserService userService;
     private CategoryService categoryService;
     private ProductService productService;
-
     private RecyclerView recyclerView;
     private ArrayList<Category> categoryList;
     private CategoryAdapter categoryAdapter;
@@ -62,7 +67,10 @@ public class HomeFragment extends Fragment {
     private ImageView imageViewNoti, imageViewMessage;
     private Manager manager;
     private String username;
-
+    private NotificationUtils notificationUtils;
+    private CartService cartService;
+    private ArrayList<CartDTO> cartList;
+    private int userId = 1;
     public HomeFragment() {
         // Required empty public constructor
     }
@@ -83,6 +91,8 @@ public class HomeFragment extends Fragment {
         userService = retrofit.create(UserService.class);
         categoryService = retrofit.create(CategoryService.class);
         productService = retrofit.create(ProductService.class);
+        cartService = retrofit.create(CartService.class);
+
 
         String username = SharedPrefManager.getInstance(getContext()).getUser().getUsername();
         getUserByUsername(username, new UserCallback() {
@@ -150,11 +160,6 @@ public class HomeFragment extends Fragment {
     }
 
     private void initializeCategories() {
-//        categoryList.add(new Category("Phở Nước", "phonuoc"));
-//        categoryList.add(new Category("Phở Khô", "phokho"));
-//        categoryList.add(new Category("Phở Rán", "phoran"));
-//        categoryList.add(new Category("Phở Cuốn", "phocuon"));
-//        categoryList.add(new Category("Phở Trộn", "photron"));
 
         getAllCategories(new CategoryCallback() {
             @Override
@@ -281,6 +286,67 @@ public class HomeFragment extends Fragment {
         catch (Exception e) {
             e.printStackTrace();
         }
+    }
+    private void getSizeListCart(CartCallBack cartCallBack) {
+        try {
+            Call<List<CartDTO>> call = cartService.getCartItems(userId);
+            call.enqueue(new Callback<List<CartDTO>>() {
+                @Override
+                public void onResponse(Call<List<CartDTO>> call, Response<List<CartDTO>> response) {
+                    if (response.isSuccessful() && response.body() != null) {
+                        cartList = new ArrayList<>(response.body());
+                        cartCallBack.getSizeList(cartList.size());
+                        setNotificationShown();
+                    }
+                    cartCallBack.getSizeList(0);
+                }
+
+                @Override
+                public void onFailure(Call<List<CartDTO>> call, Throwable t) {
+                    t.printStackTrace();
+                    cartCallBack.getSizeList(0);
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void onStart() {
+        notificationUtils = new NotificationUtils(getContext());
+        if (!shouldShowNotification()) {
+            getSizeListCart(new CartCallBack() {
+                @Override
+                public void getSizeList(int size) {
+                    if (size != 0) {
+                        notificationUtils.showNotification("Quickly place an order", "You have items in your cart. Don't forget to check out!");
+                    }
+                }
+
+                @Override
+                public void onError(Throwable throwable) {
+                }
+            });
+        }
+
+        super.onStart();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+    }
+    private boolean shouldShowNotification() {
+        SharedPreferences prefs = requireContext().getSharedPreferences("MyPrefs", getContext().MODE_PRIVATE);
+        return prefs.getBoolean("notification_shown", false);
+    }
+
+    private void setNotificationShown() {
+        SharedPreferences prefs = requireContext().getSharedPreferences("MyPrefs", getContext().MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putBoolean("notification_shown", true);
+        editor.apply();
     }
 }
 
